@@ -1,6 +1,6 @@
 cnms2formula <-
 function(cnms) {
-  # A function that builds a random effects formula from the “component names”, 
+  # A function that builds a random effects formula from the ?component names?, 
   # a list that can be extracted from an lmerMod object by .@cnms or 
   # getME(., "cnms").
   #
@@ -18,6 +18,8 @@ function(cnms) {
     if (cnms[[i]][1] == "(Intercept)") {
       cnms[[i]][1] <- "1"
     } else {
+      tpv <- cnms[[i]]
+      cnms[[i]] <- append("",tpv)
       cnms[[i]][1] <- "-1"
     }
     charForm[i] <- paste("(", paste(cnms[[i]], collapse = " + "), 
