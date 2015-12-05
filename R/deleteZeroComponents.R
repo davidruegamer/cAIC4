@@ -49,7 +49,7 @@ function(m) {
   }
   
   reFormula  <- cnms2formula(cnms)
-  if(nobars(formula(m)) == formula(m)[[2]]) {  # if there are no fixed effects 
+  if(suppressWarnings(nobars(formula(m)) == formula(m)[[2]])) {  # if there are no fixed effects 
     rhs      <- reFormula
   } else {
     rhs      <- c(attr(terms(nobars(formula(m))), "term.labels"), reFormula)
