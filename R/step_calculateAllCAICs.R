@@ -25,18 +25,31 @@ calculateAllCAICs <- function(newSetup,
   listOfCAICs <- lapply(mclapply(listOfModels,function(m){
     
     if(any(class(m)%in%c("glm","lm"))){
+      
       ll <- getGLMll(m)
       bc <- attr(stats4:::logLik(m),"df")
       caic <- -2*ll + 2*bc
       c(ll,bc,caic)
+      
     }else{
-      if(!calcNonOptimMod){
+      
+      if(class(m)=="list"){
         
-        errCode <- m@optinfo$conv$lme4$code
-        if(!is.null(errCode)) return(c(NA,NA,NA))
+        cAIC(m,...)[c("loglikelihood","df","caic")]
+        
+      }else{
+        
+        if(!calcNonOptimMod){
+          
+          errCode <- m@optinfo$conv$lme4$code
+          if(!is.null(errCode)) return(c(NA,NA,NA))
+          
+        }
+        
+        tryCatch(cAIC(m,...)[c("loglikelihood","df","caic")], error = function(e) return(c(NA,NA,NA)))
         
       }
-      tryCatch(cAIC(m,...)[c("loglikelihood","df","caic")], error = function(e) return(c(NA,NA,NA)))
+      
     }},
     mc.cores=numbCores),unlist)
   
