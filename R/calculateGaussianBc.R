@@ -57,10 +57,19 @@ function(model, sigma.estimated, analytic) {
     }
   }
   
-  Rchol   <- chol(B)
-  L1      <- backsolve(Rchol, C, transpose = TRUE)
-  Lambday <- backsolve(Rchol, L1)
-
+  Rchol   <- try(chol(B))
+  if(class(Rchol)=="try-error"){
+    
+    warning("Having problems to decompose B via Cholesky. Using standard inversion instead.")
+    Lambday <- solve(B) %*% C
+    
+  }else{
+    
+    L1      <- backsolve(Rchol, C, transpose = TRUE)
+    Lambday <- backsolve(Rchol, L1)
+    
+  }
+  
   df <- model$n - sum(diag(A))
   for (j in 1:length(model$theta)) {
       df <- df + sum(Lambday[j,] %*% (A %*% (model$Wlist[[j]] %*% e)))  
