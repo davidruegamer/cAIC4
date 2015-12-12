@@ -33,7 +33,7 @@ calculateAllCAICs <- function(newSetup,
       
     }else{
       
-      if(class(m)=="list"){
+      if(class(m)=="list"){ # m is a gamm4 object
         
         cAIC(m,...)[c("loglikelihood","df","caic")]
         

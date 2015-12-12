@@ -1,3 +1,215 @@
+#' Function to stepwise select the best (generalized) linear mixed model
+#' fitted via (g)lmer or the best (generalized) additive (mixed) model
+#' fitted via gamm4.
+#' 
+#' 
+#' The step-function searches the space of possible models in a greedy manner,
+#' where the direction of the search is specified by the argument
+#' direction. If direction = "forward" / = "backward", 
+#' the function adds / exludes random effects until the cAIC can't be improved.
+#' In the case of forward-selection, either a new grouping structure, new
+#' slopes for the random effects or new s()-terms must be supplied to the function call.
+#' If direction = "both", the greedy search is alternating between forward
+#' and backward steps, where the direction is changed after each step
+#'
+#'@param object fit by (g)lmer for which the stepwise procedure is to be computed
+#'@param groupCandidates see slopeCandidates   
+#'@param slopeCandidates character vectors containing names of possible new random effect groups / slopes
+#'@param fixEf character vector containing names of possible (non-)linear fixed effects in the GAMM; NULL for the (g)lme-use case 
+#'@param direction character vector indicating the direction in c("both","backward","forward")
+#'@param numberOfPermissibleSlopes how much slopes are permissible for one group RE
+#'@param trace logical; should information ne printed during the running of stepcAIC?
+#'@param steps maximum number of steps to be considered
+#'@param keep list($fixed,$random) of formulae; which splines / fixed (fixed) or random effects (random) to be kept during selection must be included in the original model 
+#'@param data data.frame, from which the new REs are to be taken
+#'@param nestingDepth numeric; if 1, no nested effects are evaluated, else interactions of nestingDepth are included in the procedure
+#'@param returnResult logical; whether to return the result (best model and corresponding cAIC)
+#'@param calcNonOptimMod logical; if FALSE, models which failed to converge are not considered for cAIC calculation
+#'@param bsType type of splines to consider in forward gamm4 steps
+#'@param allowUseAcross allow slopes to be used in other grouping variables
+#'@param ... options for cAIC call
+#'@section Details: 
+#' For use with "gamm4-objects": 
+#' groupCandidates are interpreted as covariables and fitted as splines.
+#' If groupCandidates does include characters such as "s(..,bs='tp')" the respective spline is included in the forward stepwise procedure.
+#' @return ...
+#' @author David Ruegamer
+#' @import parallel
+#' @examples \dontrun{
+#' 
+#' library(cAIC4dev)
+#' (fm3 <- lmer(strength ~ 1 + (1|sample) + (1|batch), Pastes))
+#' 
+#' fm3_step <- stepcAIC(fm3,direction="backward", trace=TRUE, data=Pastes)
+#' 
+#' # compare with AIC calculations of mgcv:::gam
+#'
+#' library(mgcv)
+#' summary(gam(strength ~ 1 + s(sample,bs="re"),data=Pastes,method="REML"))
+#' AIC(gam(strength ~ 1,data=Pastes,method="REML"))
+#' AIC(gam(strength ~ 1 + s(sample,bs="re"),data=Pastes,method="REML"))
+#' 
+#' fm3_min <- lm(strength ~ 1, data=Pastes)
+#' 
+#' fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),direction="forward", nestingDepth=2,
+#'                          data=Pastes,trace=TRUE)
+#' fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),direction="both", data=Pastes, trace=TRUE)
+#' fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),direction="both", nestingDepth=2,
+#'                          data=Pastes,trace=TRUE)
+#' 
+#' 
+#' Pastes$time <- 1:dim(Pastes)[1]
+#' fm3_slope <- lmer(data=Pastes, strength ~ 1 + (1 + time | cask))
+#' 
+#' fm3_slope_step <- stepcAIC(fm3_slope,direction="backward", trace=TRUE, data=Pastes)
+#' 
+#' 
+#' 
+#' fm3_min <- lm(strength ~ 1, data=Pastes)
+#' 
+#' fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),direction="forward", nestingDepth=2,
+#'                          data=Pastes,trace=TRUE)
+#' 
+#' 
+#' 
+#' fm3_inta <- lmer(strength ~ 1 + (1|sample:batch), data=Pastes)
+#' 
+#' fm3_inta_step <- stepcAIC(fm3_inta,groupCandidates=c("batch","sample"),direction="forward", nestingDepth=2,
+#'                           data=Pastes,trace=TRUE)
+#' 
+#' fm3_min_step2 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),direction="forward", nestingDepth=2,
+#'                           data=Pastes,trace=TRUE)
+#' 
+#' fm3_min_step3 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),direction="both", nestingDepth=2,
+#'                           data=Pastes,trace=TRUE)
+#' 
+#' fm3_inta_step2 <- stepcAIC(fm3_inta,direction="backward", data=Pastes,trace=TRUE)
+#' 
+#' fm3_min_step4 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),direction="both", nestingDepth=3,
+#'                           data=Pastes,trace=TRUE)
+#' 
+#' ##### create own example
+#' 
+#' 
+#' na <- 20
+#' nb <- 25
+#' n <- 400
+#' a <- sample(1:na,400,replace=TRUE)
+#' b <- factor(sample(1:nb,400,replace=TRUE))
+#' x <- runif(n)
+#' y <- 2 + 3 * x + a*.02 + rnorm(n) * .4
+#' a <- factor(a)
+#' c <- interaction(a,b)
+#' y <- y + as.numeric(as.character(c))*5
+#' df <- data.frame(y=y,x=x,a=a,b=b,c=c)
+#' 
+#' smallMod <- lm(y ~ x)
+#' 
+#' # throw error
+#' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, nestingDepth=2, returnResult=FALSE)
+#' 
+#' smallMod <- lm(y ~ x, data=df)
+#' 
+#' # throw error
+#' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, nestingDepth=2, returnResult=FALSE)
+#' 
+#' # get it all right
+#' mod <- stepcAIC(smallMod, groupCandidates=c("a","b","c"), 
+#'                 data=df, trace=TRUE, nestingDepth=2,
+#'                 direction="forward", returnResult=TRUE)
+#' 
+#' # make some more steps...
+#' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, nestingDepth=2,
+#'          direction="both", returnResult=FALSE)
+#' 
+#' mod1 <- lmer(y ~ x + (1|a), data=df)
+#' 
+#' stepcAIC(mod1, groupCandidates=c("b","c"), data=df, trace=TRUE, nestingDepth=2, direction="forward")
+#' stepcAIC(mod1, groupCandidates=c("b","c"), data=df, trace=TRUE, nestingDepth=2, direction="both")
+#' 
+#' 
+#' 
+#' mod2 <- lmer(y ~ x + (1|a) + (1|c), data=df)
+#' 
+#' stepcAIC(mod2, data=df, trace=TRUE, direction="backward")
+#' 
+#' mod3 <- lmer(y ~ x + (1|a) + (1|a:b), data=df)
+#' 
+#' stepcAIC(mod3, data=df, trace=TRUE, direction="backward")
+#' 
+#' ####################################### gamm4 #########################################
+#' 
+#' data("guWahbaData")
+#' br <- gamm4(y~s(x3)+x1+s(x2,bs="ps"),data=guWahbaData,random=~(1|fac))
+#' 
+#' stepcAIC(br,fixEf=c("x1","x3"),trace=TRUE,direction="forward",data=dat,returnResult=FALSE)
+#' stepcAIC(br,trace=TRUE,direction="backward",data=dat,returnResult=FALSE)
+#' stepcAIC(br,fixEf=c("x1","x3"),trace=TRUE,direction="both",data=dat,returnResult=FALSE)
+#' 
+#' br2 <- gamm4(y~x1,data=dat,random=~(1|fac))
+#' 
+#' stepcAIC(br2,fixEf=c("x2","x0","x1","x3"),trace=TRUE,
+#'          direction="forward",data=dat,returnResult=FALSE)
+#' stepcAIC(br2,fixEf=c("x2","x0","x1","x3"),trace=TRUE,
+#'          direction="both",data=dat,returnResult=FALSE)
+#' 
+#' 
+#' 
+#' 
+#' #################### keep argument #######################
+#' 
+#' # first lmer
+#' 
+#' (fm3 <- lmer(strength ~ 1 + (1|sample) + (1|batch), Pastes))
+#' 
+#' fm3_step_keep <- stepcAIC(fm3,direction="backward", trace=TRUE, 
+#'                           data=Pastes, keep=list(random=~(1|sample)))
+#' 
+#' (fm4 <- lmer(strength ~ 1 + (1|sample) + (1|cask) + (1|batch), Pastes))
+#' 
+#' fm4_step_keep <- stepcAIC(fm4,direction="backward", trace=TRUE, 
+#'                           data=Pastes, keep=list(random=~(1|sample)))
+#' 
+#' (fm5 <- lmer(strength ~ 1 + (1|sample) + cask + (1|batch), Pastes))
+#' 
+#' fm5_step_keep <- stepcAIC(fm5,direction="backward", trace=TRUE, 
+#'                           data=Pastes, keep=list(random=~(1|sample)))
+#' 
+#' 
+#' # gamm4 
+#' 
+#' br <- gamm4(y~s(x0)+x1+s(x2,bs="ps"),data=dat,random=~(1|fac))
+#' 
+#' stepcAIC(br,trace=TRUE,direction="backward",
+#'          data=dat,returnResult=FALSE, keep=list(random=~(1|fac),fixed=~x1))
+#' 
+#' stepcAIC(br,trace=TRUE,direction="backward",
+#'          data=dat,returnResult=FALSE, keep=list(fixed=~x1+s(x0)))
+#' 
+#' stepcAIC(br,trace=TRUE,direction="backward",
+#'          data=dat,returnResult=FALSE, keep=list(fixed=~x1+s(x0), random=~(1|fac)))
+#' 
+#' 
+#' br2 <- gamm4(y~s(x0, bs="ps")+x2,data=dat,random=~(1|fac))
+#' 
+#' stepcAIC(br2,trace=TRUE,direction="both",
+#'          fixEf=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2,random=~(1|fac)),
+#'          returnResult=FALSE, data=dat)
+#' 
+#' br3 <- gamm4(y~s(x0, bs="ps")+x2,data=dat)
+#' 
+#' stepcAIC(br3,trace=TRUE,direction="both", groupCandidates="fac",
+#'          fixEf=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2),
+#'          returnResult=FALSE, data=dat)
+#' 
+#' 
+#' 
+#' #### for paper
+#' 
+#' br <- gamm4(y~s(x3)+x1,data=dat,random=~(1|fac))
+#' 
+#' stepcAIC(br,trace=TRUE,direction="backward",data=dat)
+#' }
 stepcAIC <- function(object, 
                      groupCandidates=NULL,
                      slopeCandidates=NULL,
@@ -16,77 +228,7 @@ stepcAIC <- function(object,
                      bsType="tp",
                      ...)
 {
- 
-  # Function to stepwise select the best (generalized) linear mixed model
-  # fitted via (g)lmer or the best (generalized) additive (mixed) model
-  # fitted via gamm4.
-  # The step-function searches the space of possible models in a greedy manner,
-  # where the direction of the search is specified by the argument
-  # direction. If direction = "forward" / = "backward", 
-  # the function adds / exludes random effects until the cAIC can't be improved.
-  # In the case of forward-selection, either a new grouping structure, new
-  # slopes for the random effects or new s()-terms must be supplied to the function call.
-  # If direction = "both", the greedy search is alternating between forward
-  # and backward steps, where the direction is changed after each step
-  
-  
-  
-  #### TODOS:
-  
-  # - throw error if null space is obtained
-  # - test gamm4 
-  
-  library(cAIC4)
-  library(parallel)
 
-  ########################################
-  
-  
-  
-  # Args:
-  #
-  #   object          fit by (g)lmer for which the stepwise procedure is to
-  #                   be computed
-  #   groupCandidates,  
-  #   slopeCandidates character vectors containing names of possible
-  #                   new random effect groups / slopes
-  #   fixEf           character vector containing names of possible
-  #                   (non-)linear fixed effects in the GAMM;
-  #                   NULL for the (g)lme-use case 
-  #
-  #   direction       character vector indicating the direction
-  #                   %in%c("both","backward","forward")
-  #
-  #   numberOfPermissibleSlopes
-  #                   how much slopes are permissible for one group RE
-  #
-  #   trace           logical; should information ne printed during the running of 
-  #                   stepcAIC?
-  #
-  #   steps           maximum number of steps to be considered
-  #
-  #   keep            list($fixed,$random) of formulae; 
-  #                   which splines / fixed (fixed) or random effects (random) 
-  #                   to be kept during selection must be included in the original model 
-  #   data            data.frame, from which the new REs are to be taken
-  #   nestingDepth    numeric; if 1, no nested effects are evaluated, else
-  #                   interactions of nestingDepth are included in the procedure
-  #   returnResult    logical; whether to return the result (best model and corresponding cAIC)
-  #   calcNonOptimMod logical; if FALSE, models which failed to converge are not 
-  #                   considered for cAIC calculation
-  #   bsType          type of splines to consider in forward gamm4 steps
-  #   ...             options for cAIC call
-  
-  
-  # for use with "gamm4-objects": 
-  # ------------------------------------------------------
-  # groupCandidates are interpreted as covariables and fitted as splines
-  # if groupCandidates does include characters such as "s(..,bs='cr')" the respective spline is
-  # included in the forward stepwise procedure
-  
-  
-  
-  
   #######################################################################
   ########################## pre-processing #############################
   #######################################################################
