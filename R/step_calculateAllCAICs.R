@@ -22,7 +22,7 @@ calculateAllCAICs <- function(newSetup,
   ################### calculate alle the cAICs ##########################
   #######################################################################
   
-  listOfCAICs <- lapply(mclapply(listOfModels,function(m){
+  listOfCAICs <- tryCatch(mclapply(listOfModels,function(m){
     
     if(any(class(m)%in%c("glm","lm"))){
       
@@ -35,8 +35,7 @@ calculateAllCAICs <- function(newSetup,
       
       if(class(m)=="list"){ # m is a gamm4 object
         
-        tryCatch(cAIC(m,...)[c("loglikelihood","df","caic")],
-                 error = function(e)return(e))
+        cAIC(m,...)[c("loglikelihood","df","caic")]
         
         
       }else{
@@ -53,7 +52,9 @@ calculateAllCAICs <- function(newSetup,
       }
       
     }},
-    mc.cores=numbCores),unlist)
+    mc.cores=numbCores),error=function(e)return(e))
+  
+    if(!is.null(listOfCAICs$message)) return(listOfCAICs) else listOfCAICs <- lapply(listOfCAICs,unlist)
   
   #######################################################################
   ################ list all the cAICs and models ########################

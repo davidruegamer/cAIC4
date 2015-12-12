@@ -433,11 +433,9 @@ stepcAIC <- function(object,
      
     ##############
     
-    ### get performance
+    if(is.list(tempRes) & !is.null(tempRes$message)){ # gamm4 with error
       
-    aicTab <- as.data.frame(tempRes$aicTab)
-    
-    if(is.list(object) & length(object)==2 & all(is.na(aicTab$caic))){ # gamm4 with error
+      warning(paste0("There are zero variance components.\n",tempRes$message))
       
       if(returnResult){
         return(list(finalModel=object,
@@ -448,6 +446,11 @@ stepcAIC <- function(object,
       }
       
     }
+    
+    
+    ### get performance
+      
+    aicTab <- as.data.frame(tempRes$aicTab)
     
     ### ( print ) ###
     
