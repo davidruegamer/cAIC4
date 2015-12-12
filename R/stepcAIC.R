@@ -436,8 +436,21 @@ stepcAIC <- function(object,
     ### get performance
       
     aicTab <- as.data.frame(tempRes$aicTab)
-  
+    
+    if(is.list(object) & length(object)==2 & all(is.na(aicTab$caic))){ # gamm4 with error
+      
+      if(returnResult){
+        return(list(finalModel=object,
+                    bestCAIC=NA)
+        )
+      }else{
+        return(invisible(NULL))
+      }
+      
+    }
+    
     ### ( print ) ###
+    
     
     if (trace) {
       cat("\r\r\r\r\r\r\r\r\r\r\r\r\r")

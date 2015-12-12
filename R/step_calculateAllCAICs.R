@@ -33,11 +33,12 @@ calculateAllCAICs <- function(newSetup,
       
     }else{
       
-      if(class(m)=="list"){ # m is a gamm4 object
-        
-        cAIC(m,...)[c("loglikelihood","df","caic")]
-        
-      }else{
+#       if(class(m)=="list"){ # m is a gamm4 object
+#         
+#         try(cAIC(m,...)[c("loglikelihood","df","caic")])
+#         
+#         
+#       }else{
         
         if(!calcNonOptimMod){
           
@@ -48,7 +49,7 @@ calculateAllCAICs <- function(newSetup,
         
         tryCatch(cAIC(m,...)[c("loglikelihood","df","caic")], error = function(e) return(c(NA,NA,NA)))
         
-      }
+      # }
       
     }},
     mc.cores=numbCores),unlist)

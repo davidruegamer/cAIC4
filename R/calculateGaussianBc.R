@@ -60,7 +60,7 @@ function(model, sigma.estimated, analytic) {
   Rchol   <- try(chol(B))
   if(class(Rchol)=="try-error"){
     
-    warning("Having problems to decompose B via Cholesky. Using standard inversion instead.")
+    # warning("Having problems to decompose B via Cholesky. Using standard inversion instead.")
     Lambday <- solve(B) %*% C
     
   }else{
