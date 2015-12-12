@@ -1,4 +1,4 @@
-Package: cAIC4
+Package: cAIC4dev
 Type: Package
 Title: Conditional Akaike information criterion for lme4
 Version: 0.2
@@ -13,5 +13,4 @@ Description: Provides functions for the estimation of the conditional Akaike
 License: GPL (>= 2)
 Packaged: 2014-08-12 09:13:26 UTC; bsaefken
 NeedsCompilation: no
-Repository: CRAN
 Date/Publication: 2014-08-12 11:48:10
