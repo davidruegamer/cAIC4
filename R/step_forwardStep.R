@@ -2,11 +2,11 @@ forwardStep <- function(cnms,
                         slopeCandidates,
                         groupCandidates,
                         nrOfCombs,
-                        allowSwop,
+                        allowUseAcross,
                         intDep)
 {
 
-  if(allowSwop){
+  if(allowUseAcross){
       
       allSlopes <- unique(c(unlist(cnms),slopeCandidates),"(Intercept)")  
       

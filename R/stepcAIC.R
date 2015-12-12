@@ -3,7 +3,7 @@ stepcAIC <- function(object,
                      slopeCandidates=NULL,
                      fixEf=NULL,
                      numberOfPermissibleSlopes=2,
-                     allowSwop=FALSE,
+                     allowUseAcross=FALSE,
                      direction = "backward",
                      trace = FALSE,
                      steps = 50, 
@@ -110,7 +110,7 @@ stepcAIC <- function(object,
     library(mgcv)
     library(gamm4)
     
-    if(nestingDepth>1 | allowSwop | !is.null(slopeCandidates)){
+    if(nestingDepth>1 | allowUseAcross | !is.null(slopeCandidates)){
       
       stop("Using step-function for gamm4-object:\nNeither nesting / swopping nor slope candidates are permissible!")
       
@@ -168,7 +168,7 @@ stepcAIC <- function(object,
                    ( !is.null(groupCandidates) | !is.null(slopeCandidates) | !is.null(fixEf) ) ) | 
                    ( direction %in% c("forward","both") & 
                        is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEf) &
-                       ( allowSwop | existsNonS ) ) 
+                       ( allowUseAcross | existsNonS ) ) 
   )
   
   if( direction=="backward" & !( is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEf) )
@@ -243,7 +243,7 @@ stepcAIC <- function(object,
                                    groupCandidates=groupCandidates,
                                    fixEf=fixEf,
                                    nrOfCombs=numberOfPermissibleSlopes,
-                                   allowSwop=allowSwop,
+                                   allowUseAcross=allowUseAcross,
                                    intDep=nestingDepth,
                                    bsType=bsType,
                                    keep=keep,

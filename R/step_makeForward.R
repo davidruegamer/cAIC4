@@ -2,7 +2,7 @@ makeForward <- function(comps,
                         slopeCandidates,
                         groupCandidates,
                         nrOfCombs,
-                        allowSwop,
+                        allowUseAcross,
                         intDep,
                         fixEf, 
                         bsType,
@@ -28,11 +28,11 @@ makeForward <- function(comps,
       forwardGam(comps$gamPart, fixEf=fixEf, bsType=bsType, keep=keep$fixed, ...)
     
     returnListRE <- if(!is.null(slopeCandidates) | !is.null(groupCandidates) | 
-                           length(comps$random)>1 | allowSwop | intDep > 1) 
+                           length(comps$random)>1 | allowUseAcross | intDep > 1) 
       forwardStep(cnms=comps$random, slopeCandidates, groupCandidates, 
-                  nrOfCombs, allowSwop, intDep)
+                  nrOfCombs, allowUseAcross, intDep)
     
-    # problem: allowSwop or intDep > 1 migth be true though there are no other possible models
+    # problem: allowUseAcross or intDep > 1 migth be true though there are no other possible models
   
   }
 
