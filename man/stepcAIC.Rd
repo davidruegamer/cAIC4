@@ -33,6 +33,8 @@ stepcAIC(object, groupCandidates = NULL, slopeCandidates = NULL,
 
 \item{keep}{list($fixed,$random) of formulae; which splines / fixed (fixed) or random effects (random) to be kept during selection must be included in the original model}
 
+\item{numbCores}{the number of cores to be used in calculations; this is done by using \code{parallel::mclapply}}
+
 \item{data}{data.frame, from which the new REs are to be taken}
 
 \item{nestingDepth}{numeric; if 1, no nested effects are evaluated, else interactions of nestingDepth are included in the procedure}
@@ -46,7 +48,11 @@ stepcAIC(object, groupCandidates = NULL, slopeCandidates = NULL,
 \item{...}{options for cAIC call}
 }
 \value{
-...
+if \code{returnResult} is \code{TRUE}, a list with the best model \code{finalModel} and
+the corresponding cAIC \code{bestCAIC} is returned.
+
+Note that if \code{trace} is set to \code{FALSE} and \code{returnResult}
+is also \code{FALSE}, the function call may not be meaningful
 }
 \description{
 The step-function searches the space of possible models in a greedy manner,

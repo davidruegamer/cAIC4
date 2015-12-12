@@ -21,6 +21,7 @@
 #'@param trace logical; should information ne printed during the running of stepcAIC?
 #'@param steps maximum number of steps to be considered
 #'@param keep list($fixed,$random) of formulae; which splines / fixed (fixed) or random effects (random) to be kept during selection must be included in the original model 
+#'@param numbCores the number of cores to be used in calculations; this is done by using \code{parallel::mclapply}
 #'@param data data.frame, from which the new REs are to be taken
 #'@param nestingDepth numeric; if 1, no nested effects are evaluated, else interactions of nestingDepth are included in the procedure
 #'@param returnResult logical; whether to return the result (best model and corresponding cAIC)
@@ -32,7 +33,11 @@
 #' For use with "gamm4-objects": 
 #' groupCandidates are interpreted as covariables and fitted as splines.
 #' If groupCandidates does include characters such as "s(..,bs='tp')" the respective spline is included in the forward stepwise procedure.
-#' @return ...
+#' @return if \code{returnResult} is \code{TRUE}, a list with the best model \code{finalModel} and
+#' the corresponding cAIC \code{bestCAIC} is returned. 
+#' 
+#' Note that if \code{trace} is set to \code{FALSE} and \code{returnResult}
+#' is also \code{FALSE}, the function call may not be meaningful
 #' @author David Ruegamer
 #' @import parallel
 #' @examples \dontrun{
