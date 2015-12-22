@@ -1,8 +1,8 @@
-Package: cAIC4dev
+Package: cAIC4
 Type: Package
 Title: Conditional Akaike information criterion for lme4
-Version: 0.2
-Date: 2014-05-23
+Version: 0.3
+Date: 2015-12-22
 Author: Benjamin Saefken and David Ruegamer, with contributions from Sonja Greven and Thomas Kneib
 Maintainer: Benjamin Saefken <bsaefke@uni-goettingen.de>
 Depends: lme4(>= 1.1-6), methods, Matrix
