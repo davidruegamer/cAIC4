@@ -7,4 +7,4 @@ Now including several bug fixes and a stepcAIC-function (as at 7 December 2015).
 
 `library(devtools)`
 
-`install_github("cAIC4dev")`
+`install_github("davidruegamer/cAIC4dev")`
