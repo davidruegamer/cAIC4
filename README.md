@@ -3,3 +3,5 @@ Developer version of cAIC4 package (Conditional Akaike information criterion for
 
 Now including several bug fixes and a stepcAIC-function (as at 7 December 2015). 
 
+library(devtools)
+install_github("cAIC4dev")
