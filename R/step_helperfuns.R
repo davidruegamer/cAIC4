@@ -357,40 +357,40 @@ checkREs <- function(reList)
 #######################################################################################
 ### nester function
 ### purpose:  does the nesting of random effects
+# 
+# 
+# nester <- function(namesGroups, intDep)
+# {
+#   
+#   countColons <- function(strings) sapply(regmatches(strings, gregexpr(":", strings)), length)
+#   
+#   # namesGroups <- unique(unlist(sapply(listOfRanefCombs,names)))
+#   nrOfColons <- countColons(namesGroups)
+#   newGroups <- namesGroups[nrOfColons<intDep-1]
+#   
+#   if(length(namesGroups)>1){
+#     
+#     combsGroups <- sapply(allCombn2(newGroups,intDep),paste0,collapse=":")
+#     combsGroups <- combsGroups[countColons(combsGroups)<=intDep-1]
+#     namesGroups <- append(namesGroups,combsGroups)
+#     
+#   }
+#   
+#   return(namesGroups)
+#   
+# }
 
+#######################################################################################
+### allNestSubs function
+### purpose:  create all grouping variables from nested expression
 
-nester <- function(namesGroups, intDep)
+allNestSubs <- function(x)
 {
-  
-  countColons <- function(strings) sapply(regmatches(strings, gregexpr(":", strings)), length)
-  
-  # namesGroups <- unique(unlist(sapply(listOfRanefCombs,names)))
-  nrOfColons <- countColons(namesGroups)
-  newGroups <- namesGroups[nrOfColons<intDep-1]
-  
-  if(length(namesGroups)>1){
-    
-    combsGroups <- sapply(allCombn2(newGroups,intDep),paste0,collapse=":")
-    combsGroups <- combsGroups[countColons(combsGroups)<=intDep-1]
-    # newTerms <- as.list(rep("(Intercept)",length(combsGroups)))
-    # names(newTerms) <- unlist(combsGroups)
-    
-    #     orgLen <- length(listOfRanefCombs)
-    #     listOfRanefCombs <- append(listOfRanefCombs,vector("list",length(newTerms)))
-    #     
-    #     for(i in 1:length(newTerms)){ 
-    #       listOfRanefCombs[[orgLen+i]] <- newTerms[i]
-    #     }
-    
-    namesGroups <- append(namesGroups,combsGroups)
-    
-  }
-  
-  return(namesGroups)
-  
+  unlist(sapply( findbars( as.formula( paste0("~ (1 | ", x, ")"))), 
+                 function(y) deparse(y[[3]])
+                 )
+  )
 }
-
-
 
 #######################################################################################
 ### cnmsConverter function
@@ -487,22 +487,15 @@ forwardStep <- function(cnms,
                         slopeCandidates,
                         groupCandidates,
                         nrOfCombs,
-                        allowUseAcross,
-                        intDep)
+                        allowUseAcross
+                        )
 {
   
-  if(allowUseAcross){
-    
-    allSlopes <- unique(c(unlist(cnms),slopeCandidates),"(Intercept)")  
-    
-  }else{
-    
-    allSlopes <- c(slopeCandidates,"(Intercept)")
-    
-  }
+  if(allowUseAcross)
+    allSlopes <- unique(c(unlist(cnms), slopeCandidates), "(Intercept)") else 
+      allSlopes <- c(slopeCandidates,"(Intercept)")
   
-  allGroups <- unique(c(names(cnms),groupCandidates))
-  if(intDep>1) allGroups <- nester(allGroups, intDep)
+  allGroups <- unique( c(names(cnms), groupCandidates) )
   
   allSlopeCombs <- list()
   
@@ -792,7 +785,6 @@ makeForward <- function(comps,
                         groupCandidates,
                         nrOfCombs,
                         allowUseAcross,
-                        intDep,
                         fixEf, 
                         bsType,
                         keep,
@@ -817,11 +809,9 @@ makeForward <- function(comps,
       forwardGam(comps$gamPart, fixEf=fixEf, bsType=bsType, keep=keep$fixed, ...)
     
     returnListRE <- if(!is.null(slopeCandidates) | !is.null(groupCandidates) | 
-                       length(comps$random)>1 | allowUseAcross | intDep > 1) 
+                       length(comps$random)>1 | allowUseAcross) 
       forwardStep(cnms=comps$random, slopeCandidates, groupCandidates, 
-                  nrOfCombs, allowUseAcross, intDep)
-    
-    # problem: allowUseAcross or intDep > 1 migth be true though there are no other possible models
+                  nrOfCombs, allowUseAcross)
     
   }
   

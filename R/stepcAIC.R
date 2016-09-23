@@ -13,17 +13,19 @@
 #' and backward steps, where the direction is changed after each step
 #'
 #'@param object fit by (g)lmer for which the stepwise procedure is to be computed
-#'@param groupCandidates see slopeCandidates   
+#'@param groupCandidates see slopeCandidates. Group nesting must be initiated manually, i.e. by 
+#'listing up the string of the groups in the manner of lme4. For example \code{groupCandidates = c("a", "b", "a/b")}.   
 #'@param slopeCandidates character vectors containing names of possible new random effect groups / slopes
-#'@param fixEf character vector containing names of possible (non-)linear fixed effects in the GAMM; NULL for the (g)lme-use case 
+#'@param fixEf character vector containing names of possible (non-)linear fixed effects in the GAMM; 
+#'NULL for the (g)lme-use case 
 #'@param direction character vector indicating the direction in c("both","backward","forward")
 #'@param numberOfPermissibleSlopes how much slopes are permissible for one group RE
 #'@param trace logical; should information ne printed during the running of stepcAIC?
 #'@param steps maximum number of steps to be considered
-#'@param keep list($fixed,$random) of formulae; which splines / fixed (fixed) or random effects (random) to be kept during selection must be included in the original model 
+#'@param keep list($fixed,$random) of formulae; which splines / fixed (fixed) or random effects (random) to be 
+#'kept during selection must be included in the original model 
 #'@param numbCores the number of cores to be used in calculations; this is done by using \code{parallel::mclapply}
 #'@param data data.frame, from which the new REs are to be taken
-#'@param nestingDepth numeric; if 1, no nested effects are evaluated, else interactions of nestingDepth are included in the procedure
 #'@param returnResult logical; whether to return the result (best model and corresponding cAIC)
 #'@param calcNonOptimMod logical; if FALSE, models which failed to converge are not considered for cAIC calculation
 #'@param bsType type of splines to consider in forward gamm4 steps
@@ -45,23 +47,22 @@
 #' library(cAIC4dev)
 #' (fm3 <- lmer(strength ~ 1 + (1|sample) + (1|batch), Pastes))
 #' 
-#' fm3_step <- stepcAIC(fm3,direction="backward", trace=TRUE, data=Pastes)
+#' fm3_step <- stepcAIC(fm3, direction = "backward", trace = TRUE, data = Pastes)
 #' 
 #' # compare with AIC calculations of mgcv:::gam
 #'
 #' library(mgcv)
-#' summary(gam(strength ~ 1 + s(sample,bs="re"),data=Pastes,method="REML"))
-#' AIC(gam(strength ~ 1,data=Pastes,method="REML"))
-#' AIC(gam(strength ~ 1 + s(sample,bs="re"),data=Pastes,method="REML"))
+#' summary(gam(strength ~ 1 + s(sample,bs="re"), data = Pastes, method = "REML"))
+#' AIC(gam(strength ~ 1, data = Pastes, method = "REML"))
+#' AIC(gam(strength ~ 1 + s(sample,bs="re"), data = Pastes, method = "REML"))
 #' 
 #' fm3_min <- lm(strength ~ 1, data=Pastes)
 #' 
-#' fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),direction="forward", nestingDepth=2,
-#'                          data=Pastes,trace=TRUE)
-#' fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),direction="both", data=Pastes, trace=TRUE)
-#' fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),direction="both", nestingDepth=2,
-#'                          data=Pastes,trace=TRUE)
-#' 
+#' fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample"), direction="forward", data=Pastes, trace=TRUE)
+#' fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample"), direction="both", data=Pastes, trace=TRUE)
+#' # try using a nested group effect which is actually not nested -> warning
+#' fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample", "batch/sample"), 
+#'                          direction="both", data=Pastes, trace=TRUE)
 #' 
 #' Pastes$time <- 1:dim(Pastes)[1]
 #' fm3_slope <- lmer(data=Pastes, strength ~ 1 + (1 + time | cask))
@@ -227,7 +228,6 @@ stepcAIC <- function(object,
                      keep = NULL,
                      numbCores = 1,
                      data = NULL,
-                     nestingDepth = 1,
                      returnResult=TRUE,
                      calcNonOptimMod=TRUE,
                      bsType="tp",
@@ -248,6 +248,30 @@ stepcAIC <- function(object,
   }
   possible_predictors <- colnames(data)
   
+  ### build nesting in groupCandidates
+  nestCands <- groupCandidates[grep("/", groupCandidates)]
+  nestCands <- nestCands[!nestCands %in% possible_predictors]
+  for(nc in nestCands){ 
+    # check if really nested
+    ncc <- trimws(strsplit(nc, "/")[[1]])
+    if(!isNested(data[,ncc[1]], data[,ncc[2]])){
+      warning(paste0("Dropping incorrect nesting group ", nc, " from groupCandidates."))
+    }else{
+      groupCandidates <- unique( c(groupCandidates), allNestSubs(nc) )
+    }
+    groupCandidates <- setdiff(groupCandidates, nc)
+    
+  }
+  # intaCands <- groupCandidates[grep(":", groupCandidates)]
+  # if(length(intaCands) > 0) intaCands <- intaCands[!intaCands %in% possible_predictors]
+  # for(ic in intaCands){
+  #   sepIc <- trimws(strsplit(ic, ":")[[1]])
+  #   if(cor(sapply(data[,sepIc], as.numeric))==1)
+  #     stop(paste0("Interaction of ", sepIc, " not meaningful."))
+  # }
+  
+  
+  
   existsNonS <- FALSE
   
   ### check if gamm4-call
@@ -257,11 +281,8 @@ stepcAIC <- function(object,
     library(mgcv)
     library(gamm4)
     
-    if(nestingDepth>1 | allowUseAcross | !is.null(slopeCandidates)){
-      
-      stop("Using step-function for gamm4-object:\nNeither nesting / swopping nor slope candidates are permissible!")
-      
-    }
+    if(allowUseAcross | !is.null(slopeCandidates))
+      stop("allowUseAcross and slopeCandidates are not permissible for gamm4-objects!")
     
     ig <- interpret.gam(object$gam$formula)
     existsNonS <- length(ig$smooth.spec)<length(ig$fake.names)
@@ -270,7 +291,9 @@ stepcAIC <- function(object,
         
   }else{
     
-    if( !is.null(groupCandidates) ) stopifnot( groupCandidates %in% possible_predictors )
+    if( !is.null(groupCandidates) ) stopifnot( all ( groupCandidates %in% possible_predictors ) | 
+                                                 ( unlist(strsplit(groupCandidates, ":")) %in% 
+                                                     possible_predictors ) )
     if( !is.null(slopeCandidates) ) stopifnot( slopeCandidates %in% possible_predictors )
     
   }
@@ -311,18 +334,21 @@ stepcAIC <- function(object,
 
   # check if call is inherently consistent
   
-  stopifnot( direction=="backward" | ( direction %in% c("forward","both") & 
-                   ( !is.null(groupCandidates) | !is.null(slopeCandidates) | !is.null(fixEf) ) ) | 
-                   ( direction %in% c("forward","both") & 
-                       is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEf) &
-                       ( allowUseAcross | existsNonS ) ) 
+  stopifnot( 
+    
+    direction=="backward" | 
+      
+      ( direction %in% c("forward","both") & 
+          ( !is.null(groupCandidates) | !is.null(slopeCandidates) | !is.null(fixEf) ) ) | 
+      
+      ( direction %in% c("forward","both") & 
+          is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEf) &
+          ( allowUseAcross | existsNonS ) ) 
   )
   
   if( direction=="backward" & !( is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEf) )
       ) warning("I will ignoring variables in group- / slopeCandidates or fixEf for backward selection.")
   
-    
-  ### more to be added ...
 
   #######################################################################
   ##########################      (end)     #############################
@@ -357,7 +383,13 @@ stepcAIC <- function(object,
   ####################### iterative part ############################
   ###################################################################
   
-  
+  if(trace){
+    
+    cat("Starting stepwise procedure...")
+    cat("\n_____________________________________________\n")
+    cat("_____________________________________________\n")
+    
+  }
   
   
   # try to improve the model as long as stepsOver==FALSE
@@ -371,8 +403,8 @@ stepcAIC <- function(object,
     if(trace) {
     
       cat("\nStep ",stepsInit-steps+1," (",direction,"):  cAIC=", format(round(cAICofMod, 4)), "\n", 
-            "Best model so far: ", makePrint(object), "\n\n",
-          "_____________________________________________\nNew Candidates:\n\n",
+            "Best model so far: ", makePrint(object), "\n",
+          "New Candidates:\n\n",
           sep = "")
       utils::flush.console()
     
@@ -391,7 +423,6 @@ stepcAIC <- function(object,
                                    fixEf=fixEf,
                                    nrOfCombs=numberOfPermissibleSlopes,
                                    allowUseAcross=allowUseAcross,
-                                   intDep=nestingDepth,
                                    bsType=bsType,
                                    keep=keep,
                                    ...)
@@ -563,7 +594,7 @@ stepcAIC <- function(object,
   ###############################################################################
 
   cat("\nBest model: ", makePrint(bestModel),
-      ", cAIC:",minCAIC,"\n")
+      ", cAIC:",minCAIC,"\n_____________________________________________\n")
    
   if(returnResult){
     return(list(finalModel=bestModel,
