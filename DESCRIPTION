@@ -3,14 +3,20 @@ Type: Package
 Title: Conditional Akaike information criterion for lme4
 Version: 0.3
 Date: 2015-12-22
-Author: Benjamin Saefken and David Ruegamer, with contributions from Sonja Greven and Thomas Kneib
+Author: Benjamin Saefken and David Ruegamer, with contributions from Sonja
+    Greven and Thomas Kneib
 Maintainer: Benjamin Saefken <bsaefke@uni-goettingen.de>
-Depends: lme4(>= 1.1-6), methods, Matrix
-Suggests: gamm4
-Description: Provides functions for the estimation of the conditional Akaike 
-			 information in generalized mixed-effects models fitted with (g)lmer 
-			 form lme4.
+Depends:
+    lme4(>= 1.1-6),
+    methods,
+    Matrix
+Suggests:
+    gamm4
+Description: Provides functions for the estimation of the conditional Akaike
+    information in generalized mixed-effects models fitted with (g)lmer
+    form lme4.
 License: GPL (>= 2)
 Packaged: 2014-08-12 09:13:26 UTC; bsaefken
 NeedsCompilation: no
 Date/Publication: 2014-08-12 11:48:10
+RoxygenNote: 5.0.1

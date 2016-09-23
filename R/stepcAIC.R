@@ -112,12 +112,12 @@
 #' smallMod <- lm(y ~ x)
 #' 
 #' # throw error
-#' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, nestingDepth=2, returnResult=FALSE)
+#' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, returnResult=FALSE)
 #' 
 #' smallMod <- lm(y ~ x, data=df)
 #' 
 #' # throw error
-#' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, nestingDepth=2, returnResult=FALSE)
+#' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, returnResult=FALSE)
 #' 
 #' # get it all right
 #' mod <- stepcAIC(smallMod, groupCandidates=c("a","b","c"), 
@@ -130,8 +130,8 @@
 #' 
 #' mod1 <- lmer(y ~ x + (1|a), data=df)
 #' 
-#' stepcAIC(mod1, groupCandidates=c("b","c"), data=df, trace=TRUE, nestingDepth=2, direction="forward")
-#' stepcAIC(mod1, groupCandidates=c("b","c"), data=df, trace=TRUE, nestingDepth=2, direction="both")
+#' stepcAIC(mod1, groupCandidates=c("b","c"), data=df, trace=TRUE, direction="forward")
+#' stepcAIC(mod1, groupCandidates=c("b","c"), data=df, trace=TRUE, direction="both")
 #' 
 #' 
 #' 
@@ -314,7 +314,7 @@ stepcAIC <- function(object,
       readline("If so, type 'y': ")
       
     })
-    if(!is.numeric(cAICofMod) && cAICofMod=="y") cAICofMod <- Inf
+    if(!is.numeric(cAICofMod) && cAICofMod=="y") cAICofMod <- Inf else return(NULL)
     timeForCalc <- Sys.time() - timeBefore
 
   }else if(any(class(object)%in%c("lm","glm"))){
@@ -593,8 +593,18 @@ stepcAIC <- function(object,
   ############################  return result ###################################  
   ###############################################################################
 
-  cat("\nBest model: ", makePrint(bestModel),
-      ", cAIC:",minCAIC,"\n_____________________________________________\n")
+  if(minCAIC==Inf){
+    
+    cat("\nNo best model found.")
+    
+  }else{
+    
+    cat("\nBest model: ", makePrint(bestModel),
+        ", cAIC:",minCAIC,"\n_____________________________________________\n")
+    
+  }
+  
+  
    
   if(returnResult){
     return(list(finalModel=bestModel,
