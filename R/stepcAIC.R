@@ -34,14 +34,21 @@
 #'@section Details: 
 #' For use with "gamm4-objects": 
 #' groupCandidates are interpreted as covariables and fitted as splines.
-#' If groupCandidates does include characters such as "s(..,bs='tp')" the respective spline is included in the forward stepwise procedure.
+#' If groupCandidates does include characters such as "s(..,bs='tp')" 
+#' the respective spline is included in the forward stepwise procedure.
 #' @return if \code{returnResult} is \code{TRUE}, a list with the best model \code{finalModel} and
 #' the corresponding cAIC \code{bestCAIC} is returned. 
 #' 
 #' Note that if \code{trace} is set to \code{FALSE} and \code{returnResult}
 #' is also \code{FALSE}, the function call may not be meaningful
 #' @author David Ruegamer
+#' @export
 #' @import parallel
+#' @importFrom stats as.formula dbinom dnorm dpois family
+#' formula glm lm model.frame model.matrix
+#' predict qlogis reformulate sigma simulate terms
+#' @importFrom utils combn
+#' @importFrom stats4 logLik
 #' @examples \dontrun{
 #' 
 #' library(cAIC4dev)
@@ -49,17 +56,12 @@
 #' 
 #' fm3_step <- stepcAIC(fm3, direction = "backward", trace = TRUE, data = Pastes)
 #' 
-#' # compare with AIC calculations of mgcv:::gam
-#'
-#' library(mgcv)
-#' summary(gam(strength ~ 1 + s(sample,bs="re"), data = Pastes, method = "REML"))
-#' AIC(gam(strength ~ 1, data = Pastes, method = "REML"))
-#' AIC(gam(strength ~ 1 + s(sample,bs="re"), data = Pastes, method = "REML"))
-#' 
 #' fm3_min <- lm(strength ~ 1, data=Pastes)
 #' 
-#' fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample"), direction="forward", data=Pastes, trace=TRUE)
-#' fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample"), direction="both", data=Pastes, trace=TRUE)
+#' fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample"), 
+#' direction="forward", data=Pastes, trace=TRUE)
+#' fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample"), 
+#' direction="both", data=Pastes, trace=TRUE)
 #' # try using a nested group effect which is actually not nested -> warning
 #' fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample", "batch/sample"), 
 #'                          direction="both", data=Pastes, trace=TRUE)
@@ -73,26 +75,24 @@
 #' 
 #' fm3_min <- lm(strength ~ 1, data=Pastes)
 #' 
-#' fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),direction="forward", nestingDepth=2,
-#'                          data=Pastes,trace=TRUE)
+#' fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),
+#' direction="forward", data=Pastes,trace=TRUE)
 #' 
 #' 
 #' 
 #' fm3_inta <- lmer(strength ~ 1 + (1|sample:batch), data=Pastes)
 #' 
-#' fm3_inta_step <- stepcAIC(fm3_inta,groupCandidates=c("batch","sample"),direction="forward", nestingDepth=2,
-#'                           data=Pastes,trace=TRUE)
+#' fm3_inta_step <- stepcAIC(fm3_inta,groupCandidates=c("batch","sample"),
+#' direction="forward", data=Pastes,trace=TRUE)
 #' 
-#' fm3_min_step2 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),direction="forward", nestingDepth=2,
-#'                           data=Pastes,trace=TRUE)
+#' fm3_min_step2 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),
+#' direction="forward", data=Pastes,trace=TRUE)
 #' 
-#' fm3_min_step3 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),direction="both", nestingDepth=2,
-#'                           data=Pastes,trace=TRUE)
+#' fm3_min_step3 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),
+#' direction="both", data=Pastes,trace=TRUE)
 #' 
 #' fm3_inta_step2 <- stepcAIC(fm3_inta,direction="backward", data=Pastes,trace=TRUE)
 #' 
-#' fm3_min_step4 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),direction="both", nestingDepth=3,
-#'                           data=Pastes,trace=TRUE)
 #' 
 #' ##### create own example
 #' 
@@ -121,11 +121,11 @@
 #' 
 #' # get it all right
 #' mod <- stepcAIC(smallMod, groupCandidates=c("a","b","c"), 
-#'                 data=df, trace=TRUE, nestingDepth=2,
+#'                 data=df, trace=TRUE, 
 #'                 direction="forward", returnResult=TRUE)
 #' 
 #' # make some more steps...
-#' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, nestingDepth=2,
+#' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, 
 #'          direction="both", returnResult=FALSE)
 #' 
 #' mod1 <- lmer(y ~ x + (1|a), data=df)
@@ -277,14 +277,11 @@ stepcAIC <- function(object,
   ### check if gamm4-call
   
   if(is.list(object) & length(object)==2 & all(c("mer","gam") %in% names(object))){
-   
-    library(mgcv)
-    library(gamm4)
-    
+
     if(allowUseAcross | !is.null(slopeCandidates))
       stop("allowUseAcross and slopeCandidates are not permissible for gamm4-objects!")
     
-    ig <- interpret.gam(object$gam$formula)
+    ig <- interpretGam(object$gam$formula)
     existsNonS <- length(ig$smooth.spec)<length(ig$fake.names)
     
     if( !is.null(fixEf) ) stopifnot( fixEf %in% possible_predictors )
@@ -320,7 +317,7 @@ stepcAIC <- function(object,
   }else if(any(class(object)%in%c("lm","glm"))){
     
       ll <- getGLMll(object)
-      bc <- attr(stats4:::logLik(object),"df")
+      bc <- attr(logLik(object),"df")
       cAICofMod <- -2*ll + 2*bc
       
       if(direction=="backward") stop("A simple (generalized) linear model can't be reduced!")
@@ -498,7 +495,7 @@ stepcAIC <- function(object,
     indexMinCAIC <- which.min(aicTab$caic)
     minCAIC <- ifelse(length(indexMinCAIC)==0, Inf, aicTab$caic[indexMinCAIC]) 
     keepList <- list(random=interpret.random(keep$random),gamPart=NULL)
-    if(!is.null(keep$fixed)) keepList$gamPart <- interpret.gam(keep$fixed)
+    if(!is.null(keep$fixed)) keepList$gamPart <- interpretGam(keep$fixed)
 
     ###############################################################################
     ###############################################################################
