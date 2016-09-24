@@ -311,7 +311,10 @@ stepcAIC <- function(object,
       readline("If so, type 'y': ")
       
     })
-    if(!is.numeric(cAICofMod) && cAICofMod=="y") cAICofMod <- Inf else return(NULL)
+    if(!is.numeric(cAICofMod) && cAICofMod=="y"){ 
+      cAICofMod <- Inf 
+      }else if(!is.numeric(cAICofMod) && cAICofMod!="y") return(NULL)
+    
     timeForCalc <- Sys.time() - timeBefore
 
   }else if(any(class(object)%in%c("lm","glm"))){
