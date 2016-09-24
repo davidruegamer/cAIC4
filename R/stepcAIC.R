@@ -319,9 +319,9 @@ stepcAIC <- function(object,
 
   }else if(any(class(object)%in%c("lm","glm"))){
     
-      ll <- getGLMll(object)
-      bc <- attr(logLik(object),"df")
-      cAICofMod <- -2*ll + 2*bc
+      # ll <- getGLMll(object)
+      # bc <- attr(logLik(object),"df")
+      cAICofMod <- cAIC(object) #-2*ll + 2*bc
       
       if(direction=="backward") stop("A simple (generalized) linear model can't be reduced!")
 

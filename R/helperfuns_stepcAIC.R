@@ -226,14 +226,14 @@ calculateAllCAICs <- function(newSetup,
   
   listOfCAICs <- tryCatch(mclapply(listOfModels,function(m){
     
-    if(any(class(m)%in%c("glm","lm"))){
-      
-      ll <- getGLMll(m)
-      bc <- attr(logLik(m),"df")
-      caic <- -2*ll + 2*bc
-      c(ll,bc,caic)
-      
-    }else{
+    # if(any(class(m)%in%c("glm","lm"))){
+    #   
+    #   ll <- getGLMll(m)
+    #   bc <- attr(logLik(m),"df")
+    #   caic <- -2*ll + 2*bc
+    #   c(ll,bc,caic)
+    #   
+    # }else{
       
       if(class(m)=="list"){ # m is a gamm4 object
         
@@ -253,8 +253,8 @@ calculateAllCAICs <- function(newSetup,
         
       }
       
-    }},
-    mc.cores=numbCores),error=function(e)return(e))
+    # }
+    }, mc.cores=numbCores),error=function(e)return(e))
   
   if(!is.null(listOfCAICs$message)) return(listOfCAICs) else listOfCAICs <- lapply(listOfCAICs,unlist)
   
