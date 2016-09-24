@@ -321,7 +321,7 @@ stepcAIC <- function(object,
     
       # ll <- getGLMll(object)
       # bc <- attr(logLik(object),"df")
-      cAICofMod <- cAIC(object) #-2*ll + 2*bc
+      cAICofMod <- cAIC(object)$caic #-2*ll + 2*bc
       
       if(direction=="backward") stop("A simple (generalized) linear model can't be reduced!")
 
@@ -439,7 +439,7 @@ stepcAIC <- function(object,
     
     if(trace & !is.null(newSetup)) cat("Calculating cAIC for", 
                                        length(newSetup),
-                                       "possible model(s) ...")
+                                       "model(s) ...")
     
     #############
     
