@@ -138,7 +138,7 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
     object@optinfo$gamm4 <- TRUE    # add indicator for gamm4
   }
   
-  if (class(object) %in% c("glm","lm")) {
+  if (any(class(object) %in% c("glm","lm"))) {
     
     y <- object$y
     if(is.null(y)) y <- eval(object$call$data, environment(formula(object)))[all.vars(formula(object))[1]][[1]]
