@@ -9,9 +9,11 @@ Maintainer: Benjamin Saefken <bsaefke@uni-goettingen.de>
 Depends:
     lme4(>= 1.1-6),
     methods,
-    Matrix
+    Matrix,
+    stats4
 Suggests:
-    gamm4
+    gamm4,
+    mgcv
 Description: Provides functions for the estimation of the conditional Akaike
     information in generalized mixed-effects models fitted with (g)lmer
     form lme4.

@@ -24,7 +24,7 @@ allCombn2 <- function(x,range,simplify=F)
 backwardGam <- function(intGam, keep)
 {
   
-  # intGam    result of interpret.gam - call / $gamPart of getComponents-result
+  # intGam    result of interpretGam - call / $gamPart of getComponents-result
   
   vars <- intGam$fake.names
   sTerm <- vars%in%sapply(intGam$smooth.spec,function(x)x$term)
@@ -38,7 +38,7 @@ backwardGam <- function(intGam, keep)
   
   if(!is.null(keep)){
     
-    keep <- interpret.gam(keep)
+    keep <- interpretGam(keep)
     keepVars <- keep$fake.names
     keepSterm <- keepVars%in%sapply(keep$smooth.spec,function(x)x$term)
     keepNonS <- keepVars[!keepSterm]
@@ -229,7 +229,7 @@ calculateAllCAICs <- function(newSetup,
     if(any(class(m)%in%c("glm","lm"))){
       
       ll <- getGLMll(m)
-      bc <- attr(stats4:::logLik(m),"df")
+      bc <- attr(logLik(m),"df")
       caic <- -2*ll + 2*bc
       c(ll,bc,caic)
       
@@ -445,7 +445,7 @@ forwardGam <- function(intGam, fixEf=NULL, bsType="ps", keep)
   
   if(!is.null(keep)){
     
-    keep <- interpret.gam(keep)
+    keep <- interpretGam(keep)
     keepVars <- keep$fake.names
     keepSterm <- keepVars%in%sapply(keep$smooth.spec,function(x)x$term)
     keepNonS <- keepVars[!keepSterm]
@@ -551,7 +551,7 @@ getComponents <- function(object)
     random <- object$mer@cnms[!object$mer@cnms%in%sapply(object$gam$smooth,function(x)x$label)] # ,cutp)
     if(length(random)==0) random=NULL
     
-    gamPart <- interpret.gam(object$gam$formula)
+    gamPart <- interpretGam(object$gam$formula)
     
   }else if(inherits(object, c("lmerMod", "glmerMod"))){
     
@@ -609,28 +609,28 @@ getComponents <- function(object)
 ### purpose:  
 
 
-sepKeeps <- function(comps, keep=keep)
+sepKeeps <- function(comps, keep = keep)
 {
   
   keepRE <- keep$random
   keepS <- keep$fixed
   
-  if(!is.null(keepS)) keepS <- interpret.gam(keepS)
+  if(!is.null(keepS)) keepS <- interpretGam(keepS)
   if(!is.null(keepRE)) keepRE <- interpret.random(keepRE)
   
-  randomNK <- excludeRE(comps,keepRE)
-  gamPartNK <- excludeS(comps,keepS)   
+  randomNK <- excludeRE(comps, keepRE)
+  gamPartNK <- excludeS(comps, keepS)   
   
-  return(list(random=random,
-              gamPart=gamPart))
-  
+  return(list(random = random,
+              gamPart = gamPart))
+   
 }
 
 addKeeps <- function(keep, newComps)
 {
   
-  random <- lapply(newComps$random,function(x)append(x,keep$random))
-  gamPart <- lapply(newComps$gamPart,function(x)append(x,keep$gamPart))
+  random <- lapply(newComps$random, function(x) append(x, keep$random))
+  gamPart <- lapply(newComps$gamPart, function(x) append(x, keep$gamPart))
   
   return(list(random=random,
               gamPart=gamPart))

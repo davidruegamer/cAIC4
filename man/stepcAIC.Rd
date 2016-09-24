@@ -69,7 +69,8 @@ and backward steps, where the direction is changed after each step
  
 For use with "gamm4-objects": 
 groupCandidates are interpreted as covariables and fitted as splines.
-If groupCandidates does include characters such as "s(..,bs='tp')" the respective spline is included in the forward stepwise procedure.
+If groupCandidates does include characters such as "s(..,bs='tp')" 
+the respective spline is included in the forward stepwise procedure.
 }
 \examples{
 \dontrun{
@@ -79,17 +80,12 @@ library(cAIC4dev)
 
 fm3_step <- stepcAIC(fm3, direction = "backward", trace = TRUE, data = Pastes)
 
-# compare with AIC calculations of mgcv:::gam
-
-library(mgcv)
-summary(gam(strength ~ 1 + s(sample,bs="re"), data = Pastes, method = "REML"))
-AIC(gam(strength ~ 1, data = Pastes, method = "REML"))
-AIC(gam(strength ~ 1 + s(sample,bs="re"), data = Pastes, method = "REML"))
-
 fm3_min <- lm(strength ~ 1, data=Pastes)
 
-fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample"), direction="forward", data=Pastes, trace=TRUE)
-fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample"), direction="both", data=Pastes, trace=TRUE)
+fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample"), 
+direction="forward", data=Pastes, trace=TRUE)
+fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample"), 
+direction="both", data=Pastes, trace=TRUE)
 # try using a nested group effect which is actually not nested -> warning
 fm3_min_step <- stepcAIC(fm3_min, groupCandidates = c("batch", "sample", "batch/sample"), 
                          direction="both", data=Pastes, trace=TRUE)
@@ -103,26 +99,24 @@ fm3_slope_step <- stepcAIC(fm3_slope,direction="backward", trace=TRUE, data=Past
 
 fm3_min <- lm(strength ~ 1, data=Pastes)
 
-fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),direction="forward", nestingDepth=2,
-                         data=Pastes,trace=TRUE)
+fm3_min_step <- stepcAIC(fm3_min,groupCandidates=c("batch","sample"),
+direction="forward", data=Pastes,trace=TRUE)
 
 
 
 fm3_inta <- lmer(strength ~ 1 + (1|sample:batch), data=Pastes)
 
-fm3_inta_step <- stepcAIC(fm3_inta,groupCandidates=c("batch","sample"),direction="forward", nestingDepth=2,
-                          data=Pastes,trace=TRUE)
+fm3_inta_step <- stepcAIC(fm3_inta,groupCandidates=c("batch","sample"),
+direction="forward", data=Pastes,trace=TRUE)
 
-fm3_min_step2 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),direction="forward", nestingDepth=2,
-                          data=Pastes,trace=TRUE)
+fm3_min_step2 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),
+direction="forward", data=Pastes,trace=TRUE)
 
-fm3_min_step3 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),direction="both", nestingDepth=2,
-                          data=Pastes,trace=TRUE)
+fm3_min_step3 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),
+direction="both", data=Pastes,trace=TRUE)
 
 fm3_inta_step2 <- stepcAIC(fm3_inta,direction="backward", data=Pastes,trace=TRUE)
 
-fm3_min_step4 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),direction="both", nestingDepth=3,
-                          data=Pastes,trace=TRUE)
 
 ##### create own example
 
@@ -142,26 +136,26 @@ df <- data.frame(y=y,x=x,a=a,b=b,c=c)
 smallMod <- lm(y ~ x)
 
 # throw error
-stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, nestingDepth=2, returnResult=FALSE)
+stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, returnResult=FALSE)
 
 smallMod <- lm(y ~ x, data=df)
 
 # throw error
-stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, nestingDepth=2, returnResult=FALSE)
+stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, returnResult=FALSE)
 
 # get it all right
 mod <- stepcAIC(smallMod, groupCandidates=c("a","b","c"), 
-                data=df, trace=TRUE, nestingDepth=2,
+                data=df, trace=TRUE, 
                 direction="forward", returnResult=TRUE)
 
 # make some more steps...
-stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, nestingDepth=2,
+stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, 
          direction="both", returnResult=FALSE)
 
 mod1 <- lmer(y ~ x + (1|a), data=df)
 
-stepcAIC(mod1, groupCandidates=c("b","c"), data=df, trace=TRUE, nestingDepth=2, direction="forward")
-stepcAIC(mod1, groupCandidates=c("b","c"), data=df, trace=TRUE, nestingDepth=2, direction="both")
+stepcAIC(mod1, groupCandidates=c("b","c"), data=df, trace=TRUE, direction="forward")
+stepcAIC(mod1, groupCandidates=c("b","c"), data=df, trace=TRUE, direction="both")
 
 
 
