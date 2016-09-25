@@ -24,7 +24,7 @@ allCombn2 <- function(x,range,simplify=F)
 backwardGam <- function(intGam, keep)
 {
   
-  # intGam    result of interpretGam - call / $gamPart of getComponents-result
+  # intGam    result of interpret.gam - call / $gamPart of getComponents-result
   
   vars <- intGam$fake.names
   sTerm <- vars%in%sapply(intGam$smooth.spec,function(x)x$term)
@@ -38,7 +38,7 @@ backwardGam <- function(intGam, keep)
   
   if(!is.null(keep)){
     
-    keep <- interpretGam(keep)
+    keep <- interpret.gam(keep)
     keepVars <- keep$fake.names
     keepSterm <- keepVars%in%sapply(keep$smooth.spec,function(x)x$term)
     keepNonS <- keepVars[!keepSterm]
@@ -445,7 +445,7 @@ forwardGam <- function(intGam, fixEf=NULL, bsType="ps", keep)
   
   if(!is.null(keep)){
     
-    keep <- interpretGam(keep)
+    keep <- interpret.gam(keep)
     keepVars <- keep$fake.names
     keepSterm <- keepVars%in%sapply(keep$smooth.spec,function(x)x$term)
     keepNonS <- keepVars[!keepSterm]
@@ -551,7 +551,7 @@ getComponents <- function(object)
     random <- object$mer@cnms[!object$mer@cnms%in%sapply(object$gam$smooth,function(x)x$label)] # ,cutp)
     if(length(random)==0) random=NULL
     
-    gamPart <- interpretGam(object$gam$formula)
+    gamPart <- interpret.gam(object$gam$formula)
     
   }else if(inherits(object, c("lmerMod", "glmerMod"))){
     
@@ -615,7 +615,7 @@ sepKeeps <- function(comps, keep = keep)
   keepRE <- keep$random
   keepS <- keep$fixed
   
-  if(!is.null(keepS)) keepS <- interpretGam(keepS)
+  if(!is.null(keepS)) keepS <- interpret.gam(keepS)
   if(!is.null(keepRE)) keepRE <- interpret.random(keepRE)
   
   randomNK <- excludeRE(comps, keepRE)

@@ -281,7 +281,7 @@ stepcAIC <- function(object,
     if(allowUseAcross | !is.null(slopeCandidates))
       stop("allowUseAcross and slopeCandidates are not permissible for gamm4-objects!")
     
-    ig <- interpretGam(object$gam$formula)
+    ig <- interpret.gam(object$gam$formula)
     existsNonS <- length(ig$smooth.spec)<length(ig$fake.names)
     
     if( !is.null(fixEf) ) stopifnot( fixEf %in% possible_predictors )
@@ -498,7 +498,7 @@ stepcAIC <- function(object,
     indexMinCAIC <- which.min(aicTab$caic)
     minCAIC <- ifelse(length(indexMinCAIC)==0, Inf, aicTab$caic[indexMinCAIC]) 
     keepList <- list(random=interpret.random(keep$random),gamPart=NULL)
-    if(!is.null(keep$fixed)) keepList$gamPart <- interpretGam(keep$fixed)
+    if(!is.null(keep$fixed)) keepList$gamPart <- interpret.gam(keep$fixed)
 
     ###############################################################################
     ###############################################################################
