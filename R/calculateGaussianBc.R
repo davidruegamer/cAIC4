@@ -57,14 +57,11 @@ function(model, sigma.estimated, analytic) {
     }
   }
   
-  Rchol   <- try(chol(B))
-  if(class(Rchol)=="try-error"){
-    
-    # warning("Having problems to decompose B via Cholesky. Using standard inversion instead.")
-    Lambday <- solve(B) %*% C
-    
-  }else{
-    
+  Lambday <- try(solve(B) %*% C)
+  
+  if(class(Lambday)=="try-error"){  
+  
+    Rchol   <- try(chol(B))
     L1      <- backsolve(Rchol, C, transpose = TRUE)
     Lambday <- backsolve(Rchol, L1)
     
