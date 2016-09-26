@@ -547,13 +547,7 @@ stepcAIC <- function(object,
       # if there is a new better model and the new model is not a (g)lm
       # update the best model
   
-      if( steps==0 | length(newSetup)==1 ){
-        
-        stepsOver <- TRUE
-        minCAIC <- cAICofMod
-        bestModel <- object
-        
-      }else{
+      if( steps==0 | length(newSetup)==1 ) stepsOver <- TRUE else{
         
         cAICofMod <- minCAIC
         object <- bestModel
@@ -585,7 +579,7 @@ stepcAIC <- function(object,
     }else{
       
       # in case when the procedure did all steps / no more random effects are available
-      # but the last step got better performance or the last step had an equal cAIC
+      # but the last step did not yield better performance or the last step had an equal cAIC
       
       stepsOver <- TRUE
       bestModel <- object
