@@ -448,8 +448,6 @@ stepcAIC <- function(object,
     tempRes <- if(!is.null(newSetup)){
       
                       calculateAllCAICs(newSetup=newSetup,
-                                        # gamPos=!is.null(fixEf),
-                                        # comps=comps,
                                         modelInit=object,
                                         numbCores=numbCores,
                                         data=data,
@@ -466,7 +464,7 @@ stepcAIC <- function(object,
     
     if(is.list(tempRes) & !is.null(tempRes$message)){ # gamm4 with error
       
-      warning(paste0("There are zero variance components.\n",tempRes$message))
+      warning(paste0("There are zero variance components.\n", tempRes$message))
       
       if(returnResult){
         return(list(finalModel=object,
@@ -505,9 +503,7 @@ stepcAIC <- function(object,
     ############################# - decision part - ###############################
     ###############################################################################
     ###############################################################################
-    
-  #   lenRanefATM <- sum(sapply(object@cnms,length))
-    
+
     if( minCAIC==Inf ){
       
       if(dirWasBoth){
@@ -551,10 +547,20 @@ stepcAIC <- function(object,
       # if there is a new better model and the new model is not a (g)lm
       # update the best model
   
-      cAICofMod <- minCAIC
-      object <- bestModel
-      improvementInBoth <- TRUE # set TRUE as performance improved (only relevant for direction=="both")
-      if(dirWasBoth)  direction <- ifelse( direction=="forward", "backward", "forward" )
+      if( steps==0 | length(newSetup)==1 ){
+        
+        stepsOver <- TRUE
+        minCAIC <- cAICofMod
+        bestModel <- object
+        
+      }else{
+        
+        cAICofMod <- minCAIC
+        object <- bestModel
+        improvementInBoth <- TRUE # set TRUE as performance improved (only relevant for direction=="both")
+        if(dirWasBoth)  direction <- ifelse( direction=="forward", "backward", "forward" )
+        
+      }
       
     }else if( minCAIC > cAICofMod & ( steps==0 | length(newSetup)==1 ) & !dirWasBoth ){
         
