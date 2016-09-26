@@ -257,7 +257,7 @@ stepcAIC <- function(object,
     if(!isNested(data[,ncc[1]], data[,ncc[2]])){
       warning(paste0("Dropping incorrect nesting group ", nc, " from groupCandidates."))
     }else{
-      groupCandidates <- unique( c(groupCandidates), allNestSubs(nc) )
+      groupCandidates <- unique( c(groupCandidates, allNestSubs(nc)) )
     }
     groupCandidates <- setdiff(groupCandidates, nc)
     
