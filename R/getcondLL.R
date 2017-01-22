@@ -1,3 +1,4 @@
+#' @importFrom lme4 sigma
 #' @export
 getcondLL <-
 function(object) {
