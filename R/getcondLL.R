@@ -1,3 +1,4 @@
+#' @export
 getcondLL <-
 function(object) {
   # A function that calls the bias correction functions.
@@ -11,7 +12,7 @@ function(object) {
   switch(family(object)$family,
     binomial = {
       cll <- sum(dbinom(x    = getME(object, "y"), 
-                        size = length(unique(getME(object, "y"))), 
+                        size = length(unique(getME(object, "y"))) - 1, 
                         prob = getME(object, "mu"), log = TRUE))
     },
     poisson  = {
