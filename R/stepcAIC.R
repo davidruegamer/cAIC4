@@ -46,7 +46,7 @@
 #' @import parallel
 #' @importFrom stats as.formula dbinom dnorm dpois family
 #' formula glm lm model.frame model.matrix
-#' predict qlogis reformulate sigma simulate terms
+#' predict qlogis reformulate simulate terms
 #' @importFrom utils combn
 #' @importFrom stats4 logLik
 #' @examples \dontrun{

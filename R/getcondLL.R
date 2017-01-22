@@ -1,3 +1,9 @@
+#' Function to calculate the conditional log-likelihood
+#' 
+#' @param object An object of class merMod either fitted by
+#' \code{\link[lme4]{lmer}} or \code{\link[lme4]{glmer}} of the lme4-package.
+#' 
+#' @return conditional log-likelihood value
 #' @importFrom lme4 sigma
 #' @export
 getcondLL <-
