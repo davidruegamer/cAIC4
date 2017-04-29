@@ -1,4 +1,3 @@
-#' @importFrom lme4 sigma
 conditionalBootstrap <-
 function(object, BootStrRep) {
   # A function that calculates the bias correction for a (generalized) linear 
