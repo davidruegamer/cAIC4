@@ -1,4 +1,4 @@
-#' Conditional Akaike information for lmer & glmer
+#' Conditional Akaike information for lmer & glmer 
 #' 
 #' Estimates the conditional Akaike information for models that were fitted in
 #' lme4. This is possible for all distributions, i.e.
