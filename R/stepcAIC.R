@@ -16,7 +16,7 @@
 #'@param groupCandidates see slopeCandidates. Group nesting must be initiated manually, i.e. by 
 #'listing up the string of the groups in the manner of lme4. For example \code{groupCandidates = c("a", "b", "a/b")}.   
 #'@param slopeCandidates character vectors containing names of possible new random effect groups / slopes
-#'@param fixEf character vector containing names of possible (non-)linear fixed effects in the GAMM; 
+#'@param fixEfCandidates character vector containing names of possible (non-)linear fixed effects in the GAMM; 
 #'NULL for the (g)lme-use case 
 #'@param direction character vector indicating the direction in c("both","backward","forward")
 #'@param numberOfPermissibleSlopes how much slopes are permissible for one group RE
@@ -148,15 +148,15 @@
 #' data("guWahbaData")
 #' br <- gamm4(y~s(x3)+x1+s(x2,bs="ps"),data=guWahbaData,random=~(1|fac))
 #' 
-#' stepcAIC(br,fixEf=c("x1","x3"),trace=TRUE,direction="forward",data=dat,returnResult=FALSE)
+#' stepcAIC(br,fixEfCandidates=c("x1","x3"),trace=TRUE,direction="forward",data=dat,returnResult=FALSE)
 #' stepcAIC(br,trace=TRUE,direction="backward",data=dat,returnResult=FALSE)
-#' stepcAIC(br,fixEf=c("x1","x3"),trace=TRUE,direction="both",data=dat,returnResult=FALSE)
+#' stepcAIC(br,fixEfCandidates=c("x1","x3"),trace=TRUE,direction="both",data=dat,returnResult=FALSE)
 #' 
 #' br2 <- gamm4(y~x1,data=dat,random=~(1|fac))
 #' 
-#' stepcAIC(br2,fixEf=c("x2","x0","x1","x3"),trace=TRUE,
+#' stepcAIC(br2,fixEfCandidates=c("x2","x0","x1","x3"),trace=TRUE,
 #'          direction="forward",data=dat,returnResult=FALSE)
-#' stepcAIC(br2,fixEf=c("x2","x0","x1","x3"),trace=TRUE,
+#' stepcAIC(br2,fixEfCandidates=c("x2","x0","x1","x3"),trace=TRUE,
 #'          direction="both",data=dat,returnResult=FALSE)
 #' 
 #' 
@@ -199,13 +199,13 @@
 #' br2 <- gamm4(y~s(x0, bs="ps")+x2,data=dat,random=~(1|fac))
 #' 
 #' stepcAIC(br2,trace=TRUE,direction="both",
-#'          fixEf=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2,random=~(1|fac)),
+#'          fixEfCandidates=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2,random=~(1|fac)),
 #'          returnResult=FALSE, data=dat)
 #' 
 #' br3 <- gamm4(y~s(x0, bs="ps")+x2,data=dat)
 #' 
 #' stepcAIC(br3,trace=TRUE,direction="both", groupCandidates="fac",
-#'          fixEf=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2),
+#'          fixEfCandidates=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2),
 #'          returnResult=FALSE, data=dat)
 #' 
 #' 
@@ -219,7 +219,7 @@
 stepcAIC <- function(object, 
                      groupCandidates=NULL,
                      slopeCandidates=NULL,
-                     fixEf=NULL,
+                     fixEfCandidates=NULL,
                      numberOfPermissibleSlopes=2,
                      allowUseAcross=FALSE,
                      direction = "backward",
@@ -284,7 +284,7 @@ stepcAIC <- function(object,
     ig <- interpret.gam(object$gam$formula)
     existsNonS <- length(ig$smooth.spec)<length(ig$fake.names)
     
-    if( !is.null(fixEf) ) stopifnot( fixEf %in% possible_predictors )
+    if( !is.null(fixEfCandidates) ) stopifnot( fixEfCandidates %in% possible_predictors )
         
   }else{
     
@@ -339,15 +339,15 @@ stepcAIC <- function(object,
     direction=="backward" | 
       
       ( direction %in% c("forward","both") & 
-          ( !is.null(groupCandidates) | !is.null(slopeCandidates) | !is.null(fixEf) ) ) | 
+          ( !is.null(groupCandidates) | !is.null(slopeCandidates) | !is.null(fixEfCandidates) ) ) | 
       
       ( direction %in% c("forward","both") & 
-          is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEf) &
+          is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEfCandidates) &
           ( allowUseAcross | existsNonS ) ) 
   )
   
-  if( direction=="backward" & !( is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEf) )
-      ) warning("I will ignoring variables in group- / slopeCandidates or fixEf for backward selection.")
+  if( direction=="backward" & !( is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEfCandidates) )
+      ) warning("I will ignoring variables in group- / slopeCandidates or fixEfCandidates for backward selection.")
   
 
   #######################################################################
@@ -420,7 +420,7 @@ stepcAIC <- function(object,
                        makeForward(comps=comps,
                                    slopeCandidates=slopeCandidates,
                                    groupCandidates=groupCandidates,
-                                   fixEf=fixEf,
+                                   fixEfCandidates=fixEfCandidates,
                                    nrOfCombs=numberOfPermissibleSlopes,
                                    allowUseAcross=allowUseAcross,
                                    bsType=bsType,
