@@ -24,7 +24,7 @@
 #'@param steps maximum number of steps to be considered
 #'@param keep list($fixed,$random) of formulae; which splines / fixed (fixed) or random effects (random) to be 
 #'kept during selection must be included in the original model 
-#'@param numbCores the number of cores to be used in calculations; this is done by using \code{parallel::mclapply}
+#'@param numCores the number of cores to be used in calculations; this is done by using \code{parallel::mclapply}
 #'@param data data.frame, from which the new REs are to be taken
 #'@param returnResult logical; whether to return the result (best model and corresponding cAIC)
 #'@param calcNonOptimMod logical; if FALSE, models which failed to converge are not considered for cAIC calculation
@@ -226,7 +226,7 @@ stepcAIC <- function(object,
                      trace = FALSE,
                      steps = 50, 
                      keep = NULL,
-                     numbCores = 1,
+                     numCores = 1,
                      data = NULL,
                      returnResult=TRUE,
                      calcNonOptimMod=TRUE,
@@ -449,7 +449,7 @@ stepcAIC <- function(object,
       
                       calculateAllCAICs(newSetup=newSetup,
                                         modelInit=object,
-                                        numbCores=numbCores,
+                                        numCores=numCores,
                                         data=data,
                                         calcNonOptimMod=calcNonOptimMod,
                                         ...)
