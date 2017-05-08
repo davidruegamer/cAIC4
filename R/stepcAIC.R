@@ -424,8 +424,7 @@ stepcAIC <- function(object,
                                    nrOfCombs=numberOfPermissibleSlopes,
                                    allowUseAcross=allowUseAcross,
                                    bsType=bsType,
-                                   keep=keep,
-                                   ...)
+                                   keep=keep)
     }else{
       
       makeBackward(comps=comps,

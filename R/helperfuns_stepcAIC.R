@@ -203,7 +203,7 @@ backwardStep <- function(cnms, keep)
 calculateAllCAICs <- function(newSetup,
                               # gamPos,
                               modelInit, 
-                              numbCores, 
+                              numCores, 
                               data, 
                               calcNonOptimMod, 
                               ...)
@@ -216,8 +216,8 @@ calculateAllCAICs <- function(newSetup,
   ### create all possible models ###
   
   listOfModels <- mclapply(formulaList, function(f)
-    makeUpdate(modelInit=modelInit, setup=f, data=data, ...),
-    mc.cores=numbCores)
+    makeUpdate(modelInit=modelInit, setup=f, data=data),
+    mc.cores=numCores)
   
   
   #######################################################################
@@ -254,7 +254,7 @@ calculateAllCAICs <- function(newSetup,
       }
       
     # }
-    }, mc.cores=numbCores),error=function(e)return(e))
+    }, mc.cores=numCores),error=function(e)return(e))
   
   if(!is.null(listOfCAICs$message)) return(listOfCAICs) else listOfCAICs <- lapply(listOfCAICs,unlist)
   
@@ -431,7 +431,7 @@ cnmsConverter <- function(cnms)
 ### purpose:  does the forward step for gamm4 models
 
 
-forwardGam <- function(intGam, fixEf=NULL, bsType="ps", keep)
+forwardGam <- function(intGam, fixEfCandidates=NULL, bsType="ps", keep)
 {
   
   vars <- intGam$fake.names
@@ -441,7 +441,7 @@ forwardGam <- function(intGam, fixEf=NULL, bsType="ps", keep)
   sLabs <- makeS(intGam)
   keepNonS <- NULL
   
-  newX <- fixEf[which(!fixEf %in% vars)]
+  newX <- fixEfCandidates[which(!fixEfCandidates %in% vars)]
   
   if(!is.null(keep)){
     
@@ -785,10 +785,9 @@ makeForward <- function(comps,
                         groupCandidates,
                         nrOfCombs,
                         allowUseAcross,
-                        fixEf, 
+                        fixEfCandidates, 
                         bsType,
-                        keep,
-                        ...)
+                        keep)
 {
   
   returnListRE <- returnListS <- NULL
@@ -801,12 +800,12 @@ makeForward <- function(comps,
     
     returnListRE <- if(!is.null(groupCandidates)) lapply(split(gr, 1:length(gr)),as.list)
     
-    returnListS <- if(!is.null(fixEf)) lapply(as.list(fixEf),as.list)
+    returnListS <- if(!is.null(fixEfCandidates)) lapply(as.list(fixEfCandidates),as.list)
     
   }else{
     
-    returnListS <- if(!is.null(comps$gamPart) | !is.null(fixEf)) 
-      forwardGam(comps$gamPart, fixEf=fixEf, bsType=bsType, keep=keep$fixed, ...)
+    returnListS <- if(!is.null(comps$gamPart) | !is.null(fixEfCandidates)) 
+      forwardGam(comps$gamPart, fixEfCandidates=fixEfCandidates, bsType=bsType, keep=keep$fixed)
     
     returnListRE <- if(!is.null(slopeCandidates) | !is.null(groupCandidates) | 
                        length(comps$random)>1 | allowUseAcross) 
@@ -908,8 +907,7 @@ makeS <- function(intGam)
 
 makeUpdate <- function(modelInit, 
                        setup, 
-                       data, 
-                       ...)
+                       data)
 {
   
   willBeGam <- !is.null(setup$gamPart) & 
@@ -934,12 +932,12 @@ makeUpdate <- function(modelInit,
     
     mod <- if(fm=="gaussian"){
       
-      lmer(setup$random, data = data, ...)
+      lmer(setup$random, data = data)
       
     }else{
       
       glmer(setup$random, data = data, 
-            family = fm, ...)
+            family = fm)
       
     }
     
@@ -978,8 +976,7 @@ makeUpdate <- function(modelInit,
     mod <- gamm4(setup$gamPart, 
                  data = data, 
                  family = family(modelInit$mer), 
-                 random = r, 
-                 ...)
+                 random = r)
     
   }
   
