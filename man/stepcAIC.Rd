@@ -7,10 +7,10 @@ fitted via (g)lmer or the best (generalized) additive (mixed) model
 fitted via gamm4.}
 \usage{
 stepcAIC(object, groupCandidates = NULL, slopeCandidates = NULL,
-  fixEf = NULL, numberOfPermissibleSlopes = 2, allowUseAcross = FALSE,
-  direction = "backward", trace = FALSE, steps = 50, keep = NULL,
-  numbCores = 1, data = NULL, returnResult = TRUE,
-  calcNonOptimMod = TRUE, bsType = "tp", ...)
+  fixEfCandidates = NULL, numberOfPermissibleSlopes = 2,
+  allowUseAcross = FALSE, direction = "backward", trace = FALSE,
+  steps = 50, keep = NULL, numCores = 1, data = NULL,
+  returnResult = TRUE, calcNonOptimMod = TRUE, bsType = "tp", ...)
 }
 \arguments{
 \item{object}{fit by (g)lmer for which the stepwise procedure is to be computed}
@@ -20,7 +20,7 @@ listing up the string of the groups in the manner of lme4. For example \code{gro
 
 \item{slopeCandidates}{character vectors containing names of possible new random effect groups / slopes}
 
-\item{fixEf}{character vector containing names of possible (non-)linear fixed effects in the GAMM; 
+\item{fixEfCandidates}{character vector containing names of possible (non-)linear fixed effects in the GAMM; 
 NULL for the (g)lme-use case}
 
 \item{numberOfPermissibleSlopes}{how much slopes are permissible for one group RE}
@@ -36,7 +36,7 @@ NULL for the (g)lme-use case}
 \item{keep}{list($fixed,$random) of formulae; which splines / fixed (fixed) or random effects (random) to be 
 kept during selection must be included in the original model}
 
-\item{numbCores}{the number of cores to be used in calculations; this is done by using \code{parallel::mclapply}}
+\item{numCores}{the number of cores to be used in calculations; this is done by using \code{parallel::mclapply}}
 
 \item{data}{data.frame, from which the new REs are to be taken}
 
@@ -172,15 +172,15 @@ stepcAIC(mod3, data=df, trace=TRUE, direction="backward")
 data("guWahbaData")
 br <- gamm4(y~s(x3)+x1+s(x2,bs="ps"),data=guWahbaData,random=~(1|fac))
 
-stepcAIC(br,fixEf=c("x1","x3"),trace=TRUE,direction="forward",data=dat,returnResult=FALSE)
+stepcAIC(br,fixEfCandidates=c("x1","x3"),trace=TRUE,direction="forward",data=dat,returnResult=FALSE)
 stepcAIC(br,trace=TRUE,direction="backward",data=dat,returnResult=FALSE)
-stepcAIC(br,fixEf=c("x1","x3"),trace=TRUE,direction="both",data=dat,returnResult=FALSE)
+stepcAIC(br,fixEfCandidates=c("x1","x3"),trace=TRUE,direction="both",data=dat,returnResult=FALSE)
 
 br2 <- gamm4(y~x1,data=dat,random=~(1|fac))
 
-stepcAIC(br2,fixEf=c("x2","x0","x1","x3"),trace=TRUE,
+stepcAIC(br2,fixEfCandidates=c("x2","x0","x1","x3"),trace=TRUE,
          direction="forward",data=dat,returnResult=FALSE)
-stepcAIC(br2,fixEf=c("x2","x0","x1","x3"),trace=TRUE,
+stepcAIC(br2,fixEfCandidates=c("x2","x0","x1","x3"),trace=TRUE,
          direction="both",data=dat,returnResult=FALSE)
 
 
@@ -223,13 +223,13 @@ stepcAIC(br,trace=TRUE,direction="backward",
 br2 <- gamm4(y~s(x0, bs="ps")+x2,data=dat,random=~(1|fac))
 
 stepcAIC(br2,trace=TRUE,direction="both",
-         fixEf=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2,random=~(1|fac)),
+         fixEfCandidates=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2,random=~(1|fac)),
          returnResult=FALSE, data=dat)
 
 br3 <- gamm4(y~s(x0, bs="ps")+x2,data=dat)
 
 stepcAIC(br3,trace=TRUE,direction="both", groupCandidates="fac",
-         fixEf=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2),
+         fixEfCandidates=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2),
          returnResult=FALSE, data=dat)
 
 
