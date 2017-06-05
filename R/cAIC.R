@@ -211,10 +211,10 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
     })
     
     return(list(loglikelihood = as.numeric(cll), 
-                df            = attr(cll, "df"), 
+                df            = object$rank + 1, 
                 reducedModel  = NA, 
                 new           = NA, 
-                caic          = -2 * as.numeric(cll) + 2 * attr(cll, "df")))
+                caic          = -2 * as.numeric(cll) + 2 * (object$rank + 1)))
   }
   
   if (!inherits(object, c("lmerMod", "glmerMod"))) {
