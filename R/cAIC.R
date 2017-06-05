@@ -123,21 +123,36 @@
 #' data <- data.frame(x = x, id = id)
 #' y_wo_bi <- eta + rnorm(n, 0, sd = epsvar) 
 #' 
-#' for(ranvar in c(1,0.1,0.05,0.025)){
+#' ranvar1 = 0.25
 #' 
-#'  b_i <- scale(rnorm(5, 0, ranvar), scale = FALSE)
-#'  y <- y_wo_bi + model.matrix(~ -1 + id) %*% b_i
-#'  data$y <- y
-#'  mixedmod <- lmer(y ~ x + (1 | id), data = data)
-#'  linmod <- lm(y ~ x, data = data)
-#'  print(
-#'    cAIC(mixedmod)$caic
-#'    )
-#'  print(  
-#'    cAIC(linmod)$caic
-#'    )
+#' b_i <- scale(rnorm(5, 0, ranvar1), scale = FALSE)
+#' y <- y_wo_bi + model.matrix(~ -1 + id) %*% b_i
+#' data$y <- y
 #' 
-#' }
+#' mixedmod <- lmer(y ~ x + (1 | id), data = data)
+#' linmod <- lm(y ~ x, data = data)
+#' 
+#' cbind(
+#' cAIC(mixedmod)$caic,
+#' cAIC(linmod)$caic
+#' )
+#' 
+#' # now, use a very small RE variance
+#' ranvar2 = 0.005
+#' 
+#' b_i <- scale(rnorm(5, 0, ranvar2), scale = FALSE)
+#' y <- y_wo_bi + model.matrix(~ -1 + id) %*% b_i
+#' data$y <- y
+#' 
+#' mixedmod <- lmer(y ~ x + (1 | id), data = data)
+#' linmod <- lm(y ~ x, data = data)
+#' 
+#' cbind(
+#' cAIC(mixedmod)$caic,
+#' cAIC(linmod)$caic
+#' )
+#' 
+#' 
 #' }
 #' 
 #' 
@@ -174,10 +189,29 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
   
   if (any(class(object) %in% c("glm","lm"))) {
     
-    cll <- logLik(object, REML = TRUE)
+    y <- object$y
+    
+    if(is.null(y)) y <- eval(object$call$data, environment(formula(object)))[all.vars(formula(object))[1]][[1]]
+    if(is.null(y)) stop("Please specify the data argument in the initial model call!")
+        
+    mu <- predict(object,type="response")
+    sigma <- ifelse("glm" %in% class(object),
+                    sqrt(summary(object)$dispersion),
+                    summary(object)$sigma)  
+    
+    switch(family(object)$family, binomial = {
+      cll <- sum(dbinom(x = y, size = length(unique(y)) - 1, prob = mu, log = TRUE))
+    }, poisson = {
+      cll <- sum(dpois(x = y, lambda = mu, log = TRUE))
+    }, gaussian = {
+      cll <- sum(dnorm(x = y, mean = mu, sd = sigma, log = TRUE))
+    }, {
+      cat("For this family no bias correction is currently available \n")
+      cll <- NA
+    })
     
     return(list(loglikelihood = as.numeric(cll), 
-                df            = 2 * attr(cll, "df"), 
+                df            = attr(cll, "df"), 
                 reducedModel  = NA, 
                 new           = NA, 
                 caic          = -2 * as.numeric(cll) + 2 * attr(cll, "df")))
