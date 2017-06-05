@@ -106,7 +106,7 @@ Weighted Gaussian models are not yet implemented.
 b <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 cAIC(b)
 
-b2 <- lmer(Reaction ~ (1 | Days) + (1 | Subject), sleepstudy, analytic = FALSE)
+b2 <- lmer(Reaction ~ (1 | Days) + (1 | Subject), sleepstudy)
 cAIC(b2)
 
 b2ML <- lmer(Reaction ~ (1 + Days | Subject), sleepstudy, REML = FALSE)
@@ -132,8 +132,11 @@ for(ranvar in c(1,0.1,0.05,0.025)){
  mixedmod <- lmer(y ~ x + (1 | id), data = data)
  linmod <- lm(y ~ x, data = data)
  print(
-   cAIC(mod)$caic
-)
+   cAIC(mixedmod)$caic
+   )
+ print(  
+   cAIC(linmod)$caic
+   )
 
 }
 }

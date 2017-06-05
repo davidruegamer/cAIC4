@@ -105,7 +105,7 @@
 #' b <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #' cAIC(b)
 #' 
-#' b2 <- lmer(Reaction ~ (1 | Days) + (1 | Subject), sleepstudy, analytic = FALSE)
+#' b2 <- lmer(Reaction ~ (1 | Days) + (1 | Subject), sleepstudy)
 #' cAIC(b2)
 #' 
 #' b2ML <- lmer(Reaction ~ (1 + Days | Subject), sleepstudy, REML = FALSE)
