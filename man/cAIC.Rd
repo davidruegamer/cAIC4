@@ -89,8 +89,7 @@ boostrap samples the degrees of freedom are estimated by \deqn{\frac{1}{B -
 i-th element of the estimated natural parameter.
 
 For models with no random effects, i.e. (g)lms, the \code{\link{cAIC}}
-function returns the conventional AIC using the \code{\link{logLik}}
-function with \code{REML = TRUE} option.
+function returns the AIC of the model with scale parameter estimated by REML.
 }
 \section{WARNINGS }{
  Currently the cAIC can only be estimated for
