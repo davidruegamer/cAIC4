@@ -102,17 +102,42 @@ Weighted Gaussian models are not yet implemented.
 
 \examples{
 
+### Three application examples
 b <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-
 cAIC(b)
 
 b2 <- lmer(Reaction ~ (1 | Days) + (1 | Subject), sleepstudy, analytic = FALSE)
-
 cAIC(b2)
 
 b2ML <- lmer(Reaction ~ (1 + Days | Subject), sleepstudy, REML = FALSE)
-
 cAIC(b2ML)
+
+### Demonstration of boundary case
+\dontrun{
+set.seed(2017-5-6)
+n <- 50
+beta <- 2
+x <- rnorm(n)
+eta <- x*beta
+id <- gl(5,10)
+epsvar <- 1
+data <- data.frame(x = x, id = id)
+y_wo_bi <- eta + rnorm(n, 0, sd = epsvar) 
+
+for(ranvar in c(1,0.1,0.05,0.025)){
+
+ b_i <- scale(rnorm(5, 0, ranvar), scale = FALSE)
+ y <- y_wo_bi + model.matrix(~ -1 + id) \%*\% b_i
+ data$y <- y
+ mixedmod <- lmer(y ~ x + (1 | id), data = data)
+ linmod <- lm(y ~ x, data = data)
+ print(
+   cAIC(mod)$caic
+)
+
+}
+}
+
 
 }
 \references{

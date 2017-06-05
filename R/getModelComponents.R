@@ -23,8 +23,10 @@ function(m, analytic) {
   Lambdat       <- getME(m, "Lambdat")
   model$Wlist   <- list()
   model$eWelist <- list()
-  V0inv         <- diag(rep(1, n)) - crossprod(solve(getME(m, "L"), system = "L") %*% 
-                   solve(getME(m, "L"), Lambdat, system = "P") %*% t(Z))
+  L             <- getME(m, "L")
+  V0inv         <- diag(rep(1, n)) - crossprod(solve(L, system = "L") %*% 
+                   solve(L, Lambdat, system = "P") %*% t(Z))
+
 # P             <- diag(rep(1, n)) - X %*%  chol2inv(getME(m, "RX")) %*% crossprod(X, V0inv)
   
   ## pre calculate matrices for faster computation
