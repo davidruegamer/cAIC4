@@ -453,10 +453,6 @@ stepcAIC <- function(object,
                                         calcNonOptimMod=calcNonOptimMod,
                                         ...)
                       
-    }else{
-      
-                      stop("FIX THIS")
-                      
     }
      
     ##############
