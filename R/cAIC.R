@@ -180,11 +180,12 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
   if (any(class(object) %in% c("glm","lm"))) {
     
     y <- object$y
-    n <- length(y)
-    
+
     if(is.null(y)) y <- eval(object$call$data, environment(formula(object)))[all.vars(formula(object))[1]][[1]]
     if(is.null(y)) stop("Please specify the data argument in the initial model call!")
         
+    n <- length(y)
+    
     mu <- predict(object,type="response")
     p <- object$rank
     sigma <- ifelse("glm" %in% class(object),
