@@ -72,6 +72,7 @@ groupCandidates are interpreted as covariables and fitted as splines.
 If groupCandidates does include characters such as "s(..,bs='tp')" 
 the respective spline is included in the forward stepwise procedure.
 }
+
 \examples{
 \dontrun{
 
@@ -244,4 +245,3 @@ stepcAIC(br,trace=TRUE,direction="backward",data=dat)
 \author{
 David Ruegamer
 }
-

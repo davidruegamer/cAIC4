@@ -34,6 +34,7 @@ boundary.
 is available. Instead a warning with terms to omit from the model is
 returned.
 }
+
 \examples{
 
 ## Currently no data with variance equal to zero...
@@ -41,10 +42,6 @@ b <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 
 deleteZeroComponents(b)
 
-}
-\author{
-Benjamin Saefken \email{bsaefke@uni-goettingen.de} \& David
-Ruegamer
 }
 \references{
 Greven, S. and Kneib T. (2010) On the behaviour of marginal and
@@ -54,5 +51,8 @@ conditional AIC in linear mixed models. Biometrika 97(4), 773-789.
 \code{\link[lme4]{lme4-package}}, \code{\link[lme4]{lmer}},
 \code{\link[lme4]{getME}}
 }
+\author{
+Benjamin Saefken \email{bsaefke@uni-goettingen.de} \& David
+Ruegamer
+}
 \keyword{regression}
-

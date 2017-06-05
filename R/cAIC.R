@@ -9,6 +9,38 @@
 #' Akaike information for generalized additive models based on a fit via the
 #' \code{gamm4}-package can be estimated.
 #' 
+#' @param object An object of class merMod either fitted by
+#' \code{\link[lme4]{lmer}} or \code{\link[lme4]{glmer}} of the lme4-package.
+#' Also objects returned form a \code{gamm4} call are possible.
+#' @param method Either \code{"conditionalBootstrap"} for the estimation of the
+#' degrees of freedom with the help of conditional Bootstrap or
+#' \code{"steinian"} for analytical representations based on Stein type
+#' formulas. The default is \code{NULL}. In this case the method is choosen
+#' automatically based on the \code{family} argument of the
+#' \code{(g)lmer}-object. For \code{"gaussian"} and \code{"poisson"} this is
+#' the Steinian type estimator, for all others it is the conditional Bootstrap.
+#' @param B Number of Bootstrap replications. The default is \code{NULL}. Then
+#' B is the minimum of 100 and the length of the response vector.
+#' @param sigma.estimated If sigma is estimated. Only used for the analytical
+#' version of Gaussian responses.
+#' @param analytic FALSE if the numeric hessian of the (restricted) marginal
+#' log-likelihood from the lmer optimization procedure should be used.
+#' Otherwise (default) TRUE, i.e.  use a analytical version that has to be
+#' computed. Only used for the analytical version of Gaussian responses.
+#' @return A list consisting of: 1. the conditional log likelihood, i.e. the
+#' log likelihood with the random effects as penalized parameters; 2. the
+#' estimated degrees of freedom; 3. a list element that is either \code{NULL}
+#' if no new model was fitted otherwise the new (reduced) model, see details;
+#' 4. a boolean variable indicating whether a new model was fitted or not; 5.
+#' the estimator of the conditional Akaike information, i.e. minus twice the
+#' log likelihood plus twice the degrees of freedom.
+#' @section WARNINGS : Currently the cAIC can only be estimated for
+#' \code{family} equal to \code{"gaussian"}, \code{"poisson"} and
+#' \code{"binomial"}. Neither negative binomial nor gamma distributed responses
+#' are available. 
+#' Weighted Gaussian models are not yet implemented.
+#' 
+#' @details 
 #' For \code{method = "steinian"} and an object of class \code{merMod} computed
 #' the analytic representation of the corrected conditional AIC in Greven and
 #' Kneib (2010). This is based on a the Stein formula and uses implicit
@@ -46,38 +78,11 @@
 #' 1}\sum_{i=1}^n\theta_i(z_i)(z_i-\bar{z}),} where \eqn{\theta_i(z_i)} is the
 #' i-th element of the estimated natural parameter.
 #' 
-#' @param object An object of class merMod either fitted by
-#' \code{\link[lme4]{lmer}} or \code{\link[lme4]{glmer}} of the lme4-package.
-#' Also objects returned form a \code{gamm4} call are possible.
-#' @param method Either \code{"conditionalBootstrap"} for the estimation of the
-#' degrees of freedom with the help of conditional Bootstrap or
-#' \code{"steinian"} for analytical representations based on Stein type
-#' formulas. The default is \code{NULL}. In this case the method is choosen
-#' automatically based on the \code{family} argument of the
-#' \code{(g)lmer}-object. For \code{"gaussian"} and \code{"poisson"} this is
-#' the Steinian type estimator, for all others it is the conditional Bootstrap.
-#' @param B Number of Bootstrap replications. The default is \code{NULL}. Then
-#' B is the minimum of 100 and the length of the response vector.
-#' @param sigma.estimated If sigma is estimated. Only used for the analytical
-#' version of Gaussian responses.
-#' @param analytic FALSE if the numeric hessian of the (restricted) marginal
-#' log-likelihood from the lmer optimization procedure should be used.
-#' Otherwise (default) TRUE, i.e.  use a analytical version that has to be
-#' computed. Only used for the analytical version of Gaussian responses.
-#' @return A list consisting of: 1. the conditional log likelihood, i.e. the
-#' log likelihood with the random effects as penalized parameters; 2. the
-#' estimated degrees of freedom; 3. a list element that is either \code{NULL}
-#' if no new model was fitted otherwise the new (reduced) model, see details;
-#' 4. a boolean variable indicating whether a new model was fitted or not; 5.
-#' the estimator of the conditional Akaike information, i.e. minus twice the
-#' log likelihood plus twice the degrees of freedom.
-#' @section WARNINGS : Currently the cAIC can only be estimated for
-#' \code{family} equal to \code{"gaussian"}, \code{"poisson"} and
-#' \code{"binomial"}. Neither negative binomial nor gamma distributed responses
-#' are available.
+#' For models with no random effects, i.e. (g)lms, the \code{\link{cAIC}}
+#' function returns the conventional AIC using the \code{\link{logLik}}
+#' function with \code{REML = TRUE} option.
 #' 
-#' Weighted Gaussian models are not yet implemented.
-#' @author Benjamin Saefken \email{bsaefke@@uni-goettingen.de}
+#' @author Benjamin Saefken \email{bsaefke@uni-goettingen.de}
 #' @seealso \code{\link[lme4]{lme4-package}}, \code{\link[lme4]{lmer}},
 #' \code{\link[lme4]{glmer}}
 #' @references Saefken, B., Kneib T., van Waveren C.-S. and Greven, S. (2014) A
@@ -93,6 +98,7 @@
 #' @keywords regression
 #' @export
 #' @import lme4 Matrix methods
+#' @importFrom stats sigma
 #' @examples
 #' 
 #' b <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
@@ -140,31 +146,13 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
   
   if (any(class(object) %in% c("glm","lm"))) {
     
-    y <- object$y
-    if(is.null(y)) y <- eval(object$call$data, environment(formula(object)))[all.vars(formula(object))[1]][[1]]
-    if(is.null(y)) stop("Please specify the data argument in the initial model call!")
+    cll <- logLik(object, REML = TRUE)
     
-    mu <- predict(object,type="response")
-    sigma <- ifelse("glm" %in% class(object), 
-                    sqrt(summary(object)$dispersion), 
-                    summary(object)$sigma)  
-    
-    switch(family(object)$family, binomial = {
-      cll <- sum(dbinom(x = y, size = length(unique(y)), prob = mu, log = TRUE))
-    }, poisson = {
-      cll <- sum(dpois(x = y, lambda = mu, log = TRUE))
-    }, gaussian = {
-      cll <- sum(dnorm(x = y, mean = mu, sd = sigma, log = TRUE))
-    }, {
-      cat("For this family no bias correction is currently available \n")
-      cll <- NA
-    })
-    
-    return(list(loglikelihood = cll, 
-                df            = 2 * length(object$coefficients), 
+    return(list(loglikelihood = as.numeric(cll), 
+                df            = 2 * attr(cll, "df"), 
                 reducedModel  = NA, 
                 new           = NA, 
-                caic          = -2 * cll + 2 * length(object$coefficients)))
+                caic          = -2 * as.numeric(cll) + 2 * attr(cll, "df")))
   }
   
   if (!inherits(object, c("lmerMod", "glmerMod"))) {

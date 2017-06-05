@@ -87,15 +87,19 @@ the conditional bootstrap. This is proposed in Efron (2004). For the B
 boostrap samples the degrees of freedom are estimated by \deqn{\frac{1}{B -
 1}\sum_{i=1}^n\theta_i(z_i)(z_i-\bar{z}),} where \eqn{\theta_i(z_i)} is the
 i-th element of the estimated natural parameter.
+
+For models with no random effects, i.e. (g)lms, the \code{\link{cAIC}}
+function returns the conventional AIC using the \code{\link{logLik}}
+function with \code{REML = TRUE} option.
 }
 \section{WARNINGS }{
  Currently the cAIC can only be estimated for
 \code{family} equal to \code{"gaussian"}, \code{"poisson"} and
 \code{"binomial"}. Neither negative binomial nor gamma distributed responses
-are available.
-
+are available. 
 Weighted Gaussian models are not yet implemented.
 }
+
 \examples{
 
 b <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
@@ -110,9 +114,6 @@ b2ML <- lmer(Reaction ~ (1 + Days | Subject), sleepstudy, REML = FALSE)
 
 cAIC(b2ML)
 
-}
-\author{
-Benjamin Saefken \email{bsaefke@uni-goettingen.de}
 }
 \references{
 Saefken, B., Kneib T., van Waveren C.-S. and Greven, S. (2014) A
@@ -130,5 +131,7 @@ Efron , B. (2004) The estimation of prediction error. J. Amer. Statist. Ass.
 \code{\link[lme4]{lme4-package}}, \code{\link[lme4]{lmer}},
 \code{\link[lme4]{glmer}}
 }
+\author{
+Benjamin Saefken \email{bsaefke@uni-goettingen.de}
+}
 \keyword{regression}
-

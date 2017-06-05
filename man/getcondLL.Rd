@@ -16,4 +16,3 @@ conditional log-likelihood value
 \description{
 Function to calculate the conditional log-likelihood
 }
-
