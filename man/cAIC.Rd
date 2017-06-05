@@ -114,7 +114,7 @@ cAIC(b2ML)
 
 ### Demonstration of boundary case
 \dontrun{
-set.seed(2017-5-6)
+set.seed(2017-1-1)
 n <- 50
 beta <- 2
 x <- rnorm(n)
@@ -124,21 +124,27 @@ epsvar <- 1
 data <- data.frame(x = x, id = id)
 y_wo_bi <- eta + rnorm(n, 0, sd = epsvar) 
 
-for(ranvar in c(1,0.1,0.05,0.025)){
+# use a very small RE variance
+ranvar <- 0.05
+nrExperiments <- 100
 
- b_i <- scale(rnorm(5, 0, ranvar), scale = FALSE)
- y <- y_wo_bi + model.matrix(~ -1 + id) \%*\% b_i
- data$y <- y
- mixedmod <- lmer(y ~ x + (1 | id), data = data)
- linmod <- lm(y ~ x, data = data)
- print(
-   cAIC(mixedmod)$caic
-   )
- print(  
-   cAIC(linmod)$caic
-   )
+sim <- sapply(1:nrExperiments, function(j){
 
-}
+b_i <- scale(rnorm(5, 0, ranvar), scale = FALSE)
+y <- y_wo_bi + model.matrix(~ -1 + id) \%*\% b_i
+data$y <- y
+
+mixedmod <- lmer(y ~ x + (1 | id), data = data)
+linmod <- lm(y ~ x, data = data)
+
+c(cAIC(mixedmod)$caic, cAIC(linmod)$caic)
+})
+
+rownames(sim) <- c("mixed model", "linear model")
+
+boxplot(t(sim))
+
+
 }
 
 
