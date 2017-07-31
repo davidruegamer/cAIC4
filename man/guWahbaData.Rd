@@ -3,9 +3,10 @@
 \docType{data}
 \name{guWahbaData}
 \alias{guWahbaData}
-\title{This is data to be included in my package}
+\title{Data from Gu and Wahba (1991)}
 \description{
-This is data to be included in my package
+Data from Gu and Wahba (1991) which is used for demonstrative purposes to exemplarily fit 
+a generalized additive mixed model.
 }
 \references{
 Gu and Wahba (1991) Minimizing GCV/GML scores with multiple smoothing parameters 

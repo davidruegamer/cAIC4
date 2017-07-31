@@ -49,9 +49,8 @@
 #' predict qlogis reformulate simulate terms
 #' @importFrom utils combn
 #' @importFrom stats4 logLik
-#' @examples \dontrun{
+#' @examples 
 #' 
-#' library(cAIC4dev)
 #' (fm3 <- lmer(strength ~ 1 + (1|sample) + (1|batch), Pastes))
 #' 
 #' fm3_step <- stepcAIC(fm3, direction = "backward", trace = TRUE, data = Pastes)
@@ -111,13 +110,16 @@
 #' 
 #' smallMod <- lm(y ~ x)
 #' 
+#' \dontrun{
 #' # throw error
 #' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, returnResult=FALSE)
 #' 
 #' smallMod <- lm(y ~ x, data=df)
 #' 
+#' 
 #' # throw error
 #' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, returnResult=FALSE)
+#' }
 #' 
 #' # get it all right
 #' mod <- stepcAIC(smallMod, groupCandidates=c("a","b","c"), 
@@ -143,79 +145,6 @@
 #' 
 #' stepcAIC(mod3, data=df, trace=TRUE, direction="backward")
 #' 
-#' ####################################### gamm4 #########################################
-#' 
-#' data("guWahbaData")
-#' br <- gamm4(y~s(x3)+x1+s(x2,bs="ps"),data=guWahbaData,random=~(1|fac))
-#' 
-#' stepcAIC(br,fixEfCandidates=c("x1","x3"),trace=TRUE,direction="forward",data=dat,returnResult=FALSE)
-#' stepcAIC(br,trace=TRUE,direction="backward",data=dat,returnResult=FALSE)
-#' stepcAIC(br,fixEfCandidates=c("x1","x3"),trace=TRUE,direction="both",data=dat,returnResult=FALSE)
-#' 
-#' br2 <- gamm4(y~x1,data=dat,random=~(1|fac))
-#' 
-#' stepcAIC(br2,fixEfCandidates=c("x2","x0","x1","x3"),trace=TRUE,
-#'          direction="forward",data=dat,returnResult=FALSE)
-#' stepcAIC(br2,fixEfCandidates=c("x2","x0","x1","x3"),trace=TRUE,
-#'          direction="both",data=dat,returnResult=FALSE)
-#' 
-#' 
-#' 
-#' 
-#' #################### keep argument #######################
-#' 
-#' # first lmer
-#' 
-#' (fm3 <- lmer(strength ~ 1 + (1|sample) + (1|batch), Pastes))
-#' 
-#' fm3_step_keep <- stepcAIC(fm3,direction="backward", trace=TRUE, 
-#'                           data=Pastes, keep=list(random=~(1|sample)))
-#' 
-#' (fm4 <- lmer(strength ~ 1 + (1|sample) + (1|cask) + (1|batch), Pastes))
-#' 
-#' fm4_step_keep <- stepcAIC(fm4,direction="backward", trace=TRUE, 
-#'                           data=Pastes, keep=list(random=~(1|sample)))
-#' 
-#' (fm5 <- lmer(strength ~ 1 + (1|sample) + cask + (1|batch), Pastes))
-#' 
-#' fm5_step_keep <- stepcAIC(fm5,direction="backward", trace=TRUE, 
-#'                           data=Pastes, keep=list(random=~(1|sample)))
-#' 
-#' 
-#' # gamm4 
-#' 
-#' br <- gamm4(y~s(x0)+x1+s(x2,bs="ps"),data=dat,random=~(1|fac))
-#' 
-#' stepcAIC(br,trace=TRUE,direction="backward",
-#'          data=dat,returnResult=FALSE, keep=list(random=~(1|fac),fixed=~x1))
-#' 
-#' stepcAIC(br,trace=TRUE,direction="backward",
-#'          data=dat,returnResult=FALSE, keep=list(fixed=~x1+s(x0)))
-#' 
-#' stepcAIC(br,trace=TRUE,direction="backward",
-#'          data=dat,returnResult=FALSE, keep=list(fixed=~x1+s(x0), random=~(1|fac)))
-#' 
-#' 
-#' br2 <- gamm4(y~s(x0, bs="ps")+x2,data=dat,random=~(1|fac))
-#' 
-#' stepcAIC(br2,trace=TRUE,direction="both",
-#'          fixEfCandidates=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2,random=~(1|fac)),
-#'          returnResult=FALSE, data=dat)
-#' 
-#' br3 <- gamm4(y~s(x0, bs="ps")+x2,data=dat)
-#' 
-#' stepcAIC(br3,trace=TRUE,direction="both", groupCandidates="fac",
-#'          fixEfCandidates=c("x1","x3"), keep=list(fixed=~s(x0,bs="ps")+x2),
-#'          returnResult=FALSE, data=dat)
-#' 
-#' 
-#' 
-#' #### for paper
-#' 
-#' br <- gamm4(y~s(x3)+x1,data=dat,random=~(1|fac))
-#' 
-#' stepcAIC(br,trace=TRUE,direction="backward",data=dat)
-#' }
 stepcAIC <- function(object, 
                      groupCandidates=NULL,
                      slopeCandidates=NULL,
