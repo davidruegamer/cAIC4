@@ -850,7 +850,7 @@ makePrint <- function(comps, initial=TRUE)
     
     if(class(comps)=="lm"){
       
-      pr <- paste0("~ ", attr(comps$terms, "intercept"), " + ",
+      pr <- paste0("~ ", #attr(comps$terms, "intercept"), " + ",
                    paste(attr(comps$terms, "term.labels"),
                          collapse = " + "))
       
