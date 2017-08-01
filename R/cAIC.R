@@ -97,7 +97,12 @@
 #' @keywords regression
 #' @export
 #' @import lme4 Matrix methods
-#' @importFrom stats sigma
+#' @rawNamespace 
+#' if(getRversion() >= "3.3.0") {
+#' importFrom("stats", sigma)
+#' } else {
+#' importFrom("lme4", sigma)
+#' }
 #' @examples
 #' 
 #' ### Three application examples

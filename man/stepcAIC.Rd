@@ -137,10 +137,10 @@ smallMod <- lm(y ~ x)
 \dontrun{
 # throw error
 stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, returnResult=FALSE)
-
+}
 smallMod <- lm(y ~ x, data=df)
 
-
+\dontrun{
 # throw error
 stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, returnResult=FALSE)
 }
