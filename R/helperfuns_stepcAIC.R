@@ -848,22 +848,31 @@ makePrint <- function(comps, initial=TRUE)
       
     }
     
-    comps <- mergeChanges(getComponents(comps), NULL)
-    
-    if(isLMER) comps$gamPart <- all.vars(f)    
-    
-    gp <- c(
-      comps$gamPart,
-      cnmsConverter(comps$random)
-    )
-    
-    if(is.null(gp) | length(gp)==0) gp <- "1"
-    
-    pr <- paste0("~ ",
-                 paste(gp,
-                       collapse = " + ")
-    )
-    
+    if(class(comps)=="lm"){
+      
+      pr <- paste0("~ ", attr(comps$terms, "intercept"), " + ",
+                   paste(attr(comps$terms, "term.labels"),
+                         collapse = " + "))
+      
+    }else{
+      
+      comps <- mergeChanges(getComponents(comps), NULL)
+      
+      if(isLMER) comps$gamPart <- all.vars(f)    
+      
+      gp <- c(
+        comps$gamPart,
+        cnmsConverter(comps$random)
+      )
+      
+      if(is.null(gp) | length(gp)==0) gp <- "1"
+      
+      pr <- paste0("~ ",
+                   paste(gp,
+                         collapse = " + ")
+      )
+      
+    }    
   }else{
     
     gp <- NULL
