@@ -4,5 +4,4 @@ Developer version (version 0.3) of cAIC4 package (Conditional Akaike information
 **For installation:**
 
 `library(devtools)`
-
 `install_github("davidruegamer/cAIC4dev")`
