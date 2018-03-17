@@ -8,6 +8,7 @@
 #' freedom are available, based on Stein type formulas. Also the conditional
 #' Akaike information for generalized additive models based on a fit via the
 #' \code{gamm4}-package can be estimated.
+#' A hands-on tutorial for the package can be found at \url{https://arxiv.org/abs/1803.05664}.
 #' 
 #' @param object An object of class merMod either fitted by
 #' \code{\link[lme4]{lmer}} or \code{\link[lme4]{glmer}} of the lme4-package.
@@ -81,10 +82,15 @@
 #' For models with no random effects, i.e. (g)lms, the \code{\link{cAIC}}
 #' function returns the AIC of the model with scale parameter estimated by REML.
 #' 
-#' @author Benjamin Saefken \email{bsaefke@uni-goettingen.de}
+#' @author David Ruegamer \email{david.ruegamer@gmail.com}
 #' @seealso \code{\link[lme4]{lme4-package}}, \code{\link[lme4]{lmer}},
 #' \code{\link[lme4]{glmer}}
-#' @references Saefken, B., Kneib T., van Waveren C.-S. and Greven, S. (2014) A
+#' @references 
+#' Saefken, B., Ruegamer, D., Kneib, T. and Greven, S. (2018):
+#' Conditional Model Selection in Mixed-Effects Models with cAIC4.
+#' \url{https://arxiv.org/abs/1803.05664}
+#' 
+#' Saefken, B., Kneib T., van Waveren C.-S. and Greven, S. (2014) A
 #' unifying approach to the estimation of the conditional Akaike information in
 #' generalized linear mixed models. Electronic Journal Statistics Vol. 8,
 #' 201-225.

@@ -49,6 +49,7 @@ call) and the Poisson distribution analytical estimators for the degrees of
 freedom are available, based on Stein type formulas. Also the conditional
 Akaike information for generalized additive models based on a fit via the
 \code{gamm4}-package can be estimated.
+A hands-on tutorial for the package can be found at \url{https://arxiv.org/abs/1803.05664}.
 }
 \details{
 For \code{method = "steinian"} and an object of class \code{merMod} computed
@@ -149,6 +150,10 @@ boxplot(t(sim))
 
 }
 \references{
+Saefken, B., Ruegamer, D., Kneib, T. and Greven, S. (2018):
+Conditional Model Selection in Mixed-Effects Models with cAIC4.
+\url{https://arxiv.org/abs/1803.05664}
+
 Saefken, B., Kneib T., van Waveren C.-S. and Greven, S. (2014) A
 unifying approach to the estimation of the conditional Akaike information in
 generalized linear mixed models. Electronic Journal Statistics Vol. 8,
@@ -165,6 +170,6 @@ Efron , B. (2004) The estimation of prediction error. J. Amer. Statist. Ass.
 \code{\link[lme4]{glmer}}
 }
 \author{
-Benjamin Saefken \email{bsaefke@uni-goettingen.de}
+David Ruegamer \email{david.ruegamer@gmail.com}
 }
 \keyword{regression}
