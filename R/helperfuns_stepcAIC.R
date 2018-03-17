@@ -848,7 +848,7 @@ makePrint <- function(comps, initial=TRUE)
       
     }
     
-    if(class(comps)=="lm"){
+    if("lm" %in% class(comps)){
       
       pr <- paste0("~ ", #attr(comps$terms, "intercept"), " + ",
                    paste(attr(comps$terms, "term.labels"),
