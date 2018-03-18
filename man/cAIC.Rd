@@ -2,7 +2,7 @@
 % Please edit documentation in R/cAIC.R
 \name{cAIC}
 \alias{cAIC}
-\title{Conditional Akaike information for lmer & glmer}
+\title{Conditional Akaike Information for 'lme4'}
 \usage{
 cAIC(object, method = NULL, B = NULL, sigma.estimated = TRUE,
   analytic = TRUE)
@@ -10,7 +10,7 @@ cAIC(object, method = NULL, B = NULL, sigma.estimated = TRUE,
 \arguments{
 \item{object}{An object of class merMod either fitted by
 \code{\link[lme4]{lmer}} or \code{\link[lme4]{glmer}} of the lme4-package.
-Also objects returned form a \code{gamm4} call are possible.}
+Also objects returned form a \code{\link[gamm4]{gamm4}} call are possible.}
 
 \item{method}{Either \code{"conditionalBootstrap"} for the estimation of the
 degrees of freedom with the help of conditional Bootstrap or
@@ -42,13 +42,13 @@ log likelihood plus twice the degrees of freedom.
 }
 \description{
 Estimates the conditional Akaike information for models that were fitted in
-lme4. This is possible for all distributions, i.e.
+'lme4'. This is possible for all distributions, i.e.
 \code{\link[stats]{family}} arguments, based on parametric conditional
 bootstrap. For the Gaussian distribution (from a \code{\link[lme4]{lmer}}
 call) and the Poisson distribution analytical estimators for the degrees of
 freedom are available, based on Stein type formulas. Also the conditional
 Akaike information for generalized additive models based on a fit via the
-\code{gamm4}-package can be estimated.
+'gamm4' package can be estimated.
 A hands-on tutorial for the package can be found at \url{https://arxiv.org/abs/1803.05664}.
 }
 \details{
@@ -74,7 +74,7 @@ based on the Chen-Stein formula, see for instance Saefken et. al (2014). For
 the calculation the model needs to be refitted for each observed response
 variable minus the number of response variables that are exactly zero. The
 calculation therefore takes longer then for models with Gaussian responses.
-Due to the speed and stability of lme4 this is still possible, also for
+Due to the speed and stability of 'lme4' this is still possible, also for
 larger datasets.
 
 If the model has Bernoulli distributed responses and \code{method =

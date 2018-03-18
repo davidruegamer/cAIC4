@@ -2,9 +2,9 @@
 % Please edit documentation in R/stepcAIC.R
 \name{stepcAIC}
 \alias{stepcAIC}
-\title{Function to stepwise select the best (generalized) linear mixed model
-fitted via (g)lmer or the best (generalized) additive (mixed) model
-fitted via gamm4.}
+\title{Function to stepwise select the (generalized) linear mixed model
+fitted via (g)lmer() or (generalized) additive (mixed) model
+fitted via gamm4() with the smallest cAIC.}
 \usage{
 stepcAIC(object, groupCandidates = NULL, slopeCandidates = NULL,
   fixEfCandidates = NULL, numberOfPermissibleSlopes = 2,
@@ -13,7 +13,8 @@ stepcAIC(object, groupCandidates = NULL, slopeCandidates = NULL,
   returnResult = TRUE, calcNonOptimMod = TRUE, bsType = "tp", ...)
 }
 \arguments{
-\item{object}{fit by (g)lmer for which the stepwise procedure is to be computed}
+\item{object}{fit by \code{[lme4]{lmer}}, \code{[lme4]{glmer}} or \code{[gamm4]{gamm4}} 
+for which the stepwise procedure is to be computed}
 
 \item{groupCandidates}{see slopeCandidates. Group nesting must be initiated manually, i.e. by 
 listing up the string of the groups in the manner of lme4. For example \code{groupCandidates = c("a", "b", "a/b")}.}
@@ -21,7 +22,7 @@ listing up the string of the groups in the manner of lme4. For example \code{gro
 \item{slopeCandidates}{character vectors containing names of possible new random effect groups / slopes}
 
 \item{fixEfCandidates}{character vector containing names of possible (non-)linear fixed effects in the GAMM; 
-NULL for the (g)lme-use case}
+NULL for the (g)lmer-use case}
 
 \item{numberOfPermissibleSlopes}{how much slopes are permissible for one group RE}
 
@@ -56,12 +57,12 @@ Note that if \code{trace} is set to \code{FALSE} and \code{returnResult}
 is also \code{FALSE}, the function call may not be meaningful
 }
 \description{
-The step-function searches the space of possible models in a greedy manner,
+The step function searches the space of possible models in a greedy manner,
 where the direction of the search is specified by the argument
 direction. If direction = "forward" / = "backward", 
 the function adds / exludes random effects until the cAIC can't be improved.
 In the case of forward-selection, either a new grouping structure, new
-slopes for the random effects or new s()-terms must be supplied to the function call.
+slopes for the random effects or new \code{s()}-terms must be supplied to the function call.
 If direction = "both", the greedy search is alternating between forward
 and backward steps, where the direction is changed after each step
 }
