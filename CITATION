@@ -3,7 +3,7 @@
 year <- 2018
 vers <- "0.3"
 
-citHeader("To cite package 'cAIC4' itself use the manual and the tutorial.")
+citHeader("To cite package 'cAIC4' itself use the manual and the software paper.")
 
 citEntry(
  entry = "manual",
