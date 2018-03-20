@@ -91,8 +91,10 @@
 #' fm3_min_step3 <- stepcAIC(fm3_min,groupCandidates=c("cask","batch","sample"),
 #' direction="both", data=Pastes,trace=TRUE)
 #' 
-#' fm3_inta_step2 <- stepcAIC(fm3_inta,direction="backward", data=Pastes,trace=TRUE)
-#' 
+#' \dontrun{
+#' fm3_inta_step2 <- stepcAIC(fm3_inta,direction="backward", 
+#' data=Pastes,trace=TRUE)
+#' }
 #' 
 #' ##### create own example
 #' 
@@ -114,13 +116,11 @@
 #' \dontrun{
 #' # throw error
 #' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, returnResult=FALSE)
-#' }
+#' 
 #' smallMod <- lm(y ~ x, data=df)
 #' 
-#' \dontrun{
 #' # throw error
 #' stepcAIC(smallMod, groupCandidates=c("a","b","c"), data=df, trace=TRUE, returnResult=FALSE)
-#' }
 #' 
 #' # get it all right
 #' mod <- stepcAIC(smallMod, groupCandidates=c("a","b","c"), 
@@ -145,6 +145,8 @@
 #' mod3 <- lmer(y ~ x + (1|a) + (1|a:b), data=df)
 #' 
 #' stepcAIC(mod3, data=df, trace=TRUE, direction="backward")
+#' 
+#' }
 #' 
 stepcAIC <- function(object, 
                      groupCandidates=NULL,
