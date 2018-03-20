@@ -1,0 +1,26 @@
+
+
+year <- 2018
+vers <- "0.3"
+
+citHeader("To cite package 'cAIC4' itself use the manual and the tutorial.")
+
+citEntry(
+ entry = "manual",
+ title = "cAIC4: Conditional Akaike information criterion for lme4",
+ author = "Benjamin Saefken and David Ruegamer and with contributions from Sonja Greven and Thomas Kneib",
+ year = year,
+ textVersion = paste0("Saefken, B. and Ruegamer, D. ", "(",year,"), ", "cAIC4: Conditional Akaike information criterion for lme4, ",
+                     "R package version ", vers)
+)
+
+citEntry(
+ entry = "Article",
+ title = "Conditional Model Selection in Mixed-Effects Models with cAIC4",
+ author = "Benjamin Saefken, David Ruegamer, Thomas Kneib, and Sonja Greven",
+ journal = "ArXiv e-prints",
+ year = "2018",
+ eprint = "1803.05664",
+ month = "march",
+ textVersion="Saefken, B., Ruegamer, D., Kneib, T., and Greven, S. (2018), Conditional Model Selection in Mixed-Effects Models with cAIC4, ArXiv e-prints 1803.05664."
+) 
