@@ -53,8 +53,9 @@ anocAIC <- function(object, ...) {
   frms <- sapply(objs, function(x) Reduce(paste, deparse(formula(x))))
   # replace formulas, where the model was refitted
   refit <- sapply(cAICs, "[[", "new")
-  frms[which(refit)] <- sapply(cAICs[which(refit)], function(x) 
-    Reduce(paste, deparse(formula(x$reducedModel))))
+  if(any(refit))
+    frms[which(refit)] <- sapply(cAICs[which(refit)], function(x) 
+      Reduce(paste, deparse(formula(x$reducedModel))))
   
   # create returning data.frame
   ret <- as.data.frame(do.call("rbind", lapply(cAICs, function(x)  
