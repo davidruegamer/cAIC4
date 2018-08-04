@@ -123,27 +123,27 @@ backwardStep <- function(cnms, keep)
     }
   } 
   
-  newCnms <- lapply(listCnms,function(c){
+  newCnms <- lapply(listCnms,function(d){
     
-    if(length(c)<=1){
+    if(length(d)<=1){
       
-      #       if(names(c)%in%names(keep)){
-      #         keep[names(c)]
+      #       if(names(d)%in%names(keep)){
+      #         keep[names(d)]
       #       }else{
       list(NA)
       #       }
       
     }else{
       
-      for(i in 1:length(c)){
+      for(i in 1:length(d)){
         
-        c[[i]] <- c[[i]][-i]  
+        d[[i]] <- d[[i]][-i]  
         
       }
-      #       if(names(c)%in%names(keep)){
-      #         append(c,keep[names(c)])
+      #       if(names(d)%in%names(keep)){
+      #         append(d,keep[names(d)])
       #       }else{
-      c
+      d
       #       }
       
     }
@@ -206,6 +206,7 @@ calculateAllCAICs <- function(newSetup,
                               numCores, 
                               data, 
                               calcNonOptimMod, 
+                              nrmods,
                               ...)
 {
   
@@ -269,9 +270,12 @@ calculateAllCAICs <- function(newSetup,
   
   aicTab <- as.data.frame(aicTab[,c("models","loglikelihood","df","caic")])
   
-  minInd <- which.min(aicTab$caic)
+  minInd <- order(aicTab$caic, decreasing = TRUE)
   bestMod <- NA
-  if(length(minInd)!=0) bestMod <- listOfModels[[minInd]]
+  if(length(minInd)!=0){ 
+    bestMod <- listOfModels[minInd[1:(min(nrmods,length(minInd)))]]
+    attr(bestMod, "caic") <- sort(aicTab$caic, decreasing = TRUE)[1:(min(nrmods,length(minInd)))]
+  }
   
   return(list(aicTab=aicTab,
               bestMod=bestMod)

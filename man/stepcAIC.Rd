@@ -6,15 +6,21 @@
 fitted via (g)lmer() or (generalized) additive (mixed) model
 fitted via gamm4() with the smallest cAIC.}
 \usage{
-stepcAIC(object, groupCandidates = NULL, slopeCandidates = NULL,
-  fixEfCandidates = NULL, numberOfPermissibleSlopes = 2,
-  allowUseAcross = FALSE, direction = "backward", trace = FALSE,
-  steps = 50, keep = NULL, numCores = 1, data = NULL,
-  returnResult = TRUE, calcNonOptimMod = TRUE, bsType = "tp", ...)
+stepcAIC(object, numberOfSavedModels = 1, groupCandidates = NULL,
+  slopeCandidates = NULL, fixEfCandidates = NULL,
+  numberOfPermissibleSlopes = 2, allowUseAcross = FALSE,
+  direction = "backward", trace = FALSE, steps = 50, keep = NULL,
+  numCores = 1, data = NULL, returnResult = TRUE,
+  calcNonOptimMod = TRUE, bsType = "tp", ...)
 }
 \arguments{
 \item{object}{fit by \code{[lme4]{lmer}}, \code{[lme4]{glmer}} or \code{[gamm4]{gamm4}} 
 for which the stepwise procedure is to be computed}
+
+\item{numberOfSavedModels}{integer defining how many additional models should be saved
+during the step procedure. If \code{1} (DEFAULT), only the best model is returned. 
+Any number \code{k} greater \code{1} will return the \code{k} best models. 
+If \code{0}, all models will be returned (not recommended for larger applications).}
 
 \item{groupCandidates}{see slopeCandidates. Group nesting must be initiated manually, i.e. by 
 listing up the string of the groups in the manner of lme4. For example \code{groupCandidates = c("a", "b", "a/b")}.}
@@ -72,6 +78,10 @@ For use with "gamm4-objects":
 groupCandidates are interpreted as covariables and fitted as splines.
 If groupCandidates does include characters such as "s(..,bs='tp')" 
 the respective spline is included in the forward stepwise procedure.
+
+Note that the method can not handle mixed models with uncorrelated random effects and does NOT
+reduce models to such, i.e., the model with \code{(1 + s | g)} is either reduced to
+\code{(1 | g)} or \code{(0 + s | g)} but not to \code{(1 + s || g)}.
 }
 
 \examples{

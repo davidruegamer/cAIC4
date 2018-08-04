@@ -14,6 +14,10 @@
 #'
 #'@param object fit by \code{[lme4]{lmer}}, \code{[lme4]{glmer}} or \code{[gamm4]{gamm4}} 
 #'for which the stepwise procedure is to be computed
+#'@param numberOfSavedModels integer defining how many additional models should be saved
+#'during the step procedure. If \code{1} (DEFAULT), only the best model is returned. 
+#'Any number \code{k} greater \code{1} will return the \code{k} best models. 
+#'If \code{0}, all models will be returned (not recommended for larger applications).
 #'@param groupCandidates see slopeCandidates. Group nesting must be initiated manually, i.e. by 
 #'listing up the string of the groups in the manner of lme4. For example \code{groupCandidates = c("a", "b", "a/b")}.   
 #'@param slopeCandidates character vectors containing names of possible new random effect groups / slopes
@@ -37,7 +41,12 @@
 #' groupCandidates are interpreted as covariables and fitted as splines.
 #' If groupCandidates does include characters such as "s(..,bs='tp')" 
 #' the respective spline is included in the forward stepwise procedure.
-#' @return if \code{returnResult} is \code{TRUE}, a list with the best model \code{finalModel} and
+#' 
+#' Note that the method can not handle mixed models with uncorrelated random effects and does NOT
+#' reduce models to such, i.e., the model with \code{(1 + s | g)} is either reduced to
+#' \code{(1 | g)} or \code{(0 + s | g)} but not to \code{(1 + s || g)}.
+#' @return if \code{returnResult} is \code{TRUE}, a list with the best model \code{finalModel},
+#' \code{additionalModels} if \code{numberOfSavedModels} was specified and
 #' the corresponding cAIC \code{bestCAIC} is returned. 
 #' 
 #' Note that if \code{trace} is set to \code{FALSE} and \code{returnResult}
@@ -149,6 +158,7 @@
 #' }
 #' 
 stepcAIC <- function(object, 
+                     numberOfSavedModels = 1,
                      groupCandidates=NULL,
                      slopeCandidates=NULL,
                      fixEfCandidates=NULL,
@@ -174,7 +184,7 @@ stepcAIC <- function(object,
   if(!is.null(data)){
     data <- get(deparse(substitute(data)), envir = parent.frame())
   }else if(inherits(object, c("lmerMod", "glmerMod"))){
-    data <- get(deparse(substitute(object@call[["data"]])), envir = parent.frame())
+    data <- get(deparse(object@call[["data"]]), envir = parent.frame())
   }else{
     stop("argument data must be supplied!")
   }
@@ -227,6 +237,11 @@ stepcAIC <- function(object,
     
   }
   
+  # define everything needed to save further models
+  if(numberOfSavedModels==1) additionalModels <- NULL else
+    additionalModels <- list()
+  if(numberOfSavedModels==0) numberOfSavedModels <- Inf
+  
   
   #######################################################################
   ##########################   entry step   #############################
@@ -266,7 +281,7 @@ stepcAIC <- function(object,
 
   # check if call is inherently consistent
   
-  stopifnot( 
+  if(!( 
     
     direction=="backward" | 
       
@@ -276,7 +291,8 @@ stepcAIC <- function(object,
       ( direction %in% c("forward","both") & 
           is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEfCandidates) &
           ( allowUseAcross | existsNonS ) ) 
-  )
+  ))
+    stop("Can not make forward steps without knowledge of additional random effect covariates.")
   
   if( direction=="backward" & !( is.null(groupCandidates) & is.null(slopeCandidates) & is.null(fixEfCandidates) )
       ) warning("I will ignoring variables in group- / slopeCandidates or fixEfCandidates for backward selection.")
@@ -383,6 +399,7 @@ stepcAIC <- function(object,
                                         numCores=numCores,
                                         data=data,
                                         calcNonOptimMod=calcNonOptimMod,
+                                        nrmods=numberOfSavedModels,
                                         ...)
                       
     }
@@ -419,7 +436,21 @@ stepcAIC <- function(object,
       utils::flush.console()
     }
     
-    bestModel <- tempRes$bestMod
+    bestModel <- tempRes$bestMod[[1]]
+    if(numberOfSavedModels > 1 & length(tempRes$bestMod) > 1){ 
+      
+      additionalModels <- 
+        c(additionalModels, 
+          tempRes$bestMod[2:(min(numberOfSavedModels, 
+                                 length(tempRes$bestMod)))])
+
+      caics <- sapply(additionalModels, function(x) attr(x, "caic"))
+      additionalModels <- 
+        additionalModels[order(caics, decreasing = TRUE)[
+          1:(min(numberOfSavedModels, length(additionalModels)))]
+          ]
+          
+    }
     indexMinCAIC <- which.min(aicTab$caic)
     minCAIC <- ifelse(length(indexMinCAIC)==0, Inf, aicTab$caic[indexMinCAIC]) 
     keepList <- list(random=interpret.random(keep$random),gamPart=NULL)
@@ -535,6 +566,7 @@ stepcAIC <- function(object,
    
   if(returnResult){
     return(list(finalModel=bestModel,
+                additionalModels=additionalModels,
                 bestCAIC=minCAIC)
     )
   }else{

@@ -1,34 +1,26 @@
 \name{cAIC4-package}
 \alias{cAIC4-package}
+\alias{cAIC4}
 \docType{package}
-
 \title{
-Conditional Akaike information criterion for lme4
+\packageTitle{cAIC4}
 }
-
 \description{
-Provides functions for the estimation of the conditional Akaike 
-information in generalized mixed-effects models fitted with (g)lmer 
-form lme4.
+\packageDescription{cAIC4}
 }
-
 \details{
-\tabular{ll}{
-Package: \tab cAIC\cr
-Type: \tab Package\cr
-Version: \tab 0.2\cr
-Date: \tab 2014-05-23\cr
-License: \tab GPL (>=2)\cr
-}
-}
 
+The DESCRIPTION file:
+\packageDESCRIPTION{cAIC4}
+\packageIndices{cAIC4}
+}
 \author{
-Benjamin Saefken, David Ruegamer, Thomas Kneib and Sonja Greven.
+\packageAuthor{cAIC4}
 
-Maintainer: Benjamin Saefken <bsaefke@uni-goettingen.de>
+Maintainer: \packageMaintainer{cAIC4}
 }
-
 \references{
+
 Saefken, B., Kneib T., van Waveren C.-S. and Greven, S. (2014) A unifying 
 approach to the estimation of the conditional Akaike information in generalized 
 linear mixed models. Electronic Journal Statistics Vol. 8, 201-225.
@@ -38,11 +30,13 @@ in linear mixed models. Biometrika 97(4), 773-789.
 
 Efron , B. (2004) The estimation of prediction error. J. Amer. Statist. Ass. 
 99(467), 619-632. 
+
 }
 
-
 \keyword{ package }
-
+\seealso{
+\code{\link[lme4:lme4-package]{lme4}}
+}
 \examples{
 b <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 
