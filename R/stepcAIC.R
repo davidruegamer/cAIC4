@@ -237,6 +237,9 @@ stepcAIC <- function(object,
     
   }
   
+  if(!returnResult & numberOfSavedModels != 1)
+    warning("No result will be returned if returnResult==FALSE.")
+  
   # define everything needed to save further models
   if(numberOfSavedModels==1) additionalModels <- NULL else{
     additionalModels <- list()
@@ -442,17 +445,13 @@ stepcAIC <- function(object,
     bestModel <- tempRes$bestMod[[which.min(caicsres)]]
     if(numberOfSavedModels > 1 & length(tempRes$bestMod) > 1){ 
       
-      additionalModels <- 
-        c(additionalModels, 
-          tempRes$bestMod[2:(min(numberOfSavedModels, 
-                                 length(tempRes$bestMod)))])
-
       additionalCaics <- c(additionalCaics, caicsres)
-      additionalModels <- 
-        additionalModels[order(additionalCaics, decreasing = TRUE)[
-          1:(min(numberOfSavedModels, length(additionalModels)))]
-          ]
-          
+      bestCaics <- order(additionalCaics, decreasing = TRUE)[
+        1:min(numberOfSavedModels, length(additionalCaics))
+        ]
+      
+      additionalModels <- c(additionalModels, tempRes$bestMod)[bestCaics]
+
     }
     indexMinCAIC <- which.min(aicTab$caic)
     minCAIC <- ifelse(length(indexMinCAIC)==0, Inf, aicTab$caic[indexMinCAIC]) 
@@ -568,8 +567,11 @@ stepcAIC <- function(object,
   
    
   if(returnResult){
+    if(!is.null(additionalModels)) 
+      additionalModels <- additionalModels[-1]
+    
     return(list(finalModel=bestModel,
-                additionalModels=additionalModels,
+                additionalModels=additionalModels[-1],
                 bestCAIC=minCAIC)
     )
   }else{
