@@ -446,11 +446,12 @@ stepcAIC <- function(object,
     if(numberOfSavedModels > 1 & length(tempRes$bestMod) > 1){ 
       
       additionalCaics <- c(additionalCaics, caicsres)
-      bestCaics <- order(additionalCaics, decreasing = TRUE)[
+      bestCaics <- order(additionalCaics, decreasing = FALSE)[
         1:min(numberOfSavedModels, length(additionalCaics))
         ]
       
       additionalModels <- c(additionalModels, tempRes$bestMod)[bestCaics]
+      additionalCaics <- additionalCaics[bestCaics]
 
     }
     indexMinCAIC <- which.min(aicTab$caic)

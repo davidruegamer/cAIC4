@@ -270,11 +270,11 @@ calculateAllCAICs <- function(newSetup,
   
   aicTab <- as.data.frame(aicTab[,c("models","loglikelihood","df","caic")])
   
-  minInd <- order(aicTab$caic, decreasing = TRUE)
+  minInd <- order(aicTab$caic, decreasing = FALSE)
   bestMod <- NA
   if(length(minInd)!=0){ 
     bestMod <- listOfModels[minInd[1:(min(nrmods,length(minInd)))]]
-    attr(bestMod, "caic") <- sort(aicTab$caic, decreasing = TRUE)[1:(min(nrmods,length(minInd)))]
+    attr(bestMod, "caic") <- sort(aicTab$caic, decreasing = FALSE)[1:(min(nrmods,length(minInd)))]
   }
   
   return(list(aicTab=aicTab,
