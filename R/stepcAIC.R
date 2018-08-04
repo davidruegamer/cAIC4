@@ -238,8 +238,10 @@ stepcAIC <- function(object,
   }
   
   # define everything needed to save further models
-  if(numberOfSavedModels==1) additionalModels <- NULL else
+  if(numberOfSavedModels==1) additionalModels <- NULL else{
     additionalModels <- list()
+    additionalCaics <- c()
+  }
   if(numberOfSavedModels==0) numberOfSavedModels <- Inf
   
   
@@ -436,7 +438,8 @@ stepcAIC <- function(object,
       utils::flush.console()
     }
     
-    bestModel <- tempRes$bestMod[[1]]
+    caicsres <- attr(tempRes$bestMod, "caic")
+    bestModel <- tempRes$bestMod[[which.min(caicsres)]]
     if(numberOfSavedModels > 1 & length(tempRes$bestMod) > 1){ 
       
       additionalModels <- 
@@ -444,9 +447,9 @@ stepcAIC <- function(object,
           tempRes$bestMod[2:(min(numberOfSavedModels, 
                                  length(tempRes$bestMod)))])
 
-      caics <- sapply(additionalModels, function(x) attr(x, "caic"))
+      additionalCaics <- c(additionalCaics, caicsres)
       additionalModels <- 
-        additionalModels[order(caics, decreasing = TRUE)[
+        additionalModels[order(additionalCaics, decreasing = TRUE)[
           1:(min(numberOfSavedModels, length(additionalModels)))]
           ]
           
