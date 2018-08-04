@@ -1038,3 +1038,19 @@ mergeChanges <- function(initialParts, listParts)
   return(resList)
   
 }
+
+
+#######################################################################################
+### duplicatedMers function
+### purpose: get the duplicated merMod models in a list of models
+duplicatedMers <- function(listModels)
+{
+  
+  duplicated(sapply(listModels, function(x){
+    if(class(x)[1]=="list") 
+      as.character(Reduce(paste,deparse(formula(x$mer)))) else 
+        as.character(Reduce(paste,deparse(formula(x))))
+  }))
+  
+  
+}

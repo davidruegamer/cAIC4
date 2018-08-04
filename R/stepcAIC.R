@@ -445,12 +445,20 @@ stepcAIC <- function(object,
     bestModel <- tempRes$bestMod[[which.min(caicsres)]]
     if(numberOfSavedModels > 1 & length(tempRes$bestMod) > 0){ 
       
-      additionalCaics <- c(additionalCaics, caicsres)
+      additionalModels <- c(additionalModels, tempRes$bestMod)
+      
+      # check for duplicates among models
+      duplicates <- duplicatedMers(additionalModels)
+      
+      # remove duplicates
+      additionalModels <- additionalModels[!duplicates]
+      additionalCaics <- c(additionalCaics, caicsres)[!duplicates]
+      
       bestCaics <- order(additionalCaics, decreasing = FALSE)[
         1:min(numberOfSavedModels, length(additionalCaics))
         ]
       
-      additionalModels <- c(additionalModels, tempRes$bestMod)[bestCaics]
+      additionalModels <- additionalModels[bestCaics]
       additionalCaics <- additionalCaics[bestCaics]
 
     }
