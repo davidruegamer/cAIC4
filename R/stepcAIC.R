@@ -443,7 +443,7 @@ stepcAIC <- function(object,
     
     caicsres <- attr(tempRes$bestMod, "caic")
     bestModel <- tempRes$bestMod[[which.min(caicsres)]]
-    if(numberOfSavedModels > 1 & length(tempRes$bestMod) > 1){ 
+    if(numberOfSavedModels > 1 & length(tempRes$bestMod) > 0){ 
       
       additionalCaics <- c(additionalCaics, caicsres)
       bestCaics <- order(additionalCaics, decreasing = FALSE)[
@@ -568,11 +568,12 @@ stepcAIC <- function(object,
   
    
   if(returnResult){
-    if(!is.null(additionalModels)) 
+    if(!is.null(additionalModels)){ 
       additionalModels <- additionalModels[-1]
-    
+      attr(additionalModels, "cAICs") <- additionalCaics[-1]
+    }
     return(list(finalModel=bestModel,
-                additionalModels=additionalModels[-1],
+                additionalModels=additionalModels,
                 bestCAIC=minCAIC)
     )
   }else{
