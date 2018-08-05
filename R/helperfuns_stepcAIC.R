@@ -177,7 +177,11 @@ backwardStep <- function(cnms, keep)
     
   }
   
-  listOfAllCombs <- split(unlist(listOfAllCombs,recursive=FALSE),rep(1:length(newCnms),each=length(cnms)))
+  notempty <- sapply(listOfAllCombs, function(x) length(x[[1]])>0)
+  listOfAllCombs <- listOfAllCombs[notempty]
+  newCnms <- newCnms[notempty]
+  listOfAllCombs <- suppressWarnings(split(unlist(listOfAllCombs,recursive=FALSE),
+                                           rep(1:length(newCnms),each=length(cnms))))
   listOfAllCombs <- lapply(listOfAllCombs,checkREs)
   
   listOfAllCombs <- listOfAllCombs[sapply(listOfAllCombs,function(r)!is.null(r))]
