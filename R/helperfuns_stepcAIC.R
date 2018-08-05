@@ -409,7 +409,7 @@ cnmsConverter <- function(cnms)
   
   for(i in 1:length(cnms)){
     
-    if ("(Intercept)"%in%cnms[[i]][1]) {
+    if ("(Intercept)"%in%cnms[[i]]) {
       cnms[[i]][which(cnms[[i]]=="(Intercept)")] <- "1"
     }else{
       cnms[[i]] <- append(cnms[[i]],"0")
