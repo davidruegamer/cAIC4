@@ -1,14 +1,14 @@
 #' @method print cAIC
 #' @rdname summary.cAIC
 #' @export
-print.cAIC <- function(x, ...)
+print.cAIC <- function(x, ..., digits = 2)
 {
   
   prdf <- data.frame(
     a = c("Conditional log-likelihood: ",
           "Degrees of freedom: ",
-          "Conditional Akaike information: "),
-    b = unlist(x[c("loglikelihood", "df", "caic")]))
+          "Conditional Akaike information criterion: "),
+    b = round(unlist(x[c("loglikelihood", "df", "caic")]), digits = digits))
   colnames(prdf) <- c()
   
   if(x$new){
@@ -27,7 +27,7 @@ print.cAIC <- function(x, ...)
 #' Takes one or more \code{lmer}-objects and produces a table 
 #' to the console.
 #' 
-#' @param object a fitted \code{cAIC}-object
+#' @param object a fitted \code{lme4}-object
 #' @param ... additional objects of the same type
 #' 
 #' @seealso \code{\link{cAIC}} for the model fit.
@@ -37,7 +37,7 @@ print.cAIC <- function(x, ...)
 #' @aliases print.cAIC
 #' 
 #' @export
-anocAIC <- function(object, ...) {
+anocAIC <- function(object, ..., digits = 2) {
   
   # get list of models
   objs <- c(object, list(...))
@@ -59,10 +59,10 @@ anocAIC <- function(object, ...) {
   
   # create returning data.frame
   ret <- as.data.frame(do.call("rbind", lapply(cAICs, function(x)  
-    unlist(x[c("loglikelihood", "df", "caic", "new")]))))
+    round(unlist(x[c("loglikelihood", "df", "caic", "new")]), digits = digits))))
   ret[,4] <- as.logical(ret[,4])
   rownames(ret) <- make.unique(frms, sep = " % duplicate #")
-  colnames(ret) <- c("Cond. log-likelihood",
+  colnames(ret) <- c("cll",
                      "df",
                      "cAIC",
                      "Refit")

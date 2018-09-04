@@ -83,7 +83,7 @@
 #' For models with no random effects, i.e. (g)lms, the \code{\link{cAIC}}
 #' function returns the AIC of the model with scale parameter estimated by REML.
 #' 
-#' @author David Ruegamer \email{david.ruegamer@gmail.com}
+#' @author Benjamin Saefken, David Ruegamer
 #' @seealso \code{\link[lme4]{lme4-package}}, \code{\link[lme4]{lmer}},
 #' \code{\link[lme4]{glmer}}
 #' @references 
