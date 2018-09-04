@@ -171,6 +171,6 @@ Efron , B. (2004) The estimation of prediction error. J. Amer. Statist. Ass.
 \code{\link[lme4]{glmer}}
 }
 \author{
-David Ruegamer \email{david.ruegamer@gmail.com}
+Benjamin Saefken, David Ruegamer
 }
 \keyword{regression}

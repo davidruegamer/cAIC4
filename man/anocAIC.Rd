@@ -5,10 +5,10 @@
 \alias{print.cAIC}
 \title{Comparison of several lmer objects via cAIC}
 \usage{
-anocAIC(object, ...)
+anocAIC(object, ..., digits = 2)
 }
 \arguments{
-\item{object}{a fitted \code{cAIC}-object}
+\item{object}{a fitted \code{lme4}-object}
 
 \item{...}{additional objects of the same type}
 }

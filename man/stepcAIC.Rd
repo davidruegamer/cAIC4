@@ -56,7 +56,8 @@ kept during selection must be included in the original model}
 \item{...}{options for cAIC call}
 }
 \value{
-if \code{returnResult} is \code{TRUE}, a list with the best model \code{finalModel} and
+if \code{returnResult} is \code{TRUE}, a list with the best model \code{finalModel},
+\code{additionalModels} if \code{numberOfSavedModels} was specified and
 the corresponding cAIC \code{bestCAIC} is returned. 
 
 Note that if \code{trace} is set to \code{FALSE} and \code{returnResult}

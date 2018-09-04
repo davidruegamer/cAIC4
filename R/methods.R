@@ -1,5 +1,5 @@
+#' Print method for cAIC
 #' @method print cAIC
-#' @rdname summary.cAIC
 #' @export
 print.cAIC <- function(x, ..., digits = 2)
 {
