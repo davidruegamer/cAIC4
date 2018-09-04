@@ -10,12 +10,24 @@ function(object) {
   #   BC     = Bias correction (i.e. degrees of freedom) for a (generalized) 
   #            linear mixed model with Poisson response.
   #
-  y                   <- object@resp$y
+  zeroLessModel <- deleteZeroComponents(object)
+  if (inherits(zeroLessModel, "glm")) {
+    return(zeroLessModel$rank)
+  }
+  y                   <- zeroLessModel@resp$y
   ind                 <- which(y != 0)
 	workingMatrix       <- matrix(rep(y, length(y)), ncol = length(y))
 	diag(workingMatrix) <- diag(workingMatrix) - 1
 	workingMatrix       <- workingMatrix[, ind]
-	workingEta          <- diag(apply(workingMatrix, 2, function(x) refit(object,
+	workingEta          <- diag(apply(workingMatrix, 2, function(x) refit(zeroLessModel,
                                     newresp = x)@resp$eta)[ind,])
-	return(sum(y[ind] * (object@resp$eta[ind] - workingEta)))
+	bc <- sum(y[ind] * (zeroLessModel@resp$eta[ind] - workingEta))
+	if (identical(object, zeroLessModel)) {
+      newModel <- NULL
+      new      <- FALSE
+    } else {
+      newModel <- zeroLessModel
+      new      <- TRUE
+    }
+	return(list(bc = bc, newModel = newModel, new = new))
 }

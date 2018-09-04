@@ -7,17 +7,28 @@ biasCorrectionBernoulli <- function(object){
   # Returns:
   #   bc = Bias correction for Binomial gam
   #
-  signCor 	 <- - 2 * object@resp$y + 1
-  muHat   	 <- object@resp$mu
+  zeroLessModel <- deleteZeroComponents(object)
+  if (inherits(zeroLessModel, "glm")) {
+    return(zeroLessModel$rank)
+  }
+  signCor 	 <- - 2 * zeroLessModel@resp$y + 1
+  muHat   	 <- zeroLessModel@resp$mu
   workingEta <- numeric(length(muHat))
   for(i in 1:length(muHat)){
-  	workingData 	<- object$y
+  	workingData 	<- zeroLessModel$y
   	workingData[i] 	<- 1 - workingData[i]
-  	workingModel 	<- refit(object, nresp = workingData)
+  	workingModel 	<- refit(zeroLessModel, nresp = workingData)
   	workingEta[i] 	<- log(workingModel@resp$mu[i] / (1 - workingModel@resp$mu[i])) - log(muHat[i] / (1 - muHat[i]))
   }
   bc <- sum(muHat * (1 - muHat) * signCor * workingEta)
-  return(bc)
+	if (identical(object, zeroLessModel)) {
+      newModel <- NULL
+      new      <- FALSE
+    } else {
+      newModel <- zeroLessModel
+      new      <- TRUE
+    }
+	return(list(bc = bc, newModel = newModel, new = new))
 }
 
 #
