@@ -2,7 +2,6 @@
 % Please edit documentation in R/methods.R
 \name{anocAIC}
 \alias{anocAIC}
-\alias{print.cAIC}
 \title{Comparison of several lmer objects via cAIC}
 \usage{
 anocAIC(object, ..., digits = 2)
@@ -11,6 +10,8 @@ anocAIC(object, ..., digits = 2)
 \item{object}{a fitted \code{lme4}-object}
 
 \item{...}{additional objects of the same type}
+
+\item{digits}{number of digits to print}
 }
 \value{
 a table comparing the cAIC relevant information of all models

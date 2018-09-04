@@ -1,6 +1,10 @@
 #' Print method for cAIC
 #' @method print cAIC
-#' @export
+#' @param x a cAIC object
+#' @param digits number of digits to print
+#' @param ... further arguments passed to 
+#' generic print function (not in use).
+#' #' @export
 print.cAIC <- function(x, ..., digits = 2)
 {
   
@@ -29,12 +33,11 @@ print.cAIC <- function(x, ..., digits = 2)
 #' 
 #' @param object a fitted \code{lme4}-object
 #' @param ... additional objects of the same type
+#' @param digits number of digits to print
 #' 
 #' @seealso \code{\link{cAIC}} for the model fit.
 #' 
 #' @return a table comparing the cAIC relevant information of all models
-#' 
-#' @aliases print.cAIC
 #' 
 #' @export
 anocAIC <- function(object, ..., digits = 2) {
