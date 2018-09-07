@@ -5,8 +5,7 @@
 #' @param ... further arguments passed to 
 #' generic print function (not in use).
 #' #' @export
-print.cAIC <- function(x, ..., digits = 2)
-{
+print.cAIC <- function(x, ..., digits = 2){
   
   prdf <- data.frame(
     a = c("Conditional log-likelihood: ",
