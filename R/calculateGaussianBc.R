@@ -36,7 +36,7 @@ function(model, sigma.estimated, analytic) {
       C[j, ] <- as.vector((e %*% Wj) %*% A - eWje * e/(2 * tye))
       for (k in j:length(model$theta)) {
           Wk <- model$Wlist[[k]]
-          WkAWjA <- sum(WAlist[[j]] * WAlist[[k]])
+          WkAWjA <- sum(t(WAlist[[j]]) * WAlist[[k]])
           eWke   <- model$eWelist[[k]]
           if (!model$isREML) {
             B[j, k] <- B[k, j] <-  - tye * 
