@@ -5,8 +5,7 @@
 #' @param ... further arguments passed to 
 #' generic print function (not in use).
 #' #' @export
-print.cAIC <- function(x, ..., digits = 2)
-{
+print.cAIC <- function(x, ..., digits = 2){
   
   prdf <- data.frame(
     a = c("Conditional log-likelihood: ",
@@ -17,7 +16,7 @@ print.cAIC <- function(x, ..., digits = 2)
   
   if(x$new){
     cat("The original model was refitted due to zero variance components.\n")
-    cat("Refitted model: ", Reduce(paste, deparse(formula(c$reducedModel))), "\n")
+    cat("Refitted model: ", Reduce(paste, deparse(formula(x$reducedModel))), "\n")
   }
     
   print(prdf, row.names = FALSE)
