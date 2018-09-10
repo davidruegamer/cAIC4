@@ -49,7 +49,7 @@ function(m, analytic) {
     diag(LambdaS)              <- diag(LambdaSt)                <- 0
     Ds                         <- LambdaS + LambdaSt
     diag(Ds)                   <- diagonal
-    model$Wlist[[s]]           <- Z %*% Ds %*% t(Z)
+    model$Wlist[[s]]           <- crossprod(Z %*% Ds, Z)
     model$eWelist[[s]]         <- as.numeric(e %*% model$Wlist[[s]] %*% e)
 #   model$Wlist[[s]]  <- model$Wlist[[s]]/norm(model$Wlist[[s]], type = "F")
   }

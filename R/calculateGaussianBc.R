@@ -23,23 +23,31 @@ function(model, sigma.estimated, analytic) {
   V0inv <- model$V0inv
    
   if(analytic) {
+    WAlist <- lapply(model$Wlist, function(w)
+      {
+      
+      if(!model$isREML) return(w %*% V0inv) else
+        return(w %*% A)
+      
+    })
     for (j in 1:length(model$theta)) {
       Wj     <- model$Wlist[[j]]
       eWje   <- model$eWelist[[j]]
       C[j, ] <- as.vector((e %*% Wj) %*% A - eWje * e/(2 * tye))
       for (k in j:length(model$theta)) {
           Wk <- model$Wlist[[k]]
+          WkAWjA <- sum(WAlist[[j]] * WAlist[[k]])
           eWke   <- model$eWelist[[k]]
           if (!model$isREML) {
             B[j, k] <- B[k, j] <-  - tye * 
-              sum(t(Wk %*% V0inv) * (Wj %*% V0inv))/(2 * model$n) - 
+              WkAWjA/(2 * model$n) - 
               eWje * eWke/(2 * tye) + 
               as.numeric(e %*% Wk %*% (A %*% (Wj %*% e)))
           } else {
             B[j, k] <- B[k, j] <- - tye * 
-              sum(t(Wk %*% A) * (Wj %*% A))/(2*(model$n - ncol(model$X))) - 
+              WkAWjA/(2*(model$n - ncol(model$X))) - 
               eWje * eWke/(2 * tye) + 
-              as.numeric(e %*% Wk %*% (model$A %*% (Wj %*% e)))
+              as.numeric(e %*% Wk %*% (A %*% (Wj %*% e)))
           }
       }
     }
