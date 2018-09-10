@@ -445,9 +445,9 @@ forwardGam <- function(intGam, fixEfCandidates=NULL, bsType="ps", keep)
   vars <- intGam$fake.names
   sTerm <- vars%in%sapply(intGam$smooth.spec,function(x)x$term)
   nonS <- vars[!sTerm]
-  haveS <- vars[sTerm] # should be at least of lenght = 1 , else a (g)lmer should be fitted
+  haveS <- vars[sTerm] # should be at least of length 1 , else a (g)lmer should be fitted
   sLabs <- makeS(intGam)
-  keepNonS <- NULL
+  keepNonS <- vars[!(vars %in% fixEfCandidates)]
   
   newX <- fixEfCandidates[which(!fixEfCandidates %in% vars)]
   
@@ -458,11 +458,11 @@ forwardGam <- function(intGam, fixEfCandidates=NULL, bsType="ps", keep)
     keepSterm <- keepVars%in%sapply(keep$smooth.spec,function(x)x$term)
     keepNonS <- keepVars[!keepSterm]
     
-    nonS <- nonS[!nonS%in%keepNonS] # drop the keepNonS from nonS
-    # to prevent s-making
-    if(length(nonS)==0) nonS <- NULL
-    
   }
+
+  nonS <- nonS[!nonS%in%keepNonS] # drop the keepNonS from nonS
+  # to prevent s-making
+  if(length(nonS)==0) nonS <- NULL
   
   returnListS <- vector("list",length=length(nonS)+length(newX)) 
   
@@ -474,7 +474,7 @@ forwardGam <- function(intGam, fixEfCandidates=NULL, bsType="ps", keep)
       
     }else{
       
-      returnListS[[i]] <- c(keepNonS,sLabs, 
+      returnListS[[i]] <- c(keepNonS,sLabs,nonS[-(i-length(newX))],
                             paste0("s(",nonS[i-length(newX)],
                                    ",bs=",deparse(bsType),")"))
       
@@ -495,7 +495,8 @@ forwardStep <- function(cnms,
                         slopeCandidates,
                         groupCandidates,
                         nrOfCombs,
-                        allowUseAcross
+                        allowUseAcross,
+                        allowCorrelationSel
                         )
 {
   
@@ -533,9 +534,29 @@ forwardStep <- function(cnms,
   allCombs <- lapply(allCombs,function(t)t[order(names(t))])
   allCombs <- allCombs[!(duplicated(allCombs) & duplicated(lapply(allCombs,names)))]
   
+  # also allow for correlation parameter to be selected?
+  if(!allowCorrelationSel) allCombs <- removeUncor(allCombs)
+  if(length(allCombs)==0) return(NULL)
+  
   return(#list(randomPart=
     allCombs#, sPart=...)
   )
+  
+}
+
+#######################################################################################
+### removeUncor function
+### purpose:  removes random effects with uncorrelated intercept and slope
+
+removeUncor <- function(res)
+{
+  
+  keep <- sapply(res, function(re){
+    
+    length(re) == 1 | (all(unlist(sapply(re, function(x) grepl("(Intercept)", x, fixed=T)))))
+    
+  })
+  return(res[keep])
   
 }
 
@@ -795,7 +816,8 @@ makeForward <- function(comps,
                         allowUseAcross,
                         fixEfCandidates, 
                         bsType,
-                        keep)
+                        keep,
+                        allowCorrelationSel)
 {
   
   returnListRE <- returnListS <- NULL
@@ -818,7 +840,7 @@ makeForward <- function(comps,
     returnListRE <- if(!is.null(slopeCandidates) | !is.null(groupCandidates) | 
                        length(comps$random)>1 | allowUseAcross) 
       forwardStep(cnms=comps$random, slopeCandidates, groupCandidates, 
-                  nrOfCombs, allowUseAcross)
+                  nrOfCombs, allowUseAcross, allowCorrelationSel)
     
   }
   

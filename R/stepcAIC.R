@@ -28,13 +28,14 @@
 #'@param trace logical; should information ne printed during the running of stepcAIC?
 #'@param steps maximum number of steps to be considered
 #'@param keep list($fixed,$random) of formulae; which splines / fixed (fixed) or random effects (random) to be 
-#'kept during selection must be included in the original model 
+#'kept during selection; must be included in the original model 
 #'@param numCores the number of cores to be used in calculations; this is done by using \code{parallel::mclapply}
 #'@param data data.frame, from which the new REs are to be taken
 #'@param returnResult logical; whether to return the result (best model and corresponding cAIC)
 #'@param calcNonOptimMod logical; if FALSE, models which failed to converge are not considered for cAIC calculation
 #'@param bsType type of splines to consider in forward gamm4 steps
 #'@param allowUseAcross allow slopes to be used in other grouping variables
+#'@param allowCorrelationSel logical; FALSE does not allow correlations of random effects to be (de-)selected (default)
 #'@param ... options for cAIC call
 #'@section Details: 
 #' For use with "gamm4-objects": 
@@ -164,6 +165,7 @@ stepcAIC <- function(object,
                      fixEfCandidates=NULL,
                      numberOfPermissibleSlopes=2,
                      allowUseAcross=FALSE,
+                     allowCorrelationSel=FALSE,
                      direction = "backward",
                      trace = FALSE,
                      steps = 50, 
@@ -376,6 +378,7 @@ stepcAIC <- function(object,
                                    fixEfCandidates=fixEfCandidates,
                                    nrOfCombs=numberOfPermissibleSlopes,
                                    allowUseAcross=allowUseAcross,
+                                   allowCorrelationSel=allowCorrelationSel,
                                    bsType=bsType,
                                    keep=keep)
     }else{
