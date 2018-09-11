@@ -73,7 +73,8 @@ function(m) {
           the model cAIC can be called again.", call. = FALSE)
   }
 
-  if(is.null(m@optinfo$conv$lme4$code)) {
+  if(is.null(m@optinfo$conv$lme4$code) || 
+     m@optinfo$conv$lme4$code == -1) {
     for(i in 1:length(varBlockMatrices)){
       cnms[[i]] <- cnms[[i]][which(diag(varBlockMatrices[[i]]) != 0)]
     }
@@ -95,6 +96,8 @@ function(m) {
   lhs        <- formula(m)[[2]]  # left hand side of the formula
   newFormula <- reformulate(rhs, lhs)  # merge both sides           
   newMod     <- update(m, formula. = newFormula, evaluate = TRUE)
+  if(all.equal(newMod, m)=="TRUE") # should not happen, but just in case...
+    stop("Infinite loop in deleteZeroComponents.")
   
   return(deleteZeroComponents(newMod))
 }
