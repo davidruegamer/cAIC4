@@ -392,6 +392,17 @@ stepcAIC <- function(object,
       
     }
     
+    if(all(sapply(newSetup, is.null)) & direction=="forward")
+    {
+      
+      cat("\nModel can not be further extended.")
+      return(list(finalModel=object,
+                  additionalModels=NULL,
+                  bestCAIC=cAICofMod)
+      )
+      
+    }
+    
     newSetup <- mergeChanges(initialParts=comps, listParts=newSetup)
     
     ### ( print ) ###
