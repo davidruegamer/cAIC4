@@ -96,8 +96,6 @@ function(m) {
   lhs        <- formula(m)[[2]]  # left hand side of the formula
   newFormula <- reformulate(rhs, lhs)  # merge both sides           
   newMod     <- update(m, formula. = newFormula, evaluate = TRUE)
-  if(all.equal(newMod, m)=="TRUE") # should not happen, but just in case...
-    stop("Infinite loop in deleteZeroComponents.")
-  
+
   return(deleteZeroComponents(newMod))
 }
