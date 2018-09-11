@@ -249,6 +249,10 @@ stepcAIC <- function(object,
   }
   if(numberOfSavedModels==0) numberOfSavedModels <- Inf
   
+  if(numberOfPermissibleSlopes < 1) 
+    stop("numberOfPermissibleSlopes must be greater or equal to 1")
+  # redefine numberOfPermissibleSlopes as intercepts will also count as slopes
+  numberOfPermissibleSlopes <- numberOfPermissibleSlopes + 1
   
   #######################################################################
   ##########################   entry step   #############################
