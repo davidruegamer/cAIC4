@@ -362,9 +362,7 @@ stepcAIC <- function(object,
     if(trace) {
     
       cat("\nStep ",stepsInit-steps+1," (",direction,"):  cAIC=", format(round(cAICofMod, 4)), "\n", 
-            "Best model so far: ", makePrint(object), "\n",
-          "New Candidates:\n\n",
-          sep = "")
+            "Best model so far: ", makePrint(object), "\n", sep = "")
       utils::flush.console()
     
     }
@@ -395,13 +393,14 @@ stepcAIC <- function(object,
     if(all(sapply(newSetup, is.null)) & direction=="forward")
     {
       
-      cat("\nModel can not be further extended.")
+      # cat("\nModel can not be further extended.")
       return(list(finalModel=object,
                   additionalModels=NULL,
                   bestCAIC=cAICofMod)
       )
       
     }
+    cat("New Candidates:\n\n")
     
     newSetup <- mergeChanges(initialParts=comps, listParts=newSetup)
     
