@@ -36,6 +36,7 @@
 #'@param bsType type of splines to consider in forward gamm4 steps
 #'@param allowUseAcross allow slopes to be used in other grouping variables
 #'@param allowCorrelationSel logical; FALSE does not allow correlations of random effects to be (de-)selected (default)
+#'@param digits number of digits used in printing the results
 #'@param ... options for cAIC call
 #'@section Details: 
 #' For use with "gamm4-objects": 
@@ -160,21 +161,22 @@
 #' 
 stepcAIC <- function(object, 
                      numberOfSavedModels = 1,
-                     groupCandidates=NULL,
-                     slopeCandidates=NULL,
-                     fixEfCandidates=NULL,
-                     numberOfPermissibleSlopes=2,
-                     allowUseAcross=FALSE,
-                     allowCorrelationSel=FALSE,
+                     groupCandidates = NULL,
+                     slopeCandidates = NULL,
+                     fixEfCandidates = NULL,
+                     numberOfPermissibleSlopes = 2,
+                     allowUseAcross = FALSE,
+                     allowCorrelationSel = FALSE,
                      direction = "backward",
                      trace = FALSE,
                      steps = 50, 
                      keep = NULL,
                      numCores = 1,
                      data = NULL,
-                     returnResult=TRUE,
-                     calcNonOptimMod=TRUE,
-                     bsType="tp",
+                     returnResult = TRUE,
+                     calcNonOptimMod = TRUE,
+                     bsType = "tp",
+                     digits = 2,
                      ...)
 {
 
@@ -408,7 +410,7 @@ stepcAIC <- function(object,
     
     if(trace & !is.null(newSetup)) cat("Calculating cAIC for", 
                                        length(newSetup),
-                                       "model(s) ...")
+                                       "model(s) ...\n")
     
     #############
     
@@ -453,7 +455,7 @@ stepcAIC <- function(object,
     
     if (trace) {
       cat("\r\r\r\r\r\r\r\r\r\r\r\r\r")
-      print(aicTab[with(aicTab,order(-caic)), ], row.names = FALSE)
+      print(aicTab[with(aicTab,order(-caic)), ], row.names = FALSE, digits = digits)
       cat("\n_____________________________________________\n")
       cat("_____________________________________________\n")
       utils::flush.console()
