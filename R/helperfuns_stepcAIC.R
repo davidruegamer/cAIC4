@@ -243,8 +243,13 @@ calculateAllCAICs <- function(newSetup,
       if(length(class(m))==1 && class(m)=="list"){ # m is a gamm4 object
         
         tryCatch(cAIC(m,...)[c("loglikelihood","df","caic")], 
-                 error = function(e) return(c(NA,NA,NA)))
-        
+                 error = function(e){ 
+                   
+                   ret <- c(NA,NA,NA)
+                   attr(ret, "message") <- e
+                   return(ret)
+                   
+                 })
         
       }else{
         
@@ -256,12 +261,22 @@ calculateAllCAICs <- function(newSetup,
         }
         
         tryCatch(cAIC(m,...)[c("loglikelihood","df","caic")], 
-                 error = function(e) return(c(NA,NA,NA)))
+                 error = function(e){ 
+                   
+                   ret <- c(NA,NA,NA)
+                   attr(ret, "message") <- e
+                   return(ret)
+                   
+                   })
         
       }
     # }
     }, mc.cores=numCores)
   
+  if(all(sapply(listOfCAICs, function(x) is.na(sum(unlist(x))))))
+  {
+    listOfCAICs$message <- attr(listOfCAICs[[1]],"message")
+  }
   # if(all(sapply(listOfCAICs, is.list))
   #    all(sapply(listOfCAICs, function(x) !is.null(x$message))))
   #   return(listOfCAICs) else 
