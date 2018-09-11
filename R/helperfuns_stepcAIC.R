@@ -255,14 +255,17 @@ calculateAllCAICs <- function(newSetup,
           
         }
         
-        tryCatch(cAIC(m,...)[c("loglikelihood","df","caic")], error = function(e) return(c(NA,NA,NA)))
+        tryCatch(cAIC(m,...)[c("loglikelihood","df","caic")], 
+                 error = function(e) return(c(NA,NA,NA)))
         
       }
     # }
     }, mc.cores=numCores)
   
-  if(all(sapply(listOfCAICs, function(x) !is.null(x$message))))
-    return(listOfCAICs) else listOfCAICs <- lapply(listOfCAICs,unlist)
+  # if(all(sapply(listOfCAICs, is.list))
+  #    all(sapply(listOfCAICs, function(x) !is.null(x$message))))
+  #   return(listOfCAICs) else 
+  listOfCAICs <- lapply(listOfCAICs,unlist)
   
   #######################################################################
   ################ list all the cAICs and models ########################
@@ -279,7 +282,8 @@ calculateAllCAICs <- function(newSetup,
   bestMod <- NA
   if(length(minInd)!=0){ 
     bestMod <- listOfModels[minInd[1:(min(nrmods,length(minInd)))]]
-    attr(bestMod, "caic") <- sort(aicTab$caic, decreasing = FALSE)[1:(min(nrmods,length(minInd)))]
+    attr(bestMod, "caic") <- sort(aicTab$caic, decreasing = FALSE)[
+      1:(min(nrmods,length(minInd)))]
   }
   
   return(list(aicTab=aicTab,
