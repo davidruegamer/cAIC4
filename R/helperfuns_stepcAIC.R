@@ -276,6 +276,7 @@ calculateAllCAICs <- function(newSetup,
   if(all(sapply(listOfCAICs, function(x) is.na(sum(unlist(x))))))
   {
     listOfCAICs$message <- attr(listOfCAICs[[1]],"message")
+    return(listOfCAICs)
   }
   # if(all(sapply(listOfCAICs, is.list))
   #    all(sapply(listOfCAICs, function(x) !is.null(x$message))))

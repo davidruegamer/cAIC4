@@ -434,7 +434,8 @@ stepcAIC <- function(object,
       
       if(returnResult){
         return(list(finalModel=object,
-                    bestCAIC=NA)
+                    additionalModels=additionalModels,
+                    bestCAIC=cAICofMod)
         )
       }else{
         return(invisible(NULL))
