@@ -289,10 +289,10 @@ calculateAllCAICs <- function(newSetup,
   
   
   aicTab <- as.data.frame(as.matrix(do.call("rbind",listOfCAICs)))
-  colnames(aicTab) <- c("loglikelihood","df","caic")
+  colnames(aicTab) <- c("cll","df","caic")
   aicTab$models <- sapply(formulaList, makePrint, initial=FALSE)
   
-  aicTab <- as.data.frame(aicTab[,c("models","loglikelihood","df","caic")])
+  aicTab <- as.data.frame(aicTab[,c("models","cll","df","caic")])
   
   minInd <- order(aicTab$caic, decreasing = FALSE)
   bestMod <- NA
