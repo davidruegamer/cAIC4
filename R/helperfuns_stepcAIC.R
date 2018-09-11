@@ -262,7 +262,8 @@ calculateAllCAICs <- function(newSetup,
     # }
     }, mc.cores=numCores)
   
-  if(!is.null(listOfCAICs$message)) return(listOfCAICs) else listOfCAICs <- lapply(listOfCAICs,unlist)
+  if(all(sapply(listOfCAICs, function(x) !is.null(x$message))))
+    return(listOfCAICs) else listOfCAICs <- lapply(listOfCAICs,unlist)
   
   #######################################################################
   ################ list all the cAICs and models ########################
