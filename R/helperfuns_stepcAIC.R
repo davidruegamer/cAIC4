@@ -719,7 +719,7 @@ interpret.random <- function(frla)
 ### makeBackward function
 ### purpose:  
 
-makeBackward <- function(comps, keep)
+makeBackward <- function(comps, keep, allowCorrelationSel)
 {
   
   # comps   list created by getComponents
@@ -727,7 +727,8 @@ makeBackward <- function(comps, keep)
   returnListRE <- returnListS <- NULL
   
   returnListRE <- if(!is.null(comps$random)) 
-    backwardStep(comps$random, keep=keep$random)
+    backwardStep(comps$random, keep=keep$random, 
+                 allowCorrelationSel=allowCorrelationSel)
   
   returnListS <- if(!is.null(comps$gamPart) && comps$gamPart$fake.formula[[3]]!=1) 
     backwardGam(comps$gamPart, keep=keep$fixed)
