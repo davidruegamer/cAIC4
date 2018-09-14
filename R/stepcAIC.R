@@ -465,7 +465,7 @@ stepcAIC <- function(object,
     
     if (trace) {
       cat("\r\r\r\r\r\r\r\r\r\r\r\r\r")
-      print(aicTab[with(aicTab,order(-caic)), printValues], 
+      print(aicTab[with(aicTab,order(-caic)), c("models",printValues)], 
             row.names = FALSE, digits = digits)
       cat("\n_____________________________________________\n")
       cat("_____________________________________________\n")
