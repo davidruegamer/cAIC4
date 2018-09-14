@@ -380,6 +380,8 @@ stepcAIC <- function(object,
     if(all(sapply(newSetup, is.null)) & direction=="forward")
     {
       
+      cat("\nBest model: ", makePrint(bestModel), ", cAIC:", 
+          minCAIC, "\n_____________________________________________\n")
       # cat("\nModel can not be further extended.")
       return(list(finalModel=object,
                   additionalModels=NULL,
