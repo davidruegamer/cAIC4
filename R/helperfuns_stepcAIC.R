@@ -574,7 +574,9 @@ removeUncor <- function(res)
   
   keep <- sapply(res, function(re){
     
-    length(re) == 1 | (all(unlist(sapply(re, function(x) grepl("(Intercept)", x, fixed=T)))))
+    length(re) == 1 | 
+      (all(unlist(sapply(re, function(x) 
+        any(grepl("(Intercept)", x, fixed=T))))))
     
   })
   return(res[keep])
