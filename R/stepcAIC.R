@@ -177,7 +177,7 @@ stepcAIC <- function(object,
                      calcNonOptimMod = TRUE,
                      bsType = "tp",
                      digits = 2,
-                     printValues = "caic"
+                     printValues = "caic",
                      ...)
 {
 
