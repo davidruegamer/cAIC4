@@ -40,6 +40,7 @@
 #'@param allowUseAcross allow slopes to be used in other grouping variables
 #'@param allowCorrelationSel logical; FALSE does not allow correlations of random effects to be (de-)selected (default)
 #'@param digits number of digits used in printing the results
+#'@param printValues what values of \code{c("cll", "df", "caic")} to print in the table of comparisons
 #'@param ... further options for cAIC call
 #'@section Details: 
 #' 
@@ -176,6 +177,7 @@ stepcAIC <- function(object,
                      calcNonOptimMod = TRUE,
                      bsType = "tp",
                      digits = 2,
+                     printValues = "caic"
                      ...)
 {
 
@@ -395,7 +397,7 @@ stepcAIC <- function(object,
     if(trace) {
       
       cat("\nStep ",stepsInit-steps+1," (",direction,"):  cAIC=", format(round(cAICofMod, 4)), "\n", 
-          "Best model so far: ", makePrint(object), "\n", sep = "")
+          "Best model so far:\n", makePrint(object), "\n", sep = "")
       utils::flush.console()
       
     }
@@ -457,7 +459,8 @@ stepcAIC <- function(object,
     
     if (trace) {
       cat("\r\r\r\r\r\r\r\r\r\r\r\r\r")
-      print(aicTab[with(aicTab,order(-caic)), ], row.names = FALSE, digits = digits)
+      print(aicTab[with(aicTab,order(-caic)), printValues], 
+            row.names = FALSE, digits = digits)
       cat("\n_____________________________________________\n")
       cat("_____________________________________________\n")
       utils::flush.console()
@@ -590,8 +593,8 @@ stepcAIC <- function(object,
     
   }else{
     
-    cat("\nBest model: ", makePrint(bestModel),
-        ", cAIC:",minCAIC,"\n_____________________________________________\n")
+    cat("\nBest model:\n", makePrint(bestModel),",\n"
+        "cAIC:",minCAIC,"\n_____________________________________________\n")
     
   }
   
