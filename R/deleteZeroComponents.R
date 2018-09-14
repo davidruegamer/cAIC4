@@ -64,7 +64,7 @@ function(m) {
   if(exists("gamm4", m@optinfo)) {  # for gamm4 what to exclude from the model
     for(i in 1:length(varBlockMatrices)){
       if(any(diag(varBlockMatrices[[i]]) == 0)) {
-         termWithZero <- cnms[i][which(diag(varBlockMatrices[[i]]) == 0)]
+         termWithZero <- cnms[[i]][which(diag(varBlockMatrices[[i]]) == 0)]
          cat("The term", ifelse(termWithZero=="(Intercept)",names(termWithZero),termWithZero[[1]]), 
           "has zero variance components. \n")
       }
