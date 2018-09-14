@@ -358,21 +358,6 @@ stepcAIC <- function(object,
     # get all components needed for stepping procedure
     comps <- getComponents(object)
 
-    ########################### printing ##############################
-    
-    if(trace) {
-    
-      cat("\nStep ",stepsInit-steps+1," (",direction,"):  cAIC=", format(round(cAICofMod, 4)), "\n", 
-            "Best model so far: ", makePrint(object), "\n", sep = "")
-      utils::flush.console()
-    
-    }
-    
-    ###################################################################
-    
-  
-    steps = steps - 1
-      
     newSetup <- if(direction=="forward"){
       
                        makeForward(comps=comps,
@@ -401,6 +386,21 @@ stepcAIC <- function(object,
       )
       
     }
+    
+    ########################### printing ##############################
+    
+    if(trace) {
+      
+      cat("\nStep ",stepsInit-steps+1," (",direction,"):  cAIC=", format(round(cAICofMod, 4)), "\n", 
+          "Best model so far: ", makePrint(object), "\n", sep = "")
+      utils::flush.console()
+      
+    }
+    
+    ###################################################################
+    
+    steps = steps - 1
+    
     cat("New Candidates:\n\n")
     
     newSetup <- mergeChanges(initialParts=comps, listParts=newSetup)
