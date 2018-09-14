@@ -474,7 +474,7 @@ stepcAIC <- function(object,
     
     caicsres <- attr(tempRes$bestMod, "caic")
     bestModel <- tempRes$bestMod[[which.min(caicsres)]]
-    refit <- tempRes$aicTab[which.min(caicsres),"refit"]
+    
     if(numberOfSavedModels > 1 & length(tempRes$bestMod) > 0){ 
       
       additionalModels <- c(additionalModels, tempRes$bestMod)
@@ -496,6 +496,8 @@ stepcAIC <- function(object,
     }
     indexMinCAIC <- which.min(aicTab$caic)
     minCAIC <- ifelse(length(indexMinCAIC)==0, Inf, aicTab$caic[indexMinCAIC]) 
+    if(minCAIC <= cAICofMod) refit <- tempRes$aicTab[indexMinCAIC,"refit"]
+    
     keepList <- list(random=interpret.random(keep$random),gamPart=NULL)
     if(!is.null(keep$fixed)) keepList$gamPart <- mgcv::interpret.gam(keep$fixed)
 
