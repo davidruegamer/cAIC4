@@ -242,10 +242,10 @@ calculateAllCAICs <- function(newSetup,
 
       if(length(class(m))==1 && class(m)=="list"){ # m is a gamm4 object
         
-        tryCatch(cAIC(m,...)[c("loglikelihood","df","caic")], 
+        tryCatch(cAIC(m,...)[c("loglikelihood","df","caic", "new")], 
                  error = function(e){ 
                    
-                   ret <- c(NA,NA,NA)
+                   ret <- c(NA,NA,NA,NA)
                    attr(ret, "message") <- e
                    return(ret)
                    
@@ -260,7 +260,7 @@ calculateAllCAICs <- function(newSetup,
           
         }
         
-        tryCatch(cAIC(m,...)[c("loglikelihood","df","caic")], 
+        tryCatch(cAIC(m,...)[c("loglikelihood","df","caic","new")], 
                  error = function(e){ 
                    
                    ret <- c(NA,NA,NA)
@@ -289,10 +289,10 @@ calculateAllCAICs <- function(newSetup,
   
   
   aicTab <- as.data.frame(as.matrix(do.call("rbind",listOfCAICs)))
-  colnames(aicTab) <- c("cll","df","caic")
+  colnames(aicTab) <- c("cll","df","caic","refit")
   aicTab$models <- sapply(formulaList, makePrint, initial=FALSE)
   
-  aicTab <- as.data.frame(aicTab[,c("models","cll","df","caic")])
+  aicTab <- as.data.frame(aicTab[,c("models","cll","df","caic","refit")])
   
   minInd <- order(aicTab$caic, decreasing = FALSE)
   bestMod <- NA

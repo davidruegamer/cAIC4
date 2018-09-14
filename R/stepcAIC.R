@@ -40,7 +40,7 @@
 #'@param allowUseAcross allow slopes to be used in other grouping variables
 #'@param allowCorrelationSel logical; FALSE does not allow correlations of random effects to be (de-)selected (default)
 #'@param digits number of digits used in printing the results
-#'@param printValues what values of \code{c("cll", "df", "caic")} to print in the table of comparisons
+#'@param printValues what values of \code{c("cll", "df", "caic", "refit")} to print in the table of comparisons
 #'@param ... further options for cAIC call
 #'@section Details: 
 #' 
@@ -266,15 +266,18 @@ stepcAIC <- function(object,
   if(inherits(object, c("lmerMod", "glmerMod")) | "mer"%in%names(object)){
       
     timeBefore <- Sys.time()
-    cAICofMod <- tryCatch(cAIC(object,...)$caic, error = function(e){
+    cAICofMod <- tryCatch(cAIC(object,...), error = function(e){
       
       cat("\n\nThe cAIC of the initial model can not be calculated. Continue Anyway?")
       readline("If so, type 'y': ")
       
     })
-    if(!is.numeric(cAICofMod) && cAICofMod=="y"){ 
+    if(!is.numeric(cAICofMod$caic) && cAICofMod=="y"){ 
       cAICofMod <- Inf 
-      }else if(!is.numeric(cAICofMod) && cAICofMod!="y") return(NULL)
+      }else if(!is.numeric(cAICofMod$caic) && cAICofMod!="y") return(NULL)
+    
+    refit <- cAICofMod$refit
+    cAICofMod <- cAICofMod$caic
     
     timeForCalc <- Sys.time() - timeBefore
 
@@ -385,6 +388,9 @@ stepcAIC <- function(object,
       cat("\nBest model: ", makePrint(bestModel), ", cAIC:", 
           minCAIC, "\n_____________________________________________\n")
       # cat("\nModel can not be further extended.")
+      
+      if(refit) cat("\nBest model should be refitted.\n")
+      
       return(list(finalModel=object,
                   additionalModels=NULL,
                   bestCAIC=cAICofMod)
@@ -468,6 +474,7 @@ stepcAIC <- function(object,
     
     caicsres <- attr(tempRes$bestMod, "caic")
     bestModel <- tempRes$bestMod[[which.min(caicsres)]]
+    refit <- tempRes$aicTab[which.min(caicsres),"refit"]
     if(numberOfSavedModels > 1 & length(tempRes$bestMod) > 0){ 
       
       additionalModels <- c(additionalModels, tempRes$bestMod)
@@ -593,8 +600,10 @@ stepcAIC <- function(object,
     
   }else{
     
-    cat("\nBest model:\n", makePrint(bestModel),",\n"
-        "cAIC:",minCAIC,"\n_____________________________________________\n")
+    cat("\nBest model:\n", makePrint(bestModel),",\n",
+        "cAIC:", minCAIC, "\n_____________________________________________\n")
+    
+    if(refit) cat("\nBest model should be refitted.\n")
     
   }
   
