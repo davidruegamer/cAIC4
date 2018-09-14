@@ -90,7 +90,7 @@ backwardGam <- function(intGam, keep)
 ### purpose: reduce complexity of model
 
 
-backwardStep <- function(cnms, keep)
+backwardStep <- function(cnms, keep, allowCorrelationSel)
 {
   
   if( (sum(sapply(cnms,length))==1# & !isGam
@@ -194,7 +194,7 @@ backwardStep <- function(cnms, keep)
   #                           cnms[order(names(cnms))]))
   #   ))
   #   ]
-  
+  if(!allowCorrelationSel) listOfAllCombs <- removeUncor(listOfAllCombs)
   
   return(listOfAllCombs)
 }

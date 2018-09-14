@@ -372,7 +372,8 @@ stepcAIC <- function(object,
     }else{
       
       makeBackward(comps=comps,
-                   keep=keep)
+                   keep=keep,
+                   allowCorrelationSel=allowCorrelationSel)
       
     }
     
