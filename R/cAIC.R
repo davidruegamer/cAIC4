@@ -202,7 +202,7 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
     p <- object$rank
     sigma <- ifelse("glm" %in% class(object),
                     sqrt(summary(object)$dispersion),
-                    summary(object)$sigma * n / (n-p))  
+                    summary(object)$sigma * sqrt((n-p) / n))  
     
     switch(family(object)$family, binomial = {
       cll <- sum(dbinom(x = y, size = length(unique(y)) - 1, prob = mu, log = TRUE))
