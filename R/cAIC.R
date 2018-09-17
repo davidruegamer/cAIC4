@@ -215,11 +215,13 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
       cll <- NA
     })
     
-    return(list(loglikelihood = as.numeric(cll), 
+    retobj <-  list(loglikelihood = as.numeric(cll), 
                 df            = object$rank, 
                 reducedModel  = NA, 
                 new           = NA, 
-                caic          = -2 * as.numeric(cll) + 2 * (object$rank)))
+                caic          = -2 * as.numeric(cll) + 2 * (object$rank))
+    class(retobj) <- c("cAIC")
+    return(retobj)
   }
   
   if (!inherits(object, c("lmerMod", "glmerMod"))) {
