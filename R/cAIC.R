@@ -219,7 +219,7 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
                 df            = object$rank, 
                 reducedModel  = NA, 
                 new           = FALSE, 
-                caic          = -2 * as.numeric(cll) + 2 * (object$rank))
+                caic          = -2 * as.numeric(cll) + 2 * (object$rank + 1))
     class(retobj) <- c("cAIC")
     return(retobj)
   }
