@@ -526,7 +526,8 @@ stepcAIC <- function(object,
       
     }else if(
       
-        ( minCAIC <= cAICofMod & !dirWasBoth & direction=="backward" & any(class(bestModel)%in%c("glm","lm")) ) 
+        ( minCAIC <= cAICofMod & !dirWasBoth & direction=="backward" & 
+          any(class(bestModel)%in%c("glm","lm")) ) 
         # if backward step procedure reached (g)lm
       
       |
@@ -560,6 +561,15 @@ stepcAIC <- function(object,
         if(dirWasBoth)  direction <- ifelse( direction=="forward", "backward", "forward" )
         
       }
+      
+    }else if( minCAIC <= cAICofMod & equalToLastStep & improvementInBoth){
+     
+      # there is another best model
+      cAICofMod <- minCAIC
+      object <- bestModel
+      improvementInBoth <- TRUE
+      if(dirWasBoth)  direction <- ifelse( direction=="forward", "backward", "forward" )
+       
       
     }else if( minCAIC > cAICofMod & ( steps==0 | length(newSetup)==1 ) & !dirWasBoth ){
         
