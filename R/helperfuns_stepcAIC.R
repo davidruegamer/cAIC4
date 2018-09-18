@@ -557,6 +557,22 @@ forwardStep <- function(cnms,
   
   # also allow for correlation parameter to be selected?
   if(!allowCorrelationSel) allCombs <- removeUncor(allCombs)
+  
+  # only allow for REs, which are one variable larger than the current one
+  allCombs <- allCombs[!sapply(allCombs, function(r){
+    
+    any(sapply(1:length(r), function(i){
+      
+      if(!names(r)[i] %in% names(cnms)) FALSE else{
+        
+        length(r[[i]]) > length(cnms[[names(r)[i]]]) + 1
+        
+      }
+      
+    }))
+    
+  })]
+  
   if(length(allCombs)==0) return(NULL)
   
   return(#list(randomPart=
