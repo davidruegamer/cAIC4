@@ -566,7 +566,11 @@ forwardStep <- function(cnms,
     
     any(sapply(1:length(r), function(i){
       
-      if(!names(r)[i] %in% names(cnms)) FALSE else{
+      if(!names(r)[i] %in% names(cnms)){
+        
+        length(r[[i]]) > 1
+        
+      }else{
         
         length(r[[i]]) > length(cnms[[names(r)[i]]]) + 1
         
@@ -591,28 +595,43 @@ forwardStep <- function(cnms,
 removeUncor <- function(res)
 {
   
-  keep <- sapply(res, function(re){
-    
-    length(re) == 1 | 
-      (all(unlist(sapply(re, function(x) 
-        any(grepl("(Intercept)", x, fixed=T))))))
-    
-  })
+  # keep <- sapply(res, function(re){
+  #   
+  #   length(re) == 1 | 
+  #     (all(unlist(sapply(re, function(x) 
+  #       any(grepl("(Intercept)", x, fixed=T))))))
+  #   
+  # })
   
-  res <- res[keep]
-  # check for several random intercepts with different slopes
   drop <- sapply(res, function(re){
     
     reL <- split(re, names(re))
     dropPerName <- sapply(reL, function(rel)
     {
-    if(length(rel) > 1){ 
-      ints <- sapply(rel, function(x) any(grepl("(Intercept)", x, fixed=T)))
-    }else FALSE
+      if(length(rel) > 1){ 
+        ints <- sapply(rel, function(x) any(grepl("(Intercept)", x, fixed=T)))
+        noints <- sapply(rel, function(x) any(!grepl("(Intercept)", x, fixed=T)))
+        return(ints & noints)
+      }else return(FALSE)
     })
     any(dropPerName)
     
   })
+  
+  # res <- res[keep]
+  # check for several random intercepts with different slopes
+  # drop <- sapply(res, function(re){
+  #   
+  #   reL <- split(re, names(re))
+  #   dropPerName <- sapply(reL, function(rel)
+  #   {
+  #   if(length(rel) > 1){ 
+  #     ints <- sapply(rel, function(x) any(grepl("(Intercept)", x, fixed=T)))
+  #   }else FALSE
+  #   })
+  #   any(dropPerName)
+  #   
+  # })
   return(res[!drop])
   
 }
