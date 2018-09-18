@@ -249,7 +249,8 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
     new      <- FALSE
   }
   
-  cll  <- getcondLL(object)
+  if(new) cll <- getcondLL(newModel) else
+    cll  <- getcondLL(object)
   caic <- - 2 * cll + 2 * bc
   retobj <- list(loglikelihood = cll, 
                  df            = bc, 
