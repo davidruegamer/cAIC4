@@ -18,6 +18,7 @@ NULL
 #' @docType data
 #' @references Kandala, N. B., Lang, S., Klasen, S., Fahrmeir, L. (2001): 
 #' Semiparametric Analysis of the Socio-Demographic and Spatial 
-#' Determinants of Undernutrition in Two African Countries. Research in Official Statistics, 1, 81–100.
+#' Determinants of Undernutrition in Two African Countries. 
+#' Research in Official Statistics, 1, 81-100.
 #' @keywords data
 NULL

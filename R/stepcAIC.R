@@ -567,7 +567,7 @@ stepcAIC <- function(object,
       # there is another best model
       cAICofMod <- minCAIC
       object <- bestModel
-      improvementInBoth <- TRUE
+      improvementInBoth <- FALSE
       if(dirWasBoth)  direction <- ifelse( direction=="forward", "backward", "forward" )
        
       

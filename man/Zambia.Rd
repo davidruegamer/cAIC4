@@ -13,6 +13,7 @@ available at \url{http://www.uni-goettingen.de/de/551625.html}.
 \references{
 Kandala, N. B., Lang, S., Klasen, S., Fahrmeir, L. (2001): 
 Semiparametric Analysis of the Socio-Demographic and Spatial 
-Determinants of Undernutrition in Two African Countries. Research in Official Statistics, 1, 81–100.
+Determinants of Undernutrition in Two African Countries. 
+Research in Official Statistics, 1, 81-100.
 }
 \keyword{data}
