@@ -498,7 +498,7 @@ stepcAIC <- function(object,
     }
     indexMinCAIC <- which.min(aicTab$caic)
     minCAIC <- ifelse(length(indexMinCAIC)==0, Inf, aicTab$caic[indexMinCAIC]) 
-    if(minCAIC <= cAICofMod) refit <- tempRes$aicTab[indexMinCAIC,"refit"]
+    if(minCAIC < cAICofMod) refit <- tempRes$aicTab[indexMinCAIC,"refit"]
     
     keepList <- list(random=interpret.random(keep$random),gamPart=NULL)
     if(!is.null(keep$fixed)) keepList$gamPart <- mgcv::interpret.gam(keep$fixed)
@@ -562,7 +562,7 @@ stepcAIC <- function(object,
         
       }
       
-    }else if( minCAIC <= cAICofMod & equalToLastStep & improvementInBoth){
+    }else if( minCAIC <= cAICofMod & equalToLastStep & improvementInBoth ){
      
       # there is another best model
       cAICofMod <- minCAIC
@@ -597,7 +597,7 @@ stepcAIC <- function(object,
       # but the last step did not yield better performance or the last step had an equal cAIC
       
       stepsOver <- TRUE
-      bestModel <- object
+      if(refit==0) bestModel <- object
       minCAIC <- cAICofMod
       
     }
