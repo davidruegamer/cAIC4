@@ -617,7 +617,7 @@ stepcAIC <- function(object,
     cat("\nBest model:\n", makePrint(bestModel),",\n",
         "cAIC:", minCAIC, "\n_____________________________________________\n")
     
-    if(refit==1) cat("\nBest model should be refitted due to zero variance components.\n")
+    #if(refit==1) cat("\nBest model should be refitted due to zero variance components.\n")
     
   }
   
