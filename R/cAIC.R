@@ -202,7 +202,7 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
     p <- object$rank
     sigma <- ifelse("glm" %in% class(object),
                     sqrt(summary(object)$dispersion),
-                    summary(object)$sigma * n / (n-p))  
+                    summary(object)$sigma * sqrt((n-p) / n))  
     
     switch(family(object)$family, binomial = {
       cll <- sum(dbinom(x = y, size = length(unique(y)) - 1, prob = mu, log = TRUE))
@@ -215,11 +215,13 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
       cll <- NA
     })
     
-    return(list(loglikelihood = as.numeric(cll), 
-                df            = object$rank, 
+    retobj <-  list(loglikelihood = as.numeric(cll), 
+                df            = object$rank + 1, 
                 reducedModel  = NA, 
-                new           = NA, 
-                caic          = -2 * as.numeric(cll) + 2 * (object$rank)))
+                new           = FALSE, 
+                caic          = -2 * as.numeric(cll) + 2 * (object$rank + 1))
+    class(retobj) <- c("cAIC")
+    return(retobj)
   }
   
   if (!inherits(object, c("lmerMod", "glmerMod"))) {
