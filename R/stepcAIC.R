@@ -277,6 +277,8 @@ stepcAIC <- function(object,
       }else if(!is.numeric(cAICofMod$caic) && cAICofMod!="y") return(NULL)
     
     refit <- cAICofMod$refit
+    # if(refit==1 & inherits(object, c("lmerMod", "glmerMod")))
+    #   object <- cAICofMod$reducedModel
     cAICofMod <- cAICofMod$caic
     
     timeForCalc <- Sys.time() - timeBefore
