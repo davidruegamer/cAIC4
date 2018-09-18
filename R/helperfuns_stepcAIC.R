@@ -579,7 +579,16 @@ removeUncor <- function(res)
         any(grepl("(Intercept)", x, fixed=T))))))
     
   })
-  return(res[keep])
+  res <- res[keep]
+  # check for several random intercepts with different slopes
+  drop <- sapply(res, function(re){
+    
+    if(length(re) > 1) 
+      all(sapply(re, function(x) any(grepl("(Intercept)", x, fixed=T))))
+    else FALSE
+    
+  })
+  return(res[!drop])
   
 }
 
