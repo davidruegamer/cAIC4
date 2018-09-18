@@ -583,9 +583,14 @@ removeUncor <- function(res)
   # check for several random intercepts with different slopes
   drop <- sapply(res, function(re){
     
-    if(length(re) > 1) 
-      all(sapply(re, function(x) any(grepl("(Intercept)", x, fixed=T))))
-    else FALSE
+    reL <- split(re, names(re))
+    dropPerName <- sapply(reL, function(rel)
+    {
+    if(length(rel) > 1){ 
+      ints <- sapply(rel, function(x) any(grepl("(Intercept)", x, fixed=T)))
+    }else FALSE
+    })
+    any(dropPerName)
     
   })
   return(res[!drop])
