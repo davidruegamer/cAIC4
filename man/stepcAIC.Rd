@@ -9,51 +9,60 @@ fitted via gamm4() with the smallest cAIC.}
 stepcAIC(object, numberOfSavedModels = 1, groupCandidates = NULL,
   slopeCandidates = NULL, fixEfCandidates = NULL,
   numberOfPermissibleSlopes = 2, allowUseAcross = FALSE,
-  direction = "backward", trace = FALSE, steps = 50, keep = NULL,
-  numCores = 1, data = NULL, returnResult = TRUE,
-  calcNonOptimMod = TRUE, bsType = "tp", ...)
+  allowCorrelationSel = FALSE, direction = "backward", trace = FALSE,
+  steps = 50, keep = NULL, numCores = 1, data = NULL,
+  returnResult = TRUE, calcNonOptimMod = TRUE, bsType = "tp",
+  digits = 2, printValues = "caic", ...)
 }
 \arguments{
-\item{object}{fit by \code{[lme4]{lmer}}, \code{[lme4]{glmer}} or \code{[gamm4]{gamm4}} 
-for which the stepwise procedure is to be computed}
+\item{object}{object returned by \code{[lme4]{lmer}}, \code{[lme4]{glmer}} or \code{[gamm4]{gamm4}}}
 
-\item{numberOfSavedModels}{integer defining how many additional models should be saved
+\item{numberOfSavedModels}{integer defining how many additional models to be saved
 during the step procedure. If \code{1} (DEFAULT), only the best model is returned. 
 Any number \code{k} greater \code{1} will return the \code{k} best models. 
 If \code{0}, all models will be returned (not recommended for larger applications).}
 
-\item{groupCandidates}{see slopeCandidates. Group nesting must be initiated manually, i.e. by 
+\item{groupCandidates}{character vector containing names of possible grouping variables for 
+new random effects. Group nesting must be specified manually, i.e. by 
 listing up the string of the groups in the manner of lme4. For example \code{groupCandidates = c("a", "b", "a/b")}.}
 
-\item{slopeCandidates}{character vectors containing names of possible new random effect groups / slopes}
+\item{slopeCandidates}{character vector containing names of possible new random effects}
 
 \item{fixEfCandidates}{character vector containing names of possible (non-)linear fixed effects in the GAMM; 
 NULL for the (g)lmer-use case}
 
-\item{numberOfPermissibleSlopes}{how much slopes are permissible for one group RE}
+\item{numberOfPermissibleSlopes}{how much slopes are permissible for one grouping variable}
 
 \item{allowUseAcross}{allow slopes to be used in other grouping variables}
 
-\item{direction}{character vector indicating the direction in c("both","backward","forward")}
+\item{allowCorrelationSel}{logical; FALSE does not allow correlations of random effects to be (de-)selected (default)}
 
-\item{trace}{logical; should information ne printed during the running of stepcAIC?}
+\item{direction}{character vector indicating the direction ("both","backward","forward")}
+
+\item{trace}{logical; should information be printed during the execution of stepcAIC?}
 
 \item{steps}{maximum number of steps to be considered}
 
 \item{keep}{list($fixed,$random) of formulae; which splines / fixed (fixed) or random effects (random) to be 
-kept during selection must be included in the original model}
+kept during selection; specified terms must be included in the original model}
 
-\item{numCores}{the number of cores to be used in calculations; this is done by using \code{parallel::mclapply}}
+\item{numCores}{the number of cores to be used in calculations; 
+parallelization is done by using \code{parallel::mclapply}}
 
-\item{data}{data.frame, from which the new REs are to be taken}
+\item{data}{data.frame supplying the data used in \code{object}. \code{data} must also include 
+variables, which are considered for forward updates.}
 
 \item{returnResult}{logical; whether to return the result (best model and corresponding cAIC)}
 
 \item{calcNonOptimMod}{logical; if FALSE, models which failed to converge are not considered for cAIC calculation}
 
-\item{bsType}{type of splines to consider in forward gamm4 steps}
+\item{bsType}{type of splines to be used in forward gamm4 steps}
 
-\item{...}{options for cAIC call}
+\item{digits}{number of digits used in printing the results}
+
+\item{printValues}{what values of \code{c("cll", "df", "caic", "refit")} to print in the table of comparisons}
+
+\item{...}{further options for cAIC call}
 }
 \value{
 if \code{returnResult} is \code{TRUE}, a list with the best model \code{finalModel},
@@ -67,18 +76,15 @@ is also \code{FALSE}, the function call may not be meaningful
 The step function searches the space of possible models in a greedy manner,
 where the direction of the search is specified by the argument
 direction. If direction = "forward" / = "backward", 
-the function adds / exludes random effects until the cAIC can't be improved.
+the function adds / exludes random effects until the cAIC can't be improved further.
 In the case of forward-selection, either a new grouping structure, new
-slopes for the random effects or new \code{s()}-terms must be supplied to the function call.
+slopes for the random effects or new covariates modeled nonparameterically 
+must be supplied to the function call.
 If direction = "both", the greedy search is alternating between forward
 and backward steps, where the direction is changed after each step
 }
 \section{Details}{
  
-For use with "gamm4-objects": 
-groupCandidates are interpreted as covariables and fitted as splines.
-If groupCandidates does include characters such as "s(..,bs='tp')" 
-the respective spline is included in the forward stepwise procedure.
 
 Note that the method can not handle mixed models with uncorrelated random effects and does NOT
 reduce models to such, i.e., the model with \code{(1 + s | g)} is either reduced to
