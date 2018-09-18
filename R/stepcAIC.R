@@ -276,7 +276,7 @@ stepcAIC <- function(object,
       cAICofMod <- Inf 
       }else if(!is.numeric(cAICofMod$caic) && cAICofMod!="y") return(NULL)
     
-    refit <- cAICofMod$refit
+    refit <- cAICofMod$new
     # if(refit==1 & inherits(object, c("lmerMod", "glmerMod")))
     #   object <- cAICofMod$reducedModel
     cAICofMod <- cAICofMod$caic
