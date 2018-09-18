@@ -546,9 +546,9 @@ forwardStep <- function(cnms,
   
   allCombs <- lapply(X=1:length(reList),function(i)append(cnms,reList[i]))
   allCombs <- lapply(allCombs,checkREs)
-  if(!allowCorrelationSel) allCombs <- allCombs[sapply(allCombs,
-                              sapply(allCombs,function(x) 
-                                length(unique(names(x))) != length(x)))]
+  if(!allowCorrelationSel) allCombs <- allCombs[
+    sapply(allCombs,function(x) 
+      length(unique(names(x))) == length(x))]
   allCombs <- allCombs[!duplicated(allCombs)]
   allCombs <- allCombs[!(sapply(allCombs,function(x)all.equal(x,lapply(cnms,sort)))=="TRUE")]
   
