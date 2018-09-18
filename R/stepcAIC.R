@@ -388,7 +388,7 @@ stepcAIC <- function(object,
     {
       
       cat("\nBest model: ", makePrint(object), "\ncAIC:", 
-          minCAIC, "\n_____________________________________________\n")
+          cAICofMod, "\n_____________________________________________\n")
       # cat("\nModel can not be further extended.")
       
       if(refit==1) cat("\nBest model should be refitted due to zero variance components.\n")
