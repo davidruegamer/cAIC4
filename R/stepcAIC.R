@@ -387,12 +387,16 @@ stepcAIC <- function(object,
     if(all(sapply(newSetup, is.null)) & direction=="forward")
     {
       
-      cat("\nBest model: ", makePrint(object), "\ncAIC:", 
-          cAICofMod, "\n_____________________________________________\n")
-      # cat("\nModel can not be further extended.")
+      if(trace){
       
-      if(refit==1) cat("\nBest model should be refitted due to zero variance components.\n")
+        cat("\nBest model: ", makePrint(object), "\ncAIC:", 
+            cAICofMod, "\n_____________________________________________\n")
+        # cat("\nModel can not be further extended.")
+        
+        if(refit==1) cat("\nBest model should be refitted due to zero variance components.\n")
       
+      }
+        
       return(list(finalModel=object,
                   additionalModels=NULL,
                   bestCAIC=cAICofMod)
@@ -414,7 +418,7 @@ stepcAIC <- function(object,
     
     steps = steps - 1
     
-    cat("New Candidates:\n\n")
+    if(trace) cat("New Candidates:\n\n")
     
     newSetup <- mergeChanges(initialParts=comps, listParts=newSetup)
     
@@ -610,12 +614,12 @@ stepcAIC <- function(object,
 
   if(minCAIC==Inf){
     
-    cat("\nNo best model found.")
+    if(trace) cat("\nNo best model found.")
     
   }else{
     
-    cat("\nBest model:\n", makePrint(bestModel),",\n",
-        "cAIC:", minCAIC, "\n_____________________________________________\n")
+    if(trace) cat("\nBest model:\n", makePrint(bestModel),",\n",
+                  "cAIC:", minCAIC, "\n_____________________________________________\n")
     
     #if(refit==1) cat("\nBest model should be refitted due to zero variance components.\n")
     
