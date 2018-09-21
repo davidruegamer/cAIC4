@@ -468,7 +468,7 @@ forwardGam <- function(intGam, fixEfCandidates=NULL, bsType="ps", keep)
   nonS <- vars[!sTerm]
   haveS <- vars[sTerm] # should be at least of length 1 , else a (g)lmer should be fitted
   sLabs <- makeS(intGam)
-  keepNonS <- vars[!(vars %in% fixEfCandidates)]
+  keepNonS <- vars[!(vars %in% fixEfCandidates) & !(vars %in% haveS)]
   
   newX <- fixEfCandidates[which(!fixEfCandidates %in% vars)]
   
