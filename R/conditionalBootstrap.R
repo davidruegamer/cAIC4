@@ -13,7 +13,12 @@ function(object, BootStrRep) {
   #            linear mixed model.
   #  
 	dataMatrix    <- simulate(object, nsim = BootStrRep, use.u = TRUE)
-  workingEta    <- apply(dataMatrix, 2, function(x) predict(refit(object, newresp = x)))
+  workingEta    <- apply(dataMatrix, 2, function(x){ 
+    
+    if(is.character(x)) x <- as.factor(x)
+    predict(refit(object, newresp = x))
+  
+  })
 	dataMatrix    <- dataMatrix - rowMeans(dataMatrix)
 	bootBC        <- sum(workingEta * dataMatrix) / ((BootStrRep - 1) * sigma(object)^2)
 	return(bootBC)
