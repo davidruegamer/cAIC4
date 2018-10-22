@@ -19,6 +19,8 @@ function(object, BootStrRep) {
     predict(refit(object, newresp = x))
   
   })
+  if(is.factor(dataMatrix[[1]]))
+    dataMatrix <- sapply(dataMatrix, as.numeric) - 1
 	dataMatrix    <- dataMatrix - rowMeans(dataMatrix)
 	bootBC        <- sum(workingEta * dataMatrix) / ((BootStrRep - 1) * sigma(object)^2)
 	return(bootBC)
