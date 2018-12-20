@@ -66,13 +66,12 @@ function(m) {
       if(any(diag(varBlockMatrices[[i]]) == 0)) {
          termWithZero <- cnms[[i]][which(diag(varBlockMatrices[[i]]) == 0)]
          cat("The term", ifelse(termWithZero=="(Intercept)",names(termWithZero),termWithZero[[1]]), 
-          "has zero variance components. \n")
+             "has zero variance components. \n")
+         return(deleteZeroComponents(refitModelWithLinearTerm(m, termWithZero)))
       }
     }
-    stop("After removing the terms with zero variance components and refitting 
-          the model cAIC can be called again.", call. = FALSE)
   }
-
+  
   # if(is.null(m@optinfo$conv$lme4$code) || 
   #    m@optinfo$conv$lme4$code == -1) {
     for(i in 1:length(varBlockMatrices)){
