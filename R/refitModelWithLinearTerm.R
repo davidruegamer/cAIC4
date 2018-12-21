@@ -7,10 +7,13 @@ refitModelWithLinearTerm <- function(m, zeroterm)
   # TODO: add check for correlated errors
   if(m@optinfo$gammnulldim[zeroterm]==1){
     linTerm <- gsub("s\\((.*)\\)","\\1", zeroterm)
-    form <- gsub(paste0("s\\(", linTerm, ".*\\)"), linTerm, as.character(m@optinfo$gammform)[3])
+    form <- gsub(paste0("s\\(", linTerm, ", bs \\= .{0,6}\\)"), linTerm, 
+                 as.character(m@optinfo$gammform)[3])
     cat("Refitting model with zero variance term and null space dimension 1.")
-    object <- gamm4(reformulate(form, as.character(m@optinfo$gammform)[2]),
-                    data = m@optinfo$gammdata)
+    if(!grepl("s\\(", form)) object <- lm(reformulate(form, as.character(m@optinfo$gammform)[2]),
+                                          data = m@optinfo$gammdata)
+      else object <- gamm4(reformulate(form, as.character(m@optinfo$gammform)[2]),
+                           data = m@optinfo$gammdata)
   }else{
     
     stop("After removing the terms with zero variance components and refitting 
