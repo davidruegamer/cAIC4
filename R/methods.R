@@ -4,7 +4,7 @@
 #' @param digits number of digits to print
 #' @param ... further arguments passed to 
 #' generic print function (not in use).
-#' #' @export
+#' @export
 print.cAIC <- function(x, ..., digits = 2){
   
   prdf <- data.frame(
