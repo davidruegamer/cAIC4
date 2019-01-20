@@ -382,7 +382,8 @@ stepcAIC <- function(object,
       
       makeBackward(comps=comps,
                    keep=keep,
-                   allowCorrelationSel=allowCorrelationSel)
+                   allowCorrelationSel=allowCorrelationSel,
+                   allowNoIntercept=allowNoIntercept)
       
     }
     
