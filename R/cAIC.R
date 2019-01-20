@@ -185,17 +185,8 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
   #            model was fitted; the conditional Akaike information, caic.
   #
   if (any(names(object) == "mer")) {
-    gammform <- object$gam$formula
-    gammnulldim <- sapply(object$gam$smooth, "[[", "null.space.dim")
-    if(any(gammnulldim==1)){
-      gammdata <- object$gam$model
-    }
-    names(gammnulldim) <- sapply(object$gam$smooth, "[[", "label")
     object <- object$mer
     object@optinfo$gamm4 <- TRUE    # add indicator for gamm4
-    object@optinfo$gammform <- gammform
-    object@optinfo$gammnulldim <- gammnulldim
-    object@optinfo$gammdata <- gammdata
   }
   
   if (any(class(object) %in% c("glm","lm"))) {
