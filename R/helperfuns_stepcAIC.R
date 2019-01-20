@@ -90,7 +90,7 @@ backwardGam <- function(intGam, keep)
 ### purpose: reduce complexity of model
 
 
-backwardStep <- function(cnms, keep, allowCorrelationSel)
+backwardStep <- function(cnms, keep, allowCorrelationSel, allowNoIntercept)
 {
   
   if( (sum(sapply(cnms,length))==1# & !isGam
@@ -195,6 +195,7 @@ backwardStep <- function(cnms, keep, allowCorrelationSel)
   #   ))
   #   ]
   if(!allowCorrelationSel) listOfAllCombs <- removeUncor(listOfAllCombs)
+  if(!allowNoIntercept) listOfAllCombs <- removeNoInt(listOfAllCombs)
   
   return(listOfAllCombs)
 }
@@ -636,6 +637,31 @@ removeUncor <- function(res)
   
 }
 
+### removeNoInt function
+### purpose:  removes random effects with no random intercept
+
+removeNoInt <- function(res)
+{
+  
+  res <- sapply(res, function(re){
+    
+    # split
+    nre = names(re)
+    reL <- split(re, nre)
+    # check and select
+    nodrop <- sapply(reL, function(rel) grepl("(Intercept)",rel,fixed=TRUE))
+    reL <- unlist(reL[nodrop], recursive = FALSE)
+    names(reL) <- nre[nodrop]
+    # drop or combine
+    if(length(reL)==0) return(NULL) else
+      return(reL)
+    
+  })
+  
+  return(res)
+  
+}
+
 
 #######################################################################################
 ### getComponents function
@@ -772,7 +798,7 @@ interpret.random <- function(frla)
 ### makeBackward function
 ### purpose:  
 
-makeBackward <- function(comps, keep, allowCorrelationSel)
+makeBackward <- function(comps, keep, allowCorrelationSel, allowNoIntercept)
 {
   
   # comps   list created by getComponents
@@ -781,7 +807,8 @@ makeBackward <- function(comps, keep, allowCorrelationSel)
   
   returnListRE <- if(!is.null(comps$random)) 
     backwardStep(comps$random, keep=keep$random, 
-                 allowCorrelationSel=allowCorrelationSel)
+                 allowCorrelationSel=allowCorrelationSel,
+                 allowNoIntercept=allowNoIntercept)
   
   returnListS <- if(!is.null(comps$gamPart) && comps$gamPart$fake.formula[[3]]!=1) 
     backwardGam(comps$gamPart, keep=keep$fixed)

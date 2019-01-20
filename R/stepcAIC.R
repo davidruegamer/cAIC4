@@ -39,6 +39,7 @@
 #'@param bsType type of splines to be used in forward gamm4 steps
 #'@param allowUseAcross allow slopes to be used in other grouping variables
 #'@param allowCorrelationSel logical; FALSE does not allow correlations of random effects to be (de-)selected (default)
+#'@param allowNoIntercept logical; FALSE does not allow random effects without random intercept
 #'@param digits number of digits used in printing the results
 #'@param printValues what values of \code{c("cll", "df", "caic", "refit")} to print in the table of comparisons
 #'@param ... further options for cAIC call
@@ -167,6 +168,7 @@ stepcAIC <- function(object,
                      numberOfPermissibleSlopes = 2,
                      allowUseAcross = FALSE,
                      allowCorrelationSel = FALSE,
+                     allowNoIntercept = FALSE,
                      direction = "backward",
                      trace = FALSE,
                      steps = 50, 
