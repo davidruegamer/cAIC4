@@ -6,6 +6,7 @@ importFrom("stats", sigma)
 } else {
 importFrom("lme4", sigma)
 }
+S3method(print,cAIC)
 export(anocAIC)
 export(cAIC)
 export(deleteZeroComponents)

@@ -10,8 +10,7 @@
 \item{x}{a cAIC object}
 
 \item{...}{further arguments passed to 
-generic print function (not in use).
-#' @export}
+generic print function (not in use).}
 
 \item{digits}{number of digits to print}
 }

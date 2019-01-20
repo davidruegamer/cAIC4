@@ -9,10 +9,11 @@ fitted via gamm4() with the smallest cAIC.}
 stepcAIC(object, numberOfSavedModels = 1, groupCandidates = NULL,
   slopeCandidates = NULL, fixEfCandidates = NULL,
   numberOfPermissibleSlopes = 2, allowUseAcross = FALSE,
-  allowCorrelationSel = FALSE, direction = "backward", trace = FALSE,
-  steps = 50, keep = NULL, numCores = 1, data = NULL,
-  returnResult = TRUE, calcNonOptimMod = TRUE, bsType = "tp",
-  digits = 2, printValues = "caic", ...)
+  allowCorrelationSel = FALSE, allowNoIntercept = FALSE,
+  direction = "backward", trace = FALSE, steps = 50, keep = NULL,
+  numCores = 1, data = NULL, returnResult = TRUE,
+  calcNonOptimMod = TRUE, bsType = "tp", digits = 2,
+  printValues = "caic", ...)
 }
 \arguments{
 \item{object}{object returned by \code{[lme4]{lmer}}, \code{[lme4]{glmer}} or \code{[gamm4]{gamm4}}}
@@ -36,6 +37,8 @@ NULL for the (g)lmer-use case}
 \item{allowUseAcross}{allow slopes to be used in other grouping variables}
 
 \item{allowCorrelationSel}{logical; FALSE does not allow correlations of random effects to be (de-)selected (default)}
+
+\item{allowNoIntercept}{logical; FALSE does not allow random effects without random intercept}
 
 \item{direction}{character vector indicating the direction ("both","backward","forward")}
 
