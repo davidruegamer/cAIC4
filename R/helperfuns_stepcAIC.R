@@ -196,7 +196,7 @@ backwardStep <- function(cnms, keep, allowCorrelationSel, allowNoIntercept)
   #   ]
   if(!allowCorrelationSel) listOfAllCombs <- removeUncor(listOfAllCombs)
   if(!allowNoIntercept) listOfAllCombs <- removeNoInt(listOfAllCombs)
-  
+  names(listOfAllCombs) <- names(newCnms)
   return(listOfAllCombs)
 }
 
@@ -643,22 +643,22 @@ removeUncor <- function(res)
 removeNoInt <- function(res)
 {
   
-  res <- sapply(res, function(re){
+  ind <- sapply(res, function(re) any(grepl("(Intercept)", unlist(re))))
     
-    # split
-    nre = names(re)
-    reL <- split(re, nre)
-    # check and select
-    nodrop <- sapply(reL, function(rel) grepl("(Intercept)",rel,fixed=TRUE))
-    reL <- unlist(reL[nodrop], recursive = FALSE)
-    names(reL) <- nre[nodrop]
-    # drop or combine
-    if(length(reL)==0) return(NULL) else
-      return(reL)
-    
-  })
-  
-  return(res)
+  #   # split
+  #   nre = names(re)
+  #   reL <- split(re, nre)
+  #   # check and select
+  #   nodrop <- sapply(reL, function(rel) grepl("(Intercept)",rel,fixed=TRUE))
+  #   reL <- unlist(reL[nodrop], recursive = FALSE)
+  #   names(reL) <- nre[nodrop]
+  #   # drop or combine
+  #   if(length(reL)==0) return(NULL) else
+  #     return(reL)
+  #   
+  # })
+  # 
+  return(res[ind])
   
 }
 
