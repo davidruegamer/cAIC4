@@ -15,7 +15,7 @@ biasCorrectionBernoulli <- function(object){
   muHat   	 <- zeroLessModel@resp$mu
   workingEta <- numeric(length(muHat))
   for(i in 1:length(muHat)){
-  	workingData 	<- zeroLessModel$y
+  	workingData 	<- zeroLessModel@resp$y
   	workingData[i] 	<- 1 - workingData[i]
   	workingModel 	<- refit(zeroLessModel, nresp = workingData)
   	workingEta[i] 	<- log(workingModel@resp$mu[i] / (1 - workingModel@resp$mu[i])) - log(muHat[i] / (1 - muHat[i]))
