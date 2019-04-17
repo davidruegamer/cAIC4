@@ -18,10 +18,7 @@ function(mer, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRUE) 
   if (is.null(method)) {
     switch(family(mer)$family,
           binomial = {
-            if (is.null(B)) {
-              B <- max(length(getME(mer, "y")), 100)
-            }
-            bc <- conditionalBootstrap(mer, B)
+            bc <- biasCorrectionBernoulli(mer)
           },
           poisson = {
             bc <- biasCorrectionPoisson(mer)
