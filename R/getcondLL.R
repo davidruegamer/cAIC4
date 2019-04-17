@@ -4,6 +4,7 @@
 #' \code{\link[lme4]{lmer}} or \code{\link[lme4]{glmer}} of the 'lme4' package.
 #' 
 #' @return conditional log-likelihood value
+#' @importFrom stats weights
 #' @export
 getcondLL <-
 function(object) {
