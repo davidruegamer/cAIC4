@@ -219,8 +219,6 @@ stepcAIC <- function(object,
   #     stop(paste0("Interaction of ", sepIc, " not meaningful."))
   # }
   
-  
-  
   existsNonS <- FALSE
   
   ### check if gamm4-call
@@ -234,6 +232,15 @@ stepcAIC <- function(object,
     existsNonS <- length(ig$smooth.spec)<length(ig$fake.names)
     
     if( !is.null(fixEfCandidates) ) stopifnot( fixEfCandidates %in% possible_predictors )
+    
+    ### check for dot in formula
+    
+    if(grepl("\\s{1}\\.{1}\\s{1}", as.character(object$mer@call)[2]))
+    {
+      
+      stop("Abbrevation of variable names via dot in formula is not supported.")
+      
+    }
         
   }else{
     
@@ -241,6 +248,17 @@ stepcAIC <- function(object,
                                                  ( unlist(strsplit(groupCandidates, ":")) %in% 
                                                      possible_predictors ) )
     if( !is.null(slopeCandidates) ) stopifnot( slopeCandidates %in% possible_predictors )
+    
+    ### check for dot in formula
+    
+    if(grepl("\\s{1}\\.{1}\\s{1}", as.character(object@call)[2])){
+      
+      fullform <- terms(formula(object), data=object@frame)
+      fullform <- as.formula(Reduce(paste, deparse(fullform)))
+      object <- update(object, formula = fullform)
+      
+      
+    }
     
   }
   

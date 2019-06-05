@@ -870,7 +870,8 @@ makeFormula <- function(setup, modelInit)
         
       }else{
         
-        nobarsF <- attr(terms(nobars(formula(modelInit))), "term.labels")
+        nobarsF <- attr(terms.formula(nobars(formula(modelInit)),
+                              data = modelInit@frame), "term.labels")
         
       }
       
