@@ -3,7 +3,7 @@ Type: Package
 Title: Conditional Akaike Information Criterion for 'lme4'
 Version: 0.8
 Date: 2019-04-17
-Author: Benjamin Saefken and David Ruegamer, with contributions from Sonja
+Author: Benjamin Saefken, David Ruegamer and Philipp Baumann, with contributions from Sonja
     Greven and Thomas Kneib
 Maintainer: David Ruegamer <david.ruegamer@gmail.com>
 Depends: lme4(>= 1.1-6), methods, Matrix, stats4

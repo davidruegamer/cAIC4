@@ -19,6 +19,8 @@ function(model, sigma.estimated, analytic) {
   B     <- model$B
   e     <- model$e
   A     <- model$A
+  R     <- model$R
+  RA <- R%*%A
   tye   <- model$tye
   V0inv <- model$V0inv
    
@@ -75,9 +77,9 @@ function(model, sigma.estimated, analytic) {
     
   }
   
-  df <- model$n - sum(diag(A))
+  df <- model$n - sum(diag(RA))
   for (j in 1:length(model$theta)) {
-      df <- df + sum(Lambday[j,] %*% (A %*% (model$Wlist[[j]] %*% e)))  
+      df <- df + sum(Lambday[j,] %*% (RA %*% (model$Wlist[[j]] %*% e)))  
   }
   
   if (sigma.estimated) {
