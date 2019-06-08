@@ -3,7 +3,7 @@ function(m, sigma.estimated, analytic) {
   # A function that calls the bias correction functions.
   #
   # Args: 
-  #   mer    = Object of class lmerMod. Obtained by lmer().
+  #   mer    = Object of class lmerMod or lme
   #   sigma.estimated = If sigma is estimated. This only is used for the 
   #                     analytical version of Gaussian responses.
   #   analytic = FALSE if the numeric hessian of the (restricted) marginal log-

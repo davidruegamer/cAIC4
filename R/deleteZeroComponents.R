@@ -5,6 +5,7 @@
 #' from the call if corresponding variance parameter is estimated to zero and
 #' updates the model in \code{\link[lme4]{merMod}}.
 #' 
+#' For \code{\link{merMod}} class models:
 #' Uses the \code{cnms} slot of \code{m} and the relative covariance factors to
 #' rewrite the random effects part of the formula, reduced by those parameters
 #' that have an optimum on the boundary. This is necessary to obtain the true
@@ -14,14 +15,18 @@
 #' updated model there are relative covariance factors parameters on the
 #' boundary.
 #' 
+#' For \code{\link[nlme]{lme}} class models:
+#' ...
+#' 
 #' @param m An object of class \code{\link[lme4]{merMod}} fitted by
-#' \code{\link[lme4]{lmer}} of the lme4-package.
+#' \code{\link[lme4]{lmer}} of the lme4-package or of class
+#' \code{\link[nlme]{lme}}.
 #' @return An updated object of class \code{\link[lme4]{merMod}}
-#' @section WARNINGS : For models called via \code{gamm4} no automated update
-#' is available. Instead a warning with terms to omit from the model is
-#' returned.
-#' @author Benjamin Saefken \email{bsaefke@@uni-goettingen.de} \& David
-#' Ruegamer
+#' or of class \code{\link[nlme]{lme}}.
+#' @section WARNINGS : For models called via \code{gamm4} or \code{gamm} 
+#' no automated update is available. 
+#' Instead a warning with terms to omit from the model is returned.
+#' @author Benjamin Saefken \& David Ruegamer \& Philipp Baumann
 #' @seealso \code{\link[lme4]{lme4-package}}, \code{\link[lme4]{lmer}},
 #' \code{\link[lme4]{getME}}
 #' @references Greven, S. and Kneib T. (2010) On the behaviour of marginal and
@@ -35,7 +40,17 @@
 #' 
 #' deleteZeroComponents(b)
 #' 
-deleteZeroComponents <-
+#' 
+deleteZeroComponents <- function(m) UseMethod("deleteZeroComponents")
+
+deleteZeroComponents.lme <- 
+function(m) {
+  
+  ### Philipp's code
+  
+}
+
+deleteZeroComponents.merMod <-
 function(m) {
   # A function that deletes all random effects terms if corresponding variance
   # parameter is estimated to zero.

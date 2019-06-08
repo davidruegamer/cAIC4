@@ -1,17 +1,18 @@
-#' Conditional Akaike Information for 'lme4'
+#' Conditional Akaike Information for 'lme4' and 'lme'
 #' 
 #' Estimates the conditional Akaike information for models that were fitted in
-#' 'lme4'. This is possible for all distributions, i.e.
-#' \code{\link[stats]{family}} arguments, based on parametric conditional
-#' bootstrap. For the Gaussian distribution (from a \code{\link[lme4]{lmer}}
+#' 'lme4' or with 'lme'. Currently all distributions are supported for 'lme4' models, 
+#' based on parametric conditional bootstrap. 
+#' For the Gaussian distribution (from a \code{\link[lme4]{lmer}} or \code{\link[nlme]{lme}}
 #' call) and the Poisson distribution analytical estimators for the degrees of
 #' freedom are available, based on Stein type formulas. Also the conditional
 #' Akaike information for generalized additive models based on a fit via the
-#' 'gamm4' package can be estimated.
+#' 'gamm4' or \code{\link[mgcv]{gamm}} calls from the 'mgcv' package can be estimated.
 #' A hands-on tutorial for the package can be found at \url{https://arxiv.org/abs/1803.05664}.
 #' 
 #' @param object An object of class merMod either fitted by
-#' \code{\link[lme4]{lmer}} or \code{\link[lme4]{glmer}} of the lme4-package.
+#' \code{\link[lme4]{lmer}} or \code{\link[lme4]{glmer}} of the lme4-package
+#' or an \code{\link[nlme]{lme}} object fro the nlme-package.
 #' Also objects returned form a \code{\link[gamm4]{gamm4}} call are possible.
 #' @param method Either \code{"conditionalBootstrap"} for the estimation of the
 #' degrees of freedom with the help of conditional Bootstrap or
@@ -20,6 +21,8 @@
 #' automatically based on the \code{family} argument of the
 #' \code{(g)lmer}-object. For \code{"gaussian"} and \code{"poisson"} this is
 #' the Steinian type estimator, for all others it is the conditional Bootstrap.
+#' For models from the nlme package, only \code{\link[nlme]{lme}} objects, i.e.,
+#' with gaussian response are supported.
 #' @param B Number of Bootstrap replications. The default is \code{NULL}. Then
 #' B is the minimum of 100 and the length of the response vector.
 #' @param sigma.estimated If sigma is estimated. Only used for the analytical
@@ -57,7 +60,8 @@
 #' \code{\link[lme4]{lmerControl}} has an impact on whether a parameter is
 #' estimated to lie on the boundary of the parameter space. For estimated error
 #' variance an the degrees of freedom are increased by one. If this should not
-#' be done set \code{sigma.estimated = "FALSE"}.
+#' be done set \code{sigma.estimated = "FALSE"}. Similar applies for \code{\link[nlme]{lme}}
+#' models.
 #' 
 #' If the object is of class \code{\link[lme4]{merMod}} and has \code{family =
 #' "poisson"} there is also an analytic representation of the conditional AIC
@@ -158,12 +162,13 @@
 #' }
 #' 
 #' 
+#' 
 cAIC <-
 function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRUE) {
   # A function that calls the bias correction functions.
   #
   # Args: 
-  #   object = Object of class lmerMod or glmerMod. Obtained by lmer() or glmer()
+  #   object = Object of class lmerMod, glmerMod or lme
   #   method = How the bias correction should be evaluated. If NULL than method 
   #            is chosen by family, i.e. analytical if family is Poisson or 
   #            Gaussian and with parametric bootstrap for other. Method may also
@@ -189,11 +194,15 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
     object@optinfo$gamm4 <- TRUE    # add indicator for gamm4
   }
   
+  
+  ### START: calculation for GLMs and LMs
   if (any(class(object) %in% c("glm","lm"))) {
     
     y <- object$y
 
-    if(is.null(y)) y <- eval(object$call$data, environment(formula(object)))[all.vars(formula(object))[1]][[1]]
+    if(is.null(y)) y <- eval(object$call$data, 
+                             environment(formula(object)))[
+                               all.vars(formula(object))[1]][[1]]
     if(is.null(y)) stop("Please specify the data argument in the initial model call!")
         
     n <- length(y)
@@ -223,12 +232,15 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
     class(retobj) <- c("cAIC")
     return(retobj)
   }
+  ### END: calculation for GLMs and LMs
   
-  if (!inherits(object, c("lmerMod", "glmerMod"))) {
-    stop("Class of object is not known")
+  if (!inherits(object, c("lmerMod", "glmerMod", "lme"))) {
+    stop("Class of object is not supported.")
   }
   
-  if (family(object)$family == "binomial" && length(unique(getME(object, "y"))) > 2) {
+  if (class(object) != "lme" && 
+      family(object)$family == "binomial" && 
+      length(unique(getME(object, "y"))) > 2) {
     warning("Method not yet supplied for binomial data with n larger 2. 
             Therefore the conditional parametric bootstrap is returned")
     method <- "conditionalBootstrap"

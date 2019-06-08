@@ -1,4 +1,13 @@
-getModelComponents <-
+getModelComponents <- function(m, analytic) UseMethod("getModelComponents")
+
+getModelComponents.lme <- 
+function(m, analytic) {
+  
+  ### Philipp's code
+  
+}
+
+getModelComponents.merMod <-
 function(m, analytic) { 
   # A function that calculates all components needed to calculate the bias
   # correction as in Greven & Kneib (2010)
