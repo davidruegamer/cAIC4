@@ -4,6 +4,7 @@ getModelComponents.lme <-
 function(m, analytic) {
   
   ### Philipp's code
+  stop("Not implemented yet.")
   
 }
 

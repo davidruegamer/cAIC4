@@ -47,6 +47,7 @@ deleteZeroComponents.lme <-
 function(m) {
   
   ### Philipp's code
+  stop("Not implemented yet.")
   
 }
 
