@@ -5,6 +5,7 @@ function(m, analytic) {
   
   ### Philipp's code
   stop("Not implemented yet.")
+  model$R <- diag(weights) # such that Cov(eps) = sigma^2 R
   
 }
 
