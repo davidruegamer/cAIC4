@@ -35,8 +35,21 @@ function(m, analytic) {
   model$Wlist   <- list()
   model$eWelist <- list()
   L             <- getME(m, "L")
-  V0inv         <- diag(rep(1, n)) - crossprod(solve(L, system = "L") %*% 
-                   solve(L, Lambdat, system = "P") %*% t(Z))
+  w             <- weights(m)
+  if(any(w!=1)){
+    
+    model$R <- diag(w)
+    Rinv <- diag(1/w)
+    D0inv <- solve(tcrossprod(Lambda))
+    V0inv         <- Rinv - crossprod(Rinv,Z) %*% solve(D0inv + t(Z)%*%Rinv%*%Z) %*% crossprod(Z,Rinv)
+    
+  }else{
+    
+    V0inv         <- diag(rep(1, n)) - crossprod(solve(L, system = "L") %*% 
+                                                   solve(L, Lambdat, system = "P") %*% t(Z))
+    
+  }
+  
 
 # P             <- diag(rep(1, n)) - X %*%  chol2inv(getME(m, "RX")) %*% crossprod(X, V0inv)
   
