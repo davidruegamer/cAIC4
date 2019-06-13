@@ -870,9 +870,17 @@ makeFormula <- function(setup, modelInit)
         
       }else{
         
-        nobarsF <- attr(terms.formula(nobars(formula(modelInit)),
-                              data = modelInit@frame), "term.labels")
-        
+        if(any(class(modelInit)%in%c("lm","glm"))){
+          
+          nobarsF <- labels(terms(formula(modelInit)))
+          
+        }else{
+          
+          nobarsF <- attr(terms.formula(nobars(formula(modelInit)),
+                                        data = modelInit@frame), "term.labels")
+
+        }
+                  
       }
       
       rhs <- c(nobarsF, reFormula)
