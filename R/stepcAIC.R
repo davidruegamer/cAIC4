@@ -266,7 +266,7 @@ stepcAIC <- function(object,
       
     }else if(any(class(object)%in%c("lm","glm"))){
       
-      
+      # formula(object) should already give the desired result
       
     }else{
       
