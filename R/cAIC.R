@@ -25,8 +25,15 @@
 #' with gaussian response are supported.
 #' @param B Number of Bootstrap replications. The default is \code{NULL}. Then
 #' B is the minimum of 100 and the length of the response vector.
-#' @param sigma.estimated If sigma is estimated. Only used for the analytical
-#' version of Gaussian responses.
+#' @param sigma.penalty An integer value for additional penalization in the analytic 
+#' Gaussian calculation to account for estimated variance components in the residual (co-)variance. 
+#' Per default \code{sigma.penalty} is equal \code{1}, corresponding to a diagonal error 
+#' covariance matrix with only one estimated parameter (sigma). If 
+#' all variance components are known, the value should be set to \code{0}. 
+#' For individual weights (individual variances), this value should be set
+#' to the number of estimated weights. For \code{\link[nlme]{lme}} objects
+#' the penalty term is automatically set by extracting the number of estimated
+#' variance components.
 #' @param analytic FALSE if the numeric hessian of the (restricted) marginal
 #' log-likelihood from the lmer optimization procedure should be used.
 #' Otherwise (default) TRUE, i.e.  use a analytical version that has to be
@@ -59,9 +66,10 @@
 #' also returned. Notice that the \code{boundary.tol} argument in
 #' \code{\link[lme4]{lmerControl}} has an impact on whether a parameter is
 #' estimated to lie on the boundary of the parameter space. For estimated error
-#' variance an the degrees of freedom are increased by one. If this should not
-#' be done set \code{sigma.estimated = "FALSE"}. Similar applies for \code{\link[nlme]{lme}}
-#' models.
+#' variance the degrees of freedom are increased by one per default. 
+#' \code{sigma.penalty} can be set manually for \code{\link[lme4]{merMod}} models 
+#' if no (0) or more than one variance component (>1) has been estimated. For 
+#' \code{\link[nlme]{lme}} objects this value is automatically defined.
 #' 
 #' If the object is of class \code{\link[lme4]{merMod}} and has \code{family =
 #' "poisson"} there is also an analytic representation of the conditional AIC
@@ -164,31 +172,8 @@
 #' 
 #' 
 cAIC <-
-function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRUE) {
-  # A function that calls the bias correction functions.
-  #
-  # Args: 
-  #   object = Object of class lmerMod, glmerMod or lme
-  #   method = How the bias correction should be evaluated. If NULL than method 
-  #            is chosen by family, i.e. analytical if family is Poisson or 
-  #            Gaussian and with parametric bootstrap for other. Method may also
-  #            be specified before, either "steinian" or "conditionalBootstrap".
-  #            "steinian" only available for Gaussian, Poisson and Bernoulli.
-  #   B      = Number of Bootstrap replications. Default is NULL then it is 
-  #            chosen as maximum of the number of observations and 100.
-  #   sigma.estimated = If sigma is estimated. This only is used for the 
-  #                     analytical version of Gaussian responses.
-  #   analytic = FALSE if the numeric hessian of the (restricted) marginal log-
-  #              likelihood from the lmer optimization procedure should be used.
-  #              Otherwise (default) TRUE, i.e. use a analytical version that 
-  #              has to be computed.
-  #
-  # Returns:
-  #   list   = The list contains the conditional log-likelihood; the estimated 
-  #            conditional prediction error (degrees of freedom); If a new model
-  #            was fitted, the new model and an boolean indicating weather a new
-  #            model was fitted; the conditional Akaike information, caic.
-  #
+function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
+  
   if (any(names(object) == "mer")) {
     object <- object$mer
     object@optinfo$gamm4 <- TRUE    # add indicator for gamm4
@@ -249,7 +234,7 @@ function(object, method = NULL, B = NULL, sigma.estimated = TRUE, analytic = TRU
   dfList   <- bcMer(object , 
                     method = method, 
                     B = B, 
-                    sigma.estimated = sigma.estimated,
+                    sigma.estimated = sigma.penalty,
                     analytic = analytic)
   if (mode(dfList) == "list") {
     bc       <- dfList$bc

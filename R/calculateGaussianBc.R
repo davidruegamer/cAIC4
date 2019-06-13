@@ -1,12 +1,11 @@
 calculateGaussianBc <-
-function(model, sigma.estimated, analytic) {
+function(model, sigma.penalty, analytic) {
   # A function that calculates the analytic representation of the bias 
   # corrections in linear mixed models, see Greven & Kneib (2010).
   #
   # Args: 
   #   model    = From getAllModelComponents()
-  #   sigma.estimated = If sigma is estimated. This only is used for the 
-  #                     analytical version of Gaussian responses.
+  #   sigma.penalty = Number of estimated variance components in the residual error covariance
   #   analytic = FALSE if the numeric hessian of the (restricted) marginal log-
   #              likelihood from the lmer optimization procedure should be used.
   #              Otherwise (default) TRUE, i.e. use a analytical version that 
@@ -86,8 +85,8 @@ function(model, sigma.estimated, analytic) {
       df <- df + sum(Lambday[j,] %*% (RA %*% (model$Wlist[[j]] %*% e)))  
   }
   
-  if (sigma.estimated) {
-    df <- df + 1
+  if (sigma.penalty) {
+    df <- df + sigma.penalty
   }
   
   return(df)
