@@ -41,7 +41,7 @@ function(m, analytic) {
     model$R <- diag(w)
     Rinv <- diag(1/w)
     D0inv <- solve(tcrossprod(Lambda))
-    V0inv         <- Rinv - crossprod(Rinv,Z) %*% solve(D0inv + t(Z)%*%Rinv%*%Z) %*% crossprod(Z,Rinv)
+    V0inv <- Rinv - crossprod(Rinv,Z) %*% solve(D0inv + t(Z)%*%Rinv%*%Z) %*% crossprod(Z,Rinv)
     
   }else{
     

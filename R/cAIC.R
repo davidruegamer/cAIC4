@@ -116,6 +116,7 @@
 #' @keywords regression
 #' @export
 #' @import lme4 Matrix methods
+#' @importFrom stats terms.formula
 #' @rawNamespace 
 #' if(getRversion() >= "3.3.0") {
 #' importFrom("stats", sigma)
@@ -234,7 +235,7 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
   dfList   <- bcMer(object , 
                     method = method, 
                     B = B, 
-                    sigma.estimated = sigma.penalty,
+                    sigma.penalty = sigma.penalty,
                     analytic = analytic)
   if (mode(dfList) == "list") {
     bc       <- dfList$bc

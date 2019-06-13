@@ -32,7 +32,8 @@
 #' @references Greven, S. and Kneib T. (2010) On the behaviour of marginal and
 #' conditional AIC in linear mixed models. Biometrika 97(4), 773-789.
 #' @keywords regression
-#' @export
+#' @rdname deleteZeroComponents
+#' @export deleteZeroComponents
 #' @examples
 #' 
 #' ## Currently no data with variance equal to zero...
@@ -43,6 +44,11 @@
 #' 
 deleteZeroComponents <- function(m) UseMethod("deleteZeroComponents")
 
+#' @return \code{NULL}
+#'
+#' @rdname deleteZeroComponents
+#' @method deleteZeroComponents lme
+#' @S3method deleteZeroComponents lme
 deleteZeroComponents.lme <- 
 function(m) {
   
@@ -51,6 +57,11 @@ function(m) {
   
 }
 
+#' @return \code{NULL}
+#'
+#' @rdname deleteZeroComponents
+#' @method deleteZeroComponents merMod
+#' @S3method deleteZeroComponents merMod
 deleteZeroComponents.merMod <-
 function(m) {
   # A function that deletes all random effects terms if corresponding variance

@@ -242,7 +242,7 @@ stepcAIC <- function(object,
       
     }
         
-  }else{
+  }else{ # not gamm4, but potentially a lm / glm object
     
     if( !is.null(groupCandidates) ) stopifnot( all ( groupCandidates %in% possible_predictors ) | 
                                                  ( unlist(strsplit(groupCandidates, ":")) %in% 
@@ -251,12 +251,26 @@ stepcAIC <- function(object,
     
     ### check for dot in formula
     
-    if(grepl("\\s{1}\\.{1}\\s{1}", as.character(object@call)[2])){
+    
+    if(inherits(object, "merMod")){
       
-      fullform <- terms(formula(object), data=object@frame)
-      fullform <- as.formula(Reduce(paste, deparse(fullform)))
-      object <- update(object, formula = fullform)
+      if(grepl("\\s{1}\\.{1}\\s{1}", as.character(object@call)[2])){
+        
+        
+        fullform <- terms(formula(object), data=object@frame)
+        fullform <- as.formula(Reduce(paste, deparse(fullform)))
+        object <- update(object, formula = fullform)
+        
+        
+      }
       
+    }else if(any(class(object)%in%c("lm","glm"))){
+      
+      
+      
+    }else{
+      
+      stop("Model class not supported.")
       
     }
     

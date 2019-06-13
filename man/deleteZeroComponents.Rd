@@ -2,16 +2,28 @@
 % Please edit documentation in R/deleteZeroComponents.R
 \name{deleteZeroComponents}
 \alias{deleteZeroComponents}
+\alias{deleteZeroComponents.lme}
+\alias{deleteZeroComponents.merMod}
 \title{Delete random effect terms with zero variance}
 \usage{
 deleteZeroComponents(m)
+
+\method{deleteZeroComponents}{lme}(m)
+
+\method{deleteZeroComponents}{merMod}(m)
 }
 \arguments{
 \item{m}{An object of class \code{\link[lme4]{merMod}} fitted by
-\code{\link[lme4]{lmer}} of the lme4-package.}
+\code{\link[lme4]{lmer}} of the lme4-package or of class
+\code{\link[nlme]{lme}}.}
 }
 \value{
 An updated object of class \code{\link[lme4]{merMod}}
+or of class \code{\link[nlme]{lme}}.
+
+\code{NULL}
+
+\code{NULL}
 }
 \description{
 Is used in the \code{\link{cAIC}} function if \code{method = "steinian"} and
@@ -20,6 +32,7 @@ from the call if corresponding variance parameter is estimated to zero and
 updates the model in \code{\link[lme4]{merMod}}.
 }
 \details{
+For \code{\link{merMod}} class models:
 Uses the \code{cnms} slot of \code{m} and the relative covariance factors to
 rewrite the random effects part of the formula, reduced by those parameters
 that have an optimum on the boundary. This is necessary to obtain the true
@@ -28,11 +41,14 @@ see Greven and Kneib (2010). The reduced model formula is then updated. The
 function deleteZeroComponents is then called iteratively to check if in the
 updated model there are relative covariance factors parameters on the
 boundary.
+
+For \code{\link[nlme]{lme}} class models:
+...
 }
 \section{WARNINGS }{
- For models called via \code{gamm4} no automated update
-is available. Instead a warning with terms to omit from the model is
-returned.
+ For models called via \code{gamm4} or \code{gamm} 
+no automated update is available. 
+Instead a warning with terms to omit from the model is returned.
 }
 
 \examples{
@@ -41,6 +57,7 @@ returned.
 b <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 
 deleteZeroComponents(b)
+
 
 }
 \references{
@@ -52,7 +69,6 @@ conditional AIC in linear mixed models. Biometrika 97(4), 773-789.
 \code{\link[lme4]{getME}}
 }
 \author{
-Benjamin Saefken \email{bsaefke@uni-goettingen.de} \& David
-Ruegamer
+Benjamin Saefken \& David Ruegamer \& Philipp Baumann
 }
 \keyword{regression}
