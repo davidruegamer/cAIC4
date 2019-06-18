@@ -1,11 +1,79 @@
 getModelComponents <- function(m, analytic) UseMethod("getModelComponents")
 
 getModelComponents.lme <- 
-function(m, analytic) {
+function(m, analytic = TRUE) {
   
-  ### Philipp's code
-  stop("Not implemented yet.")
-  model$R <- diag(weights) # such that Cov(eps) = sigma^2 R
+  model <- list()
+  model$df <- NULL
+  X <- m$data$X
+  n <- nrow(X)
+  Z <- as.matrix(get_Z(m))
+  theta <- get_theta(m)
+  Lambdat <- get_LambdaT(m)
+  Lambda <- t(Lambdat)
+  model$Wlist <- list()
+  model$eWelist <- list()
+  L <- get_L(m)
+  
+  w <- weights(m)
+  sig2 <- sigma(m)^2
+  if (length(w) == 0){
+    R <- diag(n)
+  } else {
+    R <- diag(w)
+  }
+  Rinv <- solve(R)
+  model$R <- R
+  Zt <- t(Z)
+  Dinv <- solve(sig2*Lambda%*%Lambdat)
+  V0inv <- Rinv - Rinv%*% Z %*% solve(Dinv + Zt%*%Rinv%*%Z) %*% Zt %*% Rinv
+  
+  RX <- get_RX(m)
+  A <- V0inv - crossprod(crossprod(X %*% solve(RX), V0inv))
+  y <- m$data$y
+  e <- residuals(m)
+  
+  ## prepare list of derivative matrices W_j
+  ind <- get_Lind(m)
+  len <- rep(0,length(Lambda@x))
+  
+  for (s in 1:length(theta)) {
+    # model$Wlist <- lapply(theta, function(s){
+    LambdaS <- Lambda
+    LambdaSt <- Lambdat
+    LambdaS@x <- LambdaSt@x <- len
+    LambdaS@x[which(ind == s)] <- LambdaSt@x[which(ind == s)] <- 1
+    diagonal <- diag(LambdaS)
+    diag(LambdaS) <- diag(LambdaSt) <- 0
+    Ds <- LambdaS + LambdaSt
+    diag(Ds) <- diagonal
+    model$Wlist[[s]] <- tcrossprod(Z %*% Ds, Z)
+    model$eWelist[[s]] <- as.numeric(e %*% model$Wlist[[s]] %*% e)
+    # model$Wlist[[s]]  <- model$Wlist[[s]]/norm(model$Wlist[[s]], type = "F")
+  }
+  
+  ## Write everything into a return list
+  model$X <- X
+  model$n <- n
+  model$theta <- theta
+  model$Z <- Z
+  model$Lambda <- Lambda
+  model$Lambdat <- Lambdat
+  model$V0inv <- V0inv
+  model$A <- A
+  if(analytic) {
+    model$B <- matrix(0, length(theta), length(theta)) 
+  } else {
+    stop("Numerical Hessian not calculated in nlme::lme objects!")
+    model$B <- m@optinfo$derivs$Hessian  
+  }
+  model$C <- matrix(0, length(theta), n)
+  model$y <- y
+  model$e <- e
+  model$tye <- as.numeric(crossprod(y,e))
+  model$isREML <- m$method == "REML"
+  
+  return(model)
   
 }
 

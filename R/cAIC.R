@@ -180,6 +180,14 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
     object@optinfo$gamm4 <- TRUE    # add indicator for gamm4
   }
   
+  if (any(class(object) %in% "gamm")) {
+    attr(object$lme, "smooth_names") <- get_names(object) # old names
+    attr(object$lme, "is_gamm") <- TRUE # add indicator for mgcv::gamm
+    attr(object$lme, "gam_form") <- formula(object$gam) # for refit
+    # order columns in $data as in gamm4 and get ride of $gam
+    object <- object$lme
+    attr(object,"ordered_smooth") <- sort_sterms(object) # new names
+  }
   
   ### START: calculation for GLMs and LMs
   if (any(class(object) %in% c("glm","lm"))) {
@@ -231,6 +239,8 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
             Therefore the conditional parametric bootstrap is returned")
     method <- "conditionalBootstrap"
   }
+  
+  if (class(object) == "lme") sigma.penalty <- count_par(object)
   
   dfList   <- bcMer(object , 
                     method = method, 
