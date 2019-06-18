@@ -6,7 +6,33 @@
 #' @return conditional log-likelihood value
 #' @importFrom stats weights
 #' @export
-getcondLL <-
+#'
+#'
+getcondLL <- function(m) UseMethod("getcondLL")
+
+#' @return \code{NULL}
+#'
+#' @rdname getcondLL
+#' @method getcondLL lme
+#' @S3method getcondLL lme
+#' 
+getcondLL.lme <-
+  function(object) {
+    
+    stopifnot(family(m)$family == "gaussian")
+    w <- weights(m)
+    y <- m$data$y
+    if(length(w) == 0) w <- rep(1,length(y))
+    y_hat <- predict(m) # re at their predicted values 
+    sum(dnorm(x = y, mean = y_hat, sd = sigma(m)/sqrt(w) , log = TRUE))
+}
+
+#' @return \code{NULL}
+#'
+#' @rdname getcondLL
+#' @method getcondLL merMod
+#' @S3method getcondLL merMod
+getcondLL.merMod <-
 function(object) {
   # A function that calls the bias correction functions.
   #
