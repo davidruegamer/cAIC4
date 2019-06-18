@@ -19,12 +19,12 @@ getcondLL <- function(m) UseMethod("getcondLL")
 getcondLL.lme <-
   function(object) {
     
-    stopifnot(family(m)$family == "gaussian")
-    w <- weights(m)
-    y <- m$data$y
+    stopifnot(family(object)$family == "gaussian")
+    w <- weights(object)
+    y <- object$data$y
     if(length(w) == 0) w <- rep(1,length(y))
-    y_hat <- predict(m) # re at their predicted values 
-    sum(dnorm(x = y, mean = y_hat, sd = sigma(m)/sqrt(w) , log = TRUE))
+    y_hat <- predict(object) # re at their predicted values 
+    sum(dnorm(x = y, mean = y_hat, sd = sigma(object)/sqrt(w) , log = TRUE))
 }
 
 #' @return \code{NULL}
