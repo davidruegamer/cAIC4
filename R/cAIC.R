@@ -240,7 +240,10 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
     method <- "conditionalBootstrap"
   }
   
-  if (class(object) == "lme") sigma.penalty <- count_par(object)
+  if (class(object) == "lme") {
+    sigma.penalty <- count_par(object)
+    attr(object, "is_gamm") <- FALSE
+  } 
   
   dfList   <- bcMer(object , 
                     method = method, 

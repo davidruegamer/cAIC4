@@ -239,15 +239,17 @@ get_LambdaT <- function(m) {
   no_knots <- length(unlist(m$coefficients$random[spline_index]))
   last_index <- nrow(D)
   
-  # seperate parts
-  spline_vcov <- D[1:no_knots,1:no_knots]
-  random_vcov <- D[(no_knots+1):last_index,(no_knots+1):last_index]
+  if (length(spline_index) != 0) {
+    # seperate parts
+    spline_vcov <- D[1:no_knots,1:no_knots]
+    random_vcov <- D[(no_knots+1):last_index,(no_knots+1):last_index]
   
-  # build D matrix as in gamm4() by just reordering D from RLRsim
-  D <- matrix(0L,nrow = nrow(res$Vr), ncol = ncol(res$Vr)) # prepare
-  D[1:(last_index-no_knots),1:(last_index-no_knots)] <- random_vcov
-  D[(last_index -no_knots+1):last_index,(last_index -no_knots+1):last_index] <-
-    spline_vcov
+    # build D matrix as in gamm4() by just reordering D from RLRsim
+    D <- matrix(0L,nrow = nrow(res$Vr), ncol = ncol(res$Vr)) # prepare
+    D[1:(last_index-no_knots),1:(last_index-no_knots)] <- random_vcov
+    D[(last_index -no_knots+1):last_index,(last_index -no_knots+1):last_index] <-
+      spline_vcov
+  }
   
   # relative covariance factor (divide by residual variance)
   chol_prep <- D/res$sigmasq
@@ -259,16 +261,18 @@ get_LambdaT <- function(m) {
 get_L <- function(m) {
   
   # extracts equivalent to getME(mer,"L") from a nlme::lme object
+  stop("Fix me!")
+  R <- bdiag(getVarCov(m,type = "c", individuals = 1:m$dims$ngrps[[1]]))
   
-  weights <- weights(m)
-  if(length(weights) == 0) weights <- rep(1,nrow(gamm_model$lme$data))
-  sqrtW <- Diagonal(x = sqrt(as.numeric(weights)))
+  #weights <- weights(m)
+  #if(length(weights) == 0) weights <- rep(1,nrow(m$data))
+  #sqrtW <- Diagonal(x = sqrt(as.numeric(weights)))
   
   Zt <- t(get_Z(m))
   
-  ZtW <- Zt %*% sqrtW
+  ZtW <- Zt %*% R #sqrtW
   Lambdat <- get_LambdaT(m)
-  as(Cholesky(tcrossprod(Lambdat %*% ZtW), LDL = FALSE, Imult=1),"sparseMatrix")
+  as(Cholesky(tcrossprod(Lambdat %*% ZtW), LDL = FALSE, Imult = 1),"sparseMatrix")
   
 }
 
@@ -282,7 +286,7 @@ get_RX <- function(m){
 get_Lind <- function(m) {
   
   # extracts equivalent to getME(mer,"RX") from a nlme::lme object
-  
+
   no_re <- m$dims$qvec[[1]] + ("Corr" %in% colnames(nlme::VarCorr(m)))
   n_groups <- m$dims$ngrps[[1]] 
   
@@ -297,3 +301,26 @@ get_Lind <- function(m) {
   c(rep(1:no_re, n_groups),unlist(vemp))
   
 }
+
+get_R <- function(m) {
+  
+  # returns the cond. VCov of a mixed model fitted with nlme::lme as a block - 
+  # diag matrix. In the case of homoscedastic error variance the main diagonal 
+  # contains sigma(m)^2. For now, a nested mixed model can not be handled.
+  
+  # some gamms contain a pesudo nesting structure (s-terms) which needs 
+  # to be exlcuded
+  nlev_col <- sapply(m$groups,nlevels)
+  if (ncol(m$groups) > 1) m$groups <- m$groups[,nlev_col > 1,drop = FALSE]
+  
+  n <- m$dims$ngrps[1]
+  vcov_list <- sapply(1:n, function(x) nlme::getVarCov(m, 
+                                                       type = "conditional", x))
+  Matrix::bdiag(vcov_list)
+}
+
+
+
+
+
+

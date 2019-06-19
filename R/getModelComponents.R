@@ -14,14 +14,16 @@ function(m, analytic = TRUE) {
   model$Wlist <- list()
   model$eWelist <- list()
   L <- get_L(m)
-  
-  w <- weights(m)
+  stop("Fix me!")
+  # w <- weights(m)
   sig2 <- sigma(m)^2
-  if (length(w) == 0){
-    R <- diag(n)
-  } else {
-    R <- diag(w)
-  }
+  # if (length(w) == 0){
+  #   R <- diag(n)
+  # } else {
+  #   R <- diag(w)
+  # }
+  R <- get_R(m)/sig2 # definition according to ...
+  w <- sig2/diag(get_R(m))
   Rinv <- solve(R)
   model$R <- R
   Zt <- t(Z)
