@@ -11,7 +11,8 @@ sort_sterms <- function(m) {
   # gamm4() respects ordering of s()-terms by, first, the s()-term with the
   # highest k comes first, in case of equal k, the s()-term are ordered as they
   # appear in the model formula with the latter terms in the model formula
-  # appearing former in the columns of Z.
+  # appearing former in the columns of Z. Disregarding the order would lead to
+  # false matrix multiplication.
 
   # only the names attribute is left after sorting
 

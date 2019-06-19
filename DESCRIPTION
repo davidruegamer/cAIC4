@@ -1,6 +1,6 @@
 Package: cAIC4
 Type: Package
-Title: Conditional Akaike Information Criterion for 'lme4'
+Title: Conditional Akaike Information Criterion for 'lme4' and 'nlme'
 Version: 0.9
 Date: 2019-06-19
 Author: Benjamin Saefken, David Ruegamer and Philipp Baumann, with contributions from Sonja
