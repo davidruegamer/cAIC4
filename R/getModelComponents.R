@@ -4,7 +4,7 @@ getModelComponents.lme <-
   function(m, analytic = TRUE) {
     model <- list()
     model$df <- NULL
-    X <- m$data$X
+    X <- model.matrix(formula(m),m$data)
     n <- nrow(X)
     Z <- as.matrix(get_Z(m))
     theta <- get_theta(m)
@@ -12,17 +12,11 @@ getModelComponents.lme <-
     Lambda <- t(Lambdat)
     model$Wlist <- list()
     model$eWelist <- list()
-    L <- get_L(m)
-    stop("Fix me!")
-    # w <- weights(m)
+    # L <- get_L(m)
+
     sig2 <- sigma(m)^2
-    # if (length(w) == 0){
-    #   R <- diag(n)
-    # } else {
-    #   R <- diag(w)
-    # }
-    R <- get_R(m) / sig2 # definition according to ...
-    w <- sig2 / diag(get_R(m))
+    R <- get_R(m) / sig2 # definition according to derivation of bc with weights
+    # w <- sig2 / diag(get_R(m))
     Rinv <- solve(R)
     model$R <- R
     Zt <- t(Z)
@@ -32,7 +26,7 @@ getModelComponents.lme <-
 
     RX <- get_RX(m)
     A <- V0inv - crossprod(crossprod(X %*% solve(RX), V0inv))
-    y <- m$data$y
+    y <- as.vector(getResponse(m))
     e <- residuals(m)
 
     ## prepare list of derivative matrices W_j

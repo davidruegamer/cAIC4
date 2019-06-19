@@ -184,9 +184,13 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
     attr(object$lme, "smooth_names") <- get_names(object) # old names
     attr(object$lme, "is_gamm") <- TRUE # add indicator for mgcv::gamm
     attr(object$lme, "gam_form") <- formula(object$gam) # for refit
-    # order columns in $data as in gamm4 and get ride of $gam
     object <- object$lme
-    attr(object,"ordered_smooth") <- sort_sterms(object) # new names
+    attr(object, "ordered_smooth") <- sort_sterms(object) # names as in gamm4
+  }
+
+  if (any(class(object) %in% "lme")) {
+    sigma.penalty <- count_par(object)
+    if (is.null(attr(object, "is_gamm"))) attr(object, "is_gamm") <- FALSE
   }
   
   ### START: calculation for GLMs and LMs
@@ -239,11 +243,6 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
             Therefore the conditional parametric bootstrap is returned")
     method <- "conditionalBootstrap"
   }
-  
-  if (class(object) == "lme") {
-    sigma.penalty <- count_par(object)
-    attr(object, "is_gamm") <- FALSE
-  } 
   
   dfList   <- bcMer(object , 
                     method = method, 

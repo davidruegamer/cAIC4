@@ -18,11 +18,10 @@ getcondLL <- function(m) UseMethod("getcondLL")
 #' 
 getcondLL.lme <-
   function(object) {
-    stop("Fix me!")
     stopifnot(family(object)$family == "gaussian")
-    y <- object$data$y
+    y <- as.vector(getResponse(object))
     y_hat <- predict(object) # re at their predicted values
-    R <- get_R(m)
+    R <- as.matrix(get_R(object))
     sum(mvtnorm::dmvnorm(x = y, mean = y_hat, sigma = R, log = TRUE))
   }
 

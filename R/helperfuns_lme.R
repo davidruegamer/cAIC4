@@ -254,16 +254,15 @@ get_LambdaT <- function(m) {
 get_L <- function(m) {
 
   # extracts equivalent to getME(mer,"L") from a nlme::lme object
-  stop("Fix me!")
-  R <- bdiag(getVarCov(m, type = "c", individuals = 1:m$dims$ngrps[[1]]))
 
   # weights <- weights(m)
   # if(length(weights) == 0) weights <- rep(1,nrow(m$data))
   # sqrtW <- Diagonal(x = sqrt(as.numeric(weights)))
-
+  # ZtW <- Zt %*% sqrtW
   Zt <- t(get_Z(m))
+  R <- get_R(m)/(sigma(m)^2)
 
-  ZtW <- Zt %*% R # sqrtW
+  ZtW <- Zt %*% chol(R)
   Lambdat <- get_LambdaT(m)
   as(
     Cholesky(tcrossprod(Lambdat %*% ZtW), LDL = FALSE, Imult = 1),
@@ -285,10 +284,10 @@ get_Lind <- function(m) {
   no_re <- m$dims$qvec[[1]] + ("Corr" %in% colnames(nlme::VarCorr(m)))
   n_groups <- m$dims$ngrps[[1]]
 
-  if (is.null(attr(m, "is_gamm")) & no_re <= 2) {
+  if (!attr(m, "is_gamm") & no_re <= 2) {
     return(rep(1:no_re, each = n_groups))
   }
-  if (is.null(attr(m, "is_gamm"))) {
+  if (!attr(m, "is_gamm")) {
     return(rep(1:no_re, n_groups))
   }
 
@@ -296,10 +295,7 @@ get_Lind <- function(m) {
   term <- 1:length(knots_p_sterm) + no_re
   vemp <- vector("list", length(term))
   for (ind in seq_len(length(term))) {
-    vemp[[ind]] <- rep(
-      term[ind],
-      knots_p_sterm[ind]
-    )
+    vemp[[ind]] <- rep(term[ind],knots_p_sterm[ind])
   }
   if (no_re <= 2) {
     return(c(rep(1:no_re, each = n_groups), unlist(vemp)))
