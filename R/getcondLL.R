@@ -17,14 +17,14 @@ getcondLL <- function(m) UseMethod("getcondLL")
 #' @S3method getcondLL lme
 #' 
 getcondLL.lme <-
-function(object) {
-    
+  function(object) {
+    stop("Fix me!")
     stopifnot(family(object)$family == "gaussian")
     y <- object$data$y
-    y_hat <- predict(object) # re at their predicted values 
+    y_hat <- predict(object) # re at their predicted values
     R <- get_R(m)
-    sum(mvtnorm::dmvnorm(x = y, mean = y_hat, sigma = R,log = TRUE))
-}
+    sum(mvtnorm::dmvnorm(x = y, mean = y_hat, sigma = R, log = TRUE))
+  }
 
 #' @return \code{NULL}
 #'
