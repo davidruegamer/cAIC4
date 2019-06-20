@@ -249,7 +249,7 @@ get_LambdaT <- function(m) {
   # relative covariance factor (divide by residual variance)
   chol_prep <- D / res$sigmasq
   # may consider Cholesky() instead: Cholesky(chol_prep, LDL = FALSE, Imult=1)
-  Matrix(base::chol(chol_prep))
+  list(LambdaT = Matrix(base::chol(chol_prep)), D = D)
 }
 
 get_L <- function(m) {
