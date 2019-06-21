@@ -1107,7 +1107,7 @@ makeUpdate <- function(modelInit,
                  family(modelInit$mer)$family,
                  family(modelInit)$family)
     
-    mod <- eval(parse(text=paste0("glm(",format(setup$random),
+    mod <- eval(parse(text=paste0("glm(",paste(format(setup$random), collapse=""),
                                   ", family = ", fm, ", data = ",
                                   attr(data, "orgname"),")")))
     
@@ -1117,7 +1117,7 @@ makeUpdate <- function(modelInit,
                  family(modelInit$mer)$family,
                  family(modelInit)$family)
     
-    mod <- eval(parse(text=paste0("glm(",format(setup$gamPart),
+    mod <- eval(parse(text=paste0("glm(",paste(format(setup$gamPart), collapse=""),
                                   ", family = ", fm, ", data = ",
                                   attr(data, "orgname"),")")))   
     
