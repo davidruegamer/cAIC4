@@ -142,6 +142,32 @@ cor_re <- function(m, cnms) {
   }
 }
 
+get_D <- function(m) {
+  
+  # extracts getME(mer, "Lambda) %*% getME(mer, "Lambdat") first as in lme4
+  # and then returns the vCov of the random effects (D) in the order as they 
+  # are returned in lme4 (D = getME(mer, "Lambda) %*% getME(mer, "Lambdat") *
+  # sigma(mer) ^ 2). This needs special treatment with repect to the smooth
+  # terms which appear in different order inside the reStruct list and need to
+  # ordered first.
+  
+  D_lt <- lapply(m$modelStruct$reStruct, as.matrix)
+  n <- m$dims$ngrps[1]
+  
+  # in case of smooth terms
+  if (length(D_lt) > 1) {
+    D_lt_2 <- D_lt
+    re_formula <- lapply(m$modelStruct$reStruct[-1], function(x) formula(x))
+    re_formula <- sapply(re_formula, function(x) as.character(x[[2]][[2]]))
+    ordered_n <- attr(attr(m,"ordered_smooth"),"old_names")
+    D_lt_2 <- D_lt_2[names(re_formula[match(ordered_n,re_formula)])]
+  }
+  
+  D_lt <- lapply(1:n, function(x) D_lt[[1]]) # substitute for rep() with matrix
+  if (exists("D_lt_2")) return(bdiag(c(D_lt,D_lt_2)) * sigma(m)^2)
+  bdiag(c(D_lt)) * sigma(m)^2
+}
+
 get_theta <- function(m) {
 
   # extracts equivalent to getME(mer,"theta") from a nlme::lme. For now, only
@@ -226,30 +252,12 @@ get_LambdaT <- function(m) {
 
   # extracts equivalent to getME(mer,"Lambdat") from a nlme::lme object.
 
-  res <- RLRsim::extract.lmeDesign(m)
-  D <- res$Vr * res$sigmasq # inverse order of splines and re coefs
-
-  # find vcov coef that belong to splines and those who belong to true re
-  spline_index <- grep("^g", names(m$coefficients$random))
-  no_knots <- length(unlist(m$coefficients$random[spline_index]))
-  last_index <- nrow(D)
-
-  if (length(spline_index) != 0) {
-    # seperate parts
-    spline_vcov <- D[1:no_knots, 1:no_knots]
-    random_vcov <- D[(no_knots + 1):last_index, (no_knots + 1):last_index]
-
-    # build D matrix as in gamm4() by just reordering D from RLRsim
-    D <- matrix(0L, nrow = nrow(res$Vr), ncol = ncol(res$Vr)) # prepare
-    D[1:(last_index - no_knots), 1:(last_index - no_knots)] <- random_vcov
-    D[(last_index - no_knots + 1):last_index, (last_index - no_knots + 1):
-    last_index] <- spline_vcov
-  }
+  D <- get_D(m)
 
   # relative covariance factor (divide by residual variance)
-  chol_prep <- D / res$sigmasq
+  rel_vcov_fac <- D / (sigma(m)^2)
   # may consider Cholesky() instead: Cholesky(chol_prep, LDL = FALSE, Imult=1)
-  list(LambdaT = Matrix(base::chol(chol_prep)), D = D)
+  list(LambdaT = Matrix(base::chol(rel_vcov_fac)), D = D)
 }
 
 get_L <- function(m) {
@@ -320,4 +328,36 @@ get_R <- function(m) {
       type = "conditional", x
     ))
   Matrix::bdiag(vcov_list)
+}
+
+get_D_RLRSim <- function(m) {
+  
+  # extracts getME(mer, "Lambda) %*% getME(mer, "Lambdat") first as in lme4
+  # and then returns the vCov of the random effects (D) in the order as they 
+  # are returned in lme4 (D = getME(mer, "Lambda) %*% getME(mer, "Lambdat") *
+  # sigma(mer) ^ 2). This needs special treatment with repect to the smooth
+  # terms which appear in different order inside the reStruct list and need to
+  # ordered first.
+  
+  res <- RLRsim::extract.lmeDesign(m)
+  D <- res$Vr * res$sigmasq # inverse order of splines and re coefs
+
+  # find vcov coef that belong to splines and those who belong to true re
+  spline_index <- grep("^g", names(m$coefficients$random))
+  no_knots <- length(unlist(m$coefficients$random[spline_index]))
+  last_index <- nrow(D)
+
+  if (length(spline_index) != 0) {
+    # seperate parts
+    spline_vcov <- D[1:no_knots, 1:no_knots]
+    random_vcov <- D[(no_knots + 1):last_index, (no_knots + 1):last_index]
+
+    # build D matrix as in gamm4() by just reordering D from RLRsim
+    D <- matrix(0L, nrow = nrow(res$Vr), ncol = ncol(res$Vr)) # prepare
+    D[1:(last_index - no_knots), 1:(last_index - no_knots)] <- random_vcov
+    D[(last_index - no_knots + 1):last_index, (last_index - no_knots + 1):
+    last_index] <- spline_vcov
+  }
+  
+  D
 }
