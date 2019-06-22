@@ -134,7 +134,7 @@ cor_re <- function(m, cnms) {
   # splits the first entry of cnms into two parts if random itcpt and slope
   # were modelled dependently and returns the splitted version if so
 
-  if (!"Corr" %in% colnames(nlme::VarCorr(m)) & lengths(cnms[1]) == 2) {
+  if (!"Corr" %in% colnames(nlme:::VarCorr(m)) & lengths(cnms[1]) == 2) {
     # uncorrelated re have different cnms dim than correlated ones
     rev(c(split_at(cnms[[1]], 2), cnms[-1]))
   } else {
@@ -173,7 +173,7 @@ get_theta <- function(m) {
   # extracts equivalent to getME(mer,"theta") from a nlme::lme. For now, only
   # random intercept (+ slope, correlated and uncorrelated) can be handled.
 
-  re_vcov <- nlme::VarCorr(m)
+  re_vcov <- nlme:::VarCorr(m)
   sigma <- sigma(m)
 
   rnames <- rownames(re_vcov)
@@ -290,7 +290,7 @@ get_Lind <- function(m) {
 
   # extracts equivalent to getME(mer,"RX") from a nlme::lme object
 
-  no_re <- m$dims$qvec[[1]] + ("Corr" %in% colnames(nlme::VarCorr(m)))
+  no_re <- m$dims$qvec[[1]] + ("Corr" %in% colnames(nlme:::VarCorr(m)))
   n_groups <- m$dims$ngrps[[1]]
 
   if (!attr(m, "is_gamm") & no_re <= 2) {

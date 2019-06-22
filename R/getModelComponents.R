@@ -9,6 +9,7 @@ getModelComponents.lme <-
     Z <- as.matrix(get_Z(m))
     theta <- get_theta(m)
     Lambdat <- get_LambdaT(m)$LambdaT
+    D <- get_LambdaT(m)$D
     Lambda <- t(Lambdat)
     model$Wlist <- list()
     model$eWelist <- list()
@@ -20,9 +21,8 @@ getModelComponents.lme <-
     Rinv <- solve(R)
     model$R <- R
     Zt <- t(Z)
-    Dinv <- solve(get_LambdaT(m)$D)
-    V0inv <- Rinv - Rinv %*% Z %*% solve(Dinv + Zt %*% Rinv %*% Z) %*% Zt %*% 
-      Rinv
+    #Dinv <- solve(get_LambdaT(m)$D)
+    V0inv <- solve(Matrix(Z %*% D %*% Zt + get_R(m))/sig2)
 
     RX <- get_RX(m)
     A <- V0inv - crossprod(crossprod(X %*% solve(RX), V0inv))
