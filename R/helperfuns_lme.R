@@ -254,10 +254,10 @@ get_LambdaT <- function(m) {
 
   D <- get_D(m)
 
-  # relative covariance factor (divide by residual variance)
-  rel_vcov_fac <- D / (sigma(m)^2)
+  # relative covariance (divide by residual variance)
+  rel_vcov <- D / (sigma(m)^2)
   # may consider Cholesky() instead: Cholesky(chol_prep, LDL = FALSE, Imult=1)
-  list(LambdaT = Matrix(base::chol(rel_vcov_fac)), D = D)
+  list(LambdaT = Matrix(base::chol(rel_vcov)), D = D)
 }
 
 get_L <- function(m) {
