@@ -196,7 +196,7 @@ backwardStep <- function(cnms, keep, allowCorrelationSel, allowNoIntercept)
   #   ]
   if(!allowCorrelationSel) listOfAllCombs <- removeUncor(listOfAllCombs)
   if(!allowNoIntercept) listOfAllCombs <- removeNoInt(listOfAllCombs)
-
+  
   return(listOfAllCombs)
 }
 
@@ -240,39 +240,39 @@ calculateAllCAICs <- function(newSetup,
     #   c(ll,bc,caic)
     #   
     # }else{
-
-      if(length(class(m))==1 && class(m)=="list"){ # m is a gamm4 object
+    
+    if(length(class(m))==1 && class(m)=="list"){ # m is a gamm4 object
+      
+      tryCatch(cAIC(m,...)[c("loglikelihood","df","caic", "new")], 
+               error = function(e){ 
+                 
+                 ret <- c(NA,NA,NA,NA)
+                 attr(ret, "message") <- e
+                 return(ret)
+                 
+               })
+      
+    }else{
+      
+      if(!calcNonOptimMod){
         
-        tryCatch(cAIC(m,...)[c("loglikelihood","df","caic", "new")], 
-                 error = function(e){ 
-                   
-                   ret <- c(NA,NA,NA,NA)
-                   attr(ret, "message") <- e
-                   return(ret)
-                   
-                 })
-        
-      }else{
-        
-        if(!calcNonOptimMod){
-          
-          errCode <- m@optinfo$conv$lme4$code
-          if(!is.null(errCode)) return(c(NA,NA,NA))
-          
-        }
-        
-        tryCatch(cAIC(m,...)[c("loglikelihood","df","caic","new")], 
-                 error = function(e){ 
-                   
-                   ret <- c(NA,NA,NA)
-                   attr(ret, "message") <- e
-                   return(ret)
-                   
-                   })
+        errCode <- m@optinfo$conv$lme4$code
+        if(!is.null(errCode)) return(c(NA,NA,NA))
         
       }
+      
+      tryCatch(cAIC(m,...)[c("loglikelihood","df","caic","new")], 
+               error = function(e){ 
+                 
+                 ret <- c(NA,NA,NA)
+                 attr(ret, "message") <- e
+                 return(ret)
+                 
+               })
+      
+    }
     # }
-    }, mc.cores=numCores)
+  }, mc.cores=numCores)
   
   if(all(sapply(listOfCAICs, function(x) is.na(sum(unlist(x))))))
   {
@@ -418,7 +418,7 @@ allNestSubs <- function(x)
 {
   unlist(sapply( findbars( as.formula( paste0("~ (1 | ", x, ")"))), 
                  function(y) deparse(y[[3]])
-                 )
+  )
   )
 }
 
@@ -481,7 +481,7 @@ forwardGam <- function(intGam, fixEfCandidates=NULL, bsType="ps", keep)
     keepNonS <- keepVars[!keepSterm]
     
   }
-
+  
   nonS <- nonS[!nonS%in%keepNonS] # drop the keepNonS from nonS
   # to prevent s-making
   if(length(nonS)==0) nonS <- NULL
@@ -519,74 +519,74 @@ forwardStep <- function(cnms,
                         nrOfCombs,
                         allowUseAcross,
                         allowCorrelationSel
-                        )
+)
 {
   
   if(allowUseAcross)
     allSlopes <- unique(c(unlist(cnms), slopeCandidates), "(Intercept)") else 
       allSlopes <- c(slopeCandidates,"(Intercept)")
-  
-  allGroups <- unique( c(names(cnms), groupCandidates) )
-  
-  allSlopeCombs <- list()
-  
-  for(i in 1:nrOfCombs){
     
-    if(i<=length(allSlopes)){
-      
-      allSlopeCombs <- append(allSlopeCombs,combn(allSlopes,m=i,simplify=FALSE))
-      
-    }
+    allGroups <- unique( c(names(cnms), groupCandidates) )
     
-  }
-  
-  allSlopeCombs <- allSlopeCombs[sapply(allSlopeCombs,function(x)!any(duplicated(x)))]
-  
-  reList <- rep(allSlopeCombs,each=length(allGroups))
-  names(reList) <- rep(allGroups,length(allSlopeCombs))
-  
-  allCombs <- lapply(X=1:length(reList),function(i)append(cnms,reList[i]))
-  allCombs <- lapply(allCombs,checkREs)
-  if(!allowCorrelationSel) allCombs <- allCombs[
-    sapply(allCombs,function(x) 
-      length(unique(names(x))) == length(x))]
-  allCombs <- allCombs[!duplicated(allCombs)]
-  allCombs <- allCombs[!(sapply(allCombs,function(x)all.equal(x,lapply(cnms,sort)))=="TRUE")]
-  
-  if(length(allCombs)==0) return(NULL)
-  
-  allCombs <- allCombs[sapply(allCombs,function(r)!is.null(r))]
-  allCombs <- lapply(allCombs,function(t)t[order(names(t))])
-  allCombs <- allCombs[!(duplicated(allCombs) & duplicated(lapply(allCombs,names)))]
-  
-  # also allow for correlation parameter to be selected?
-  if(!allowCorrelationSel) allCombs <- removeUncor(allCombs)
-  
-  # only allow for REs, which are one variable larger than the current one
-  allCombs <- allCombs[!sapply(allCombs, function(r){
+    allSlopeCombs <- list()
     
-    any(sapply(1:length(r), function(i){
+    for(i in 1:nrOfCombs){
       
-      if(!names(r)[i] %in% names(cnms)){
+      if(i<=length(allSlopes)){
         
-        length(r[[i]]) > 1
-        
-      }else{
-        
-        length(r[[i]]) > length(cnms[[names(r)[i]]]) + 1
+        allSlopeCombs <- append(allSlopeCombs,combn(allSlopes,m=i,simplify=FALSE))
         
       }
       
-    }))
+    }
     
-  })]
-  
-  if(length(allCombs)==0) return(NULL)
-  
-  return(#list(randomPart=
-    allCombs#, sPart=...)
-  )
-  
+    allSlopeCombs <- allSlopeCombs[sapply(allSlopeCombs,function(x)!any(duplicated(x)))]
+    
+    reList <- rep(allSlopeCombs,each=length(allGroups))
+    names(reList) <- rep(allGroups,length(allSlopeCombs))
+    
+    allCombs <- lapply(X=1:length(reList),function(i)append(cnms,reList[i]))
+    allCombs <- lapply(allCombs,checkREs)
+    if(!allowCorrelationSel) allCombs <- allCombs[
+      sapply(allCombs,function(x) 
+        length(unique(names(x))) == length(x))]
+    allCombs <- allCombs[!duplicated(allCombs)]
+    allCombs <- allCombs[!(sapply(allCombs,function(x)all.equal(x,lapply(cnms,sort)))=="TRUE")]
+    
+    if(length(allCombs)==0) return(NULL)
+    
+    allCombs <- allCombs[sapply(allCombs,function(r)!is.null(r))]
+    allCombs <- lapply(allCombs,function(t)t[order(names(t))])
+    allCombs <- allCombs[!(duplicated(allCombs) & duplicated(lapply(allCombs,names)))]
+    
+    # also allow for correlation parameter to be selected?
+    if(!allowCorrelationSel) allCombs <- removeUncor(allCombs)
+    
+    # only allow for REs, which are one variable larger than the current one
+    allCombs <- allCombs[!sapply(allCombs, function(r){
+      
+      any(sapply(1:length(r), function(i){
+        
+        if(!names(r)[i] %in% names(cnms)){
+          
+          length(r[[i]]) > 1
+          
+        }else{
+          
+          length(r[[i]]) > length(cnms[[names(r)[i]]]) + 1
+          
+        }
+        
+      }))
+      
+    })]
+    
+    if(length(allCombs)==0) return(NULL)
+    
+    return(#list(randomPart=
+      allCombs#, sPart=...)
+    )
+    
 }
 
 #######################################################################################
@@ -650,7 +650,7 @@ removeNoInt <- function(res)
     namresi = names(res[[i]])
     
     for(j in 1:length(namresi)){
-    
+      
       resForThisGroup <- unlist(res[[i]][namresi[j]])
       # remove RE without intercept
       if(!hasInt(resForThisGroup)) res[[i]] <- res[[i]][-j]
@@ -660,7 +660,7 @@ removeNoInt <- function(res)
   }
   
   res <- res[sapply(res, length)>0]
-
+  
   return(res)
   
 }
@@ -878,9 +878,9 @@ makeFormula <- function(setup, modelInit)
           
           nobarsF <- attr(terms.formula(nobars(formula(modelInit)),
                                         data = modelInit@frame), "term.labels")
-
+          
         }
-                  
+        
       }
       
       rhs <- c(nobarsF, reFormula)
@@ -1107,8 +1107,9 @@ makeUpdate <- function(modelInit,
                  family(modelInit$mer)$family,
                  family(modelInit)$family)
     
-    mod <- glm(setup$random, family=fm,
-               data=data)
+    mod <- eval(parse(text=paste0("glm(",paste(format(setup$random), collapse=""),
+                                  ", family = ", fm, ", data = ",
+                                  attr(data, "orgname"),")")))
     
   }else if(!willBeGam & !hasBars & isGam){
     
@@ -1116,8 +1117,9 @@ makeUpdate <- function(modelInit,
                  family(modelInit$mer)$family,
                  family(modelInit)$family)
     
-    mod <- glm(setup$gamPart, family=fm,
-               data=data)    
+    mod <- eval(parse(text=paste0("glm(",paste(format(setup$gamPart), collapse=""),
+                                  ", family = ", fm, ", data = ",
+                                  attr(data, "orgname"),")")))   
     
     
   }else{ # willBeGam
