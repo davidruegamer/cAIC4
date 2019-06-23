@@ -17,6 +17,7 @@ sort_sterms <- function(m) {
   # only the names attribute is left after sorting
 
   sterm_index <- grep("^Xr", names(m$data))
+  if(length(sterm_index) == 0) return(NULL)
   old_names <- names(m$data)[sterm_index]
   smooth_names <- attr(m, "smooth_names")
   names(m$data)[sterm_index] <- paste0("s.", smooth_names)
@@ -313,22 +314,24 @@ get_Lind <- function(m) {
   # extracts equivalent to getME(mer,"RX") from a nlme::lme object
 
   no_re <- m$dims$qvec[[1]] + (is_dep(m))
+  l_re <- no_re <= 2
   n_groups <- m$dims$ngrps[[1]]
+  knots_p_sterm <- attr(m, "ordered_smooth")
+  i_g <- attr(m, "is_gamm")
 
-  if (!attr(m, "is_gamm") & no_re <= 2) {
+  if ((!i_g & l_re) | (i_g & is.null(knots_p_sterm) & l_re)) {
     return(rep(1:no_re, each = n_groups))
   }
-  if (!attr(m, "is_gamm")) {
+  if (!i_g | (i_g & is.null(knots_p_sterm))) {
     return(rep(1:no_re, n_groups))
   }
 
-  knots_p_sterm <- attr(m, "ordered_smooth")
   term <- 1:length(knots_p_sterm) + no_re
   vemp <- vector("list", length(term))
   for (ind in seq_len(length(term))) {
     vemp[[ind]] <- rep(term[ind],knots_p_sterm[ind])
   }
-  if (no_re <= 2) {
+  if (l_re) {
     return(c(rep(1:no_re, each = n_groups), unlist(vemp)))
   }
   c(rep(1:no_re, n_groups), unlist(vemp))

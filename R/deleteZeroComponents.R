@@ -115,11 +115,18 @@ deleteZeroComponents.lme <-
 
     if (!attr(m, "is_gamm")) {
       new_lme <- update(m, formula(m), random = r_effect, evaluate = TRUE)
-      return(del_zero_comp(new_lme))
+      attr(new_lme, "is_gamm") <- FALSE
+      return(deleteZeroComponents(new_lme))
     }
 
     g_m <- gamm(attr(m, "gam_form"), random = r_effect, data = m$data)
-    return(del_zero_comp(g_m))
+    attr(g_m$lme, "smooth_names") <- get_names(g_m) # old names
+    attr(g_m$lme, "is_gamm") <- TRUE # add indicator for mgcv::gamm
+    attr(g_m$lme, "gam_form") <- formula(g_m$gam) # for refit
+    g_m <- g_m$lme
+    attr(g_m, "ordered_smooth") <- sort_sterms(g_m) # names as in gamm4
+    
+    return(deleteZeroComponents(g_m))
   }
 #' @return \code{NULL}
 #'
