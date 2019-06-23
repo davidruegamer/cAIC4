@@ -168,7 +168,7 @@ get_D <- function(m) {
   D_lt <- bdiag(D_lt)
   
   # in case of independent random effects
-  if (!is_dep(m)) {
+  if (!is_dep(m) & m$dims$qvec[1] == 2) {
     D_lt <- diag(D_lt)
     fir <- D_lt[seq(1,length(D_lt),2)]
     sec <- D_lt[seq(1,length(D_lt),2) + 1]
@@ -256,7 +256,7 @@ get_Z <- function(m) {
   # get (true) random effect part from Z matrix
   random_part <- Z_try[, (no_knots + 1):ncol(Z_try)]
   
-  if (!is_dep(m)) {
+  if (!is_dep(m) & m$dims$qvec[1] == 2) {
     col <- seq(1,ncol(random_part),2)
     fir <- random_part[,col, drop = FALSE]
     sec <- random_part[,col + 1, drop = FALSE]
