@@ -61,7 +61,7 @@ getModelComponents.lme <-
       model$B <- matrix(0, length(theta), length(theta))
     } else {
       stop("Numerical Hessian not calculated in nlme::lme objects!")
-      model$B <- m@optinfo$derivs$Hessian
+      # model$B <- m@optinfo$derivs$Hessian
     }
     model$C <- matrix(0, length(theta), n)
     model$y <- y
@@ -101,8 +101,8 @@ function(m, analytic) {
   w             <- weights(m)
   if(any(w!=1)){
     
-    model$R <- diag(w)
-    Rinv <- diag(1/w)
+    model$R <- diag(1/w)
+    Rinv <- diag(w)
     D0inv <- solve(tcrossprod(Lambda))
     V0inv <- Rinv - crossprod(Rinv,Z) %*% solve(D0inv + t(Z)%*%Rinv%*%Z) %*% crossprod(Z,Rinv)
     
