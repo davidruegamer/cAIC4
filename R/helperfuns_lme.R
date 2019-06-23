@@ -134,7 +134,7 @@ cor_re <- function(m, cnms) {
   # splits the first entry of cnms into two parts if random itcpt and slope
   # were modelled dependently and returns the splitted version if so
 
-  if (!"Corr" %in% colnames(nlme:::VarCorr(m)) & lengths(cnms[1]) == 2) {
+  if (!is_dep(m) & lengths(cnms[1]) == 2) {
     # uncorrelated re have different cnms dim than correlated ones
     rev(c(split_at(cnms[[1]], 2), cnms[-1]))
   } else {
@@ -153,6 +153,7 @@ get_D <- function(m) {
   
   D_lt <- lapply(m$modelStruct$reStruct, as.matrix)
   n <- m$dims$ngrps[1]
+  no_knots <- sum(attr(m, "ordered_smooth"))
   
   # in case of smooth terms
   if (length(D_lt) > 1) {
@@ -164,8 +165,19 @@ get_D <- function(m) {
   }
   
   D_lt <- lapply(1:n, function(x) D_lt[[1]]) # substitute for rep() with matrix
-  if (exists("D_lt_2")) return(bdiag(c(D_lt,D_lt_2)) * sigma(m)^2)
-  bdiag(c(D_lt)) * sigma(m)^2
+  D_lt <- bdiag(D_lt)
+  
+  # in case of independent random effects
+  if (!is_dep(m)) {
+    D_lt <- diag(D_lt)
+    fir <- D_lt[seq(1,length(D_lt),2)]
+    sec <- D_lt[seq(1,length(D_lt),2) + 1]
+    D_lt <- Matrix(diag(c(fir,sec)))
+    if (!no_knots == 0) D_lt <-  Matrix(diag(c(sec,fir)))
+  } 
+
+  if (exists("D_lt_2")) return(bdiag(c(D_lt,bdiag(D_lt_2))) * sigma(m)^2)
+  D_lt * sigma(m)^2
 }
 
 get_theta <- function(m) {
@@ -187,7 +199,7 @@ get_theta <- function(m) {
     var_re_slope <- as.numeric(re_vcov[idx1 + 1, "Variance"])
     D <- matrix(c(var_re_itcpt, 0L, 0L, var_re_slope), ncol = 2, byrow = TRUE)
     theta_1 <- sqrt(diag(D)) / sigma
-    if ("Corr" %in% colnames(re_vcov)) {
+    if (is_dep(m)) {
       cov_re <- as.numeric(re_vcov[idx1 + 1, "Corr"]) * sqrt(var_re_itcpt *
         var_re_slope)
       D[2:3] <- cov_re
@@ -227,6 +239,8 @@ count_par <- function(m, sigma.estimated = TRUE) {
   length(var_str) + length(cor_str) + sigma.estimated
 }
 
+is_dep <- function(m) "Corr" %in% colnames(nlme:::VarCorr(m))
+
 get_Z <- function(m) {
 
   ## extracts equivalent to getME(mer,"Z") from a nlme::lme object.
@@ -236,11 +250,19 @@ get_Z <- function(m) {
   # getME(mer,"Z")
 
   Z_try <- RLRsim::extract.lmeDesign(m)$Z
-
+  
   no_knots <- sum(attr(m, "ordered_smooth"))
 
   # get (true) random effect part from Z matrix
   random_part <- Z_try[, (no_knots + 1):ncol(Z_try)]
+  
+  if (!is_dep(m)) {
+    col <- seq(1,ncol(random_part),2)
+    fir <- random_part[,col, drop = FALSE]
+    sec <- random_part[,col + 1, drop = FALSE]
+    random_part <- cbind(fir,sec)
+    if (!no_knots == 0) random_part <- cbind(sec, fir)
+  } 
 
   # get the spline part of Z order it according to getME(mer,"Z")
   spline_part <- m$data[attr(attr(m, "ordered_smooth"), "old_names")]
@@ -290,7 +312,7 @@ get_Lind <- function(m) {
 
   # extracts equivalent to getME(mer,"RX") from a nlme::lme object
 
-  no_re <- m$dims$qvec[[1]] + ("Corr" %in% colnames(nlme:::VarCorr(m)))
+  no_re <- m$dims$qvec[[1]] + (is_dep(m))
   n_groups <- m$dims$ngrps[[1]]
 
   if (!attr(m, "is_gamm") & no_re <= 2) {
