@@ -49,14 +49,78 @@ deleteZeroComponents <- function(m) UseMethod("deleteZeroComponents")
 #' @rdname deleteZeroComponents
 #' @method deleteZeroComponents lme
 #' @S3method deleteZeroComponents lme
-deleteZeroComponents.lme <- 
-function(m) {
-  
-  ### Philipp's code
-  stop("Not implemented yet.")
-  
-}
+deleteZeroComponents.lme <-
+  function(m) {
+    theta <- get_theta(m)
+    thetazero <- which(theta == 0)
+    if (is.null(names(theta))) {
+      true_re <- rep(T, length(theta))
+    } else {
+      true_re <- names(theta) == ""
+    }
 
+    if (length(thetazero) == 0) {
+      return(m)
+    }
+
+    varBlockMatrices <- get_ST(m)
+
+    re_name <- m$modelStruct$reStruct[1]
+    cnms <- attr(m$modelStruct$reStruct[[1]], "Dimnames")[1]
+    cnms <- cor_re(m, cnms)
+
+    smooth_names <- attr(m, "smooth_names")
+    cnms <- c(cnms, smooth_names)
+
+    for (i in 1:length(varBlockMatrices)) {
+      cnms[[i]] <- cnms[[i]][which(diag(varBlockMatrices[[i]]) != 0)]
+    }
+
+    # modify random argument for refit
+    no_re <- sum(true_re)
+    left_bar <- deparse(attr(re_name[[1]], "formula")[[2]])
+    right_bar <- names(re_name)
+    is_indpt <- "pdDiag" %in% class(re_name[[1]])
+    r_effect <- formula(re_name)
+
+    if (no_re == 3) {
+      if (theta[2] == 0) {
+        r_effect <- list()
+        r_effect[[right_bar]] <- pdDiag(as.formula(paste("~", left_bar)))
+      }
+      if (theta[1] == 0 & theta[2] == 0) {
+        r_effect <- list()
+        r_effect[[right_bar]] <- as.formula(paste("~ -1 + ", left_bar, "|", 
+                                                  right_bar))
+      }
+      if (theta[2] == 0 & theta[3] == 0) {
+        r_effect <- list()
+        r_effect[[right_bar]] <- as.formula(paste("~ 1", "|", right_bar))
+      }
+    }
+
+    if (is_indpt) {
+      if (theta[1] == 0) {
+        r_effect <- list()
+        r_effect[[right_bar]] <- as.formula(paste("~ -1 + ", left_bar, "|", 
+                                                  right_bar))
+      }
+      if (theta[2] == 0) {
+        r_effect <- list()
+        r_effect[[right_bar]] <- as.formula(paste("~ 1", "|", right_bar))
+      }
+    }
+
+    if (no_re == 1 & theta[1] == 0) cat("No random effect variance.")
+
+    if (!attr(m, "is_gamm")) {
+      new_lme <- update(m, formula(m), random = r_effect, evaluate = TRUE)
+      return(del_zero_comp(new_lme))
+    }
+
+    g_m <- gamm(attr(m, "gam_form"), random = r_effect, data = m$data)
+    return(del_zero_comp(g_m))
+  }
 #' @return \code{NULL}
 #'
 #' @rdname deleteZeroComponents

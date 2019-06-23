@@ -180,6 +180,18 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
     object@optinfo$gamm4 <- TRUE    # add indicator for gamm4
   }
   
+  if (any(class(object) %in% "gamm")) {
+    attr(object$lme, "smooth_names") <- get_names(object) # old names
+    attr(object$lme, "is_gamm") <- TRUE # add indicator for mgcv::gamm
+    attr(object$lme, "gam_form") <- formula(object$gam) # for refit
+    object <- object$lme
+    attr(object, "ordered_smooth") <- sort_sterms(object) # names as in gamm4
+  }
+
+  if (any(class(object) %in% "lme")) {
+    sigma.penalty <- count_par(object)
+    if (is.null(attr(object, "is_gamm"))) attr(object, "is_gamm") <- FALSE
+  }
   
   ### START: calculation for GLMs and LMs
   if (any(class(object) %in% c("glm","lm"))) {
