@@ -190,6 +190,7 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
 
   if (any(class(object) %in% "lme")) {
     sigma.penalty <- count_par(object)
+    if (!any(object$dims$ngrps > 1)) stop("No grouping structure specified.")
     if (is.null(attr(object, "is_gamm"))) attr(object, "is_gamm") <- FALSE
   }
   
