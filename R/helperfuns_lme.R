@@ -60,9 +60,9 @@ get_names <- function(x) {
 
   unlist(sapply(x$gam$smooth, function(x) {
     if (is.list(x[[1]])) {
-      return(paste0(x$term, collapse = "_"))
+      return(paste0(x$label, collapse = "_"))
     } # interaction te()
-    x$term # regular s()
+    x$label # regular s()
   }))
 }
 
