@@ -108,8 +108,9 @@ function(m, analytic) {
 
     
   }else{
-    
-    V0inv         <- diag(rep(1, n)) - crossprod(solve(L, system = "L") %*% 
+    I_v0inv       <- Matrix(0, n, n, sparse = TRUE)
+    diag(I_v0inv) <- 1
+    V0inv         <- I_v0inv - crossprod(solve(L, system = "L") %*% 
                                                    solve(L, Lambdat, system = "P") %*% t(Z))
     
   }
