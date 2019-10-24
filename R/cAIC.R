@@ -195,7 +195,7 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
   }
   
   ### START: calculation for GLMs and LMs
-  if (any(class(object) %in% c("glm","lm"))) {
+  if (any(class(object) %in% c("glm","lm")) & !("gam" %in% class(object))) {
     
     y <- object$y
 
