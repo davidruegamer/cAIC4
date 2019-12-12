@@ -1,4 +1,4 @@
-summary.MA <- function(object, randeff = FALSE, ...){
+summaryMA <- function(object, randeff = FALSE, ...){
   z <- object
   c <- z$call
   f <- z$fixeff
@@ -19,7 +19,5 @@ summary.MA <- function(object, randeff = FALSE, ...){
 
   cat("\nWeights for underlying Candidate Models:\n")
   print(round(o$weights, digits = 6))
-
-
 }
 
