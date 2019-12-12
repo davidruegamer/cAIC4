@@ -37,8 +37,6 @@
 #'
 modelAvg <- function(models, opt = TRUE, ...){
   call <- match.call()
-  # models <- c(models, list(...))
-  # optimizing weighting vector?
   if (opt == TRUE) {
     tempres <- getWeights(models, ...)
   } else {
