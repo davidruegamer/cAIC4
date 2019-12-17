@@ -13,7 +13,8 @@
 #' @keywords model averaging, prediction, linear mixed models
 #' @rdname predictMA
 #' @export predictMA
-#' @example data(Orthodont, package = "nlme")
+#' @examples 
+#' data(Orthodont, package = "nlme")
 #' models <- list(
 #'     model1 <- lmer(formula = distance ~ age + Sex + (1 | Subject) + age:Sex,
 #'                data = Orthodont),

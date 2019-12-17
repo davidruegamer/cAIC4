@@ -6,17 +6,33 @@
 fitted via (g)lmer() or (generalized) additive (mixed) model
 fitted via gamm4() with the smallest cAIC.}
 \usage{
-stepcAIC(object, numberOfSavedModels = 1, groupCandidates = NULL,
-  slopeCandidates = NULL, fixEfCandidates = NULL,
-  numberOfPermissibleSlopes = 2, allowUseAcross = FALSE,
-  allowCorrelationSel = FALSE, allowNoIntercept = FALSE,
-  direction = "backward", trace = FALSE, steps = 50, keep = NULL,
-  numCores = 1, data = NULL, returnResult = TRUE,
-  calcNonOptimMod = TRUE, bsType = "tp", digits = 2,
-  printValues = "caic", ...)
+stepcAIC(
+  object,
+  numberOfSavedModels = 1,
+  groupCandidates = NULL,
+  slopeCandidates = NULL,
+  fixEfCandidates = NULL,
+  numberOfPermissibleSlopes = 2,
+  allowUseAcross = FALSE,
+  allowCorrelationSel = FALSE,
+  allowNoIntercept = FALSE,
+  direction = "backward",
+  trace = FALSE,
+  steps = 50,
+  keep = NULL,
+  numCores = 1,
+  data = NULL,
+  returnResult = TRUE,
+  calcNonOptimMod = TRUE,
+  bsType = "tp",
+  digits = 2,
+  printValues = "caic",
+  ...
+)
 }
 \arguments{
-\item{object}{object returned by \code{[lme4]{lmer}}, \code{[lme4]{glmer}} or \code{[gamm4]{gamm4}}}
+\item{object}{object returned by \code{[lme4]{lmer}}, \code{[lme4]{glmer}} or 
+\code{[gamm4]{gamm4}}}
 
 \item{numberOfSavedModels}{integer defining how many additional models to be saved
 during the step procedure. If \code{1} (DEFAULT), only the best model is returned. 
@@ -25,18 +41,20 @@ If \code{0}, all models will be returned (not recommended for larger application
 
 \item{groupCandidates}{character vector containing names of possible grouping variables for 
 new random effects. Group nesting must be specified manually, i.e. by 
-listing up the string of the groups in the manner of lme4. For example \code{groupCandidates = c("a", "b", "a/b")}.}
+listing up the string of the groups in the manner of lme4. For example 
+\code{groupCandidates = c("a", "b", "a/b")}.}
 
 \item{slopeCandidates}{character vector containing names of possible new random effects}
 
-\item{fixEfCandidates}{character vector containing names of possible (non-)linear fixed effects in the GAMM; 
-NULL for the (g)lmer-use case}
+\item{fixEfCandidates}{character vector containing names of possible (non-)linear fixed effects 
+in the GAMM; NULL for the (g)lmer-use case}
 
 \item{numberOfPermissibleSlopes}{how much slopes are permissible for one grouping variable}
 
 \item{allowUseAcross}{allow slopes to be used in other grouping variables}
 
-\item{allowCorrelationSel}{logical; FALSE does not allow correlations of random effects to be (de-)selected (default)}
+\item{allowCorrelationSel}{logical; FALSE does not allow correlations of random effects 
+to be (de-)selected (default)}
 
 \item{allowNoIntercept}{logical; FALSE does not allow random effects without random intercept}
 
@@ -46,8 +64,9 @@ NULL for the (g)lmer-use case}
 
 \item{steps}{maximum number of steps to be considered}
 
-\item{keep}{list($fixed,$random) of formulae; which splines / fixed (fixed) or random effects (random) to be 
-kept during selection; specified terms must be included in the original model}
+\item{keep}{list($fixed,$random) of formulae; which splines / fixed (fixed) or 
+random effects (random) to be kept during selection; specified terms must be 
+included in the original model}
 
 \item{numCores}{the number of cores to be used in calculations; 
 parallelization is done by using \code{parallel::mclapply}}
@@ -57,13 +76,15 @@ variables, which are considered for forward updates.}
 
 \item{returnResult}{logical; whether to return the result (best model and corresponding cAIC)}
 
-\item{calcNonOptimMod}{logical; if FALSE, models which failed to converge are not considered for cAIC calculation}
+\item{calcNonOptimMod}{logical; if FALSE, models which failed to converge are not considered 
+for cAIC calculation}
 
 \item{bsType}{type of splines to be used in forward gamm4 steps}
 
 \item{digits}{number of digits used in printing the results}
 
-\item{printValues}{what values of \code{c("cll", "df", "caic", "refit")} to print in the table of comparisons}
+\item{printValues}{what values of \code{c("cll", "df", "caic", "refit")} 
+to print in the table of comparisons}
 
 \item{...}{further options for cAIC call}
 }

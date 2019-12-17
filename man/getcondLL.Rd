@@ -2,9 +2,15 @@
 % Please edit documentation in R/getcondLL.R
 \name{getcondLL}
 \alias{getcondLL}
+\alias{getcondLL.lme}
+\alias{getcondLL.merMod}
 \title{Function to calculate the conditional log-likelihood}
 \usage{
 getcondLL(object)
+
+\method{getcondLL}{lme}(object)
+
+\method{getcondLL}{merMod}(object)
 }
 \arguments{
 \item{object}{An object of class \code{merMod} either fitted by
@@ -12,6 +18,10 @@ getcondLL(object)
 }
 \value{
 conditional log-likelihood value
+
+\code{NULL}
+
+\code{NULL}
 }
 \description{
 Function to calculate the conditional log-likelihood

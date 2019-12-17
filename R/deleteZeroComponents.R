@@ -33,22 +33,21 @@
 #' conditional AIC in linear mixed models. Biometrika 97(4), 773-789.
 #' @keywords regression
 #' @rdname deleteZeroComponents
-#' @export deleteZeroComponents
 #' @examples
 #' 
 #' ## Currently no data with variance equal to zero...
 #' b <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #' 
 #' deleteZeroComponents(b)
-#' 
-#' 
+#' @importFrom mgcv gamm
+#' @importFrom nlme pdDiag
+#' @export
 deleteZeroComponents <- function(m) UseMethod("deleteZeroComponents")
 
 #' @return \code{NULL}
 #'
 #' @rdname deleteZeroComponents
-#' @method deleteZeroComponents lme
-#' @export deleteZeroComponents lme
+#' @export 
 deleteZeroComponents.lme <-
   function(m) {
     theta <- get_theta(m)
@@ -131,8 +130,7 @@ deleteZeroComponents.lme <-
 #' @return \code{NULL}
 #'
 #' @rdname deleteZeroComponents
-#' @method deleteZeroComponents merMod
-#' @export deleteZeroComponents merMod
+#' @export
 deleteZeroComponents.merMod <-
 function(m) {
   # A function that deletes all random effects terms if corresponding variance
@@ -163,7 +161,9 @@ function(m) {
     for(i in 1:length(varBlockMatrices)){
       if(any(diag(varBlockMatrices[[i]]) == 0)) {
          termWithZero <- cnms[[i]][which(diag(varBlockMatrices[[i]]) == 0)]
-         cat("The term", ifelse(termWithZero=="(Intercept)",names(cnms)[[i]],termWithZero[[1]]), 
+         cat("The term", ifelse(termWithZero=="(Intercept)",
+                                names(cnms)[[i]],
+                                termWithZero[[1]]), 
           "has zero variance components. \n")
       }
     }
@@ -186,7 +186,8 @@ function(m) {
   # }
   
   reFormula  <- cnms2formula(cnms)
-  if(suppressWarnings(nobars(formula(m)) == formula(m)[[2]])) {  # if there are no fixed effects 
+  if(suppressWarnings(nobars(formula(m)) == formula(m)[[2]])) {  
+    # if there are no fixed effects 
     rhs      <- reFormula
   } else {
     rhs      <- c(attr(terms(nobars(formula(m))), "term.labels"), reFormula)

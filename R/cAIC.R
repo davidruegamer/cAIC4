@@ -115,8 +115,10 @@
 #' 99(467), 619-632.
 #' @keywords regression
 #' @export
-#' @import lme4 Matrix methods
+#' @import lme4 Matrix methods RLRsim mvtnorm
 #' @importFrom stats terms.formula
+#' @importFrom stats gaussian printCoefmat residuals
+#' @importFrom utils capture.output
 #' @rawNamespace 
 #' if(getRversion() >= "3.3.0") {
 #' importFrom("stats", sigma)

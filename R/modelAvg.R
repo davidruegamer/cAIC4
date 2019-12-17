@@ -21,7 +21,8 @@
 #' @keywords model averaging, weights, linear mixed models
 #' @rdname modelAvg
 #' @export modelAvg
-#' @example data(Orthodont, package = "nlme")
+#' @examples 
+#' data(Orthodont, package = "nlme")
 #' models <- list(
 #'     model1 <- lmer(formula = distance ~ age + Sex + (1 | Subject) + age:Sex,
 #'                data = Orthodont),

@@ -57,8 +57,6 @@ Instead a warning with terms to omit from the model is returned.
 b <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 
 deleteZeroComponents(b)
-
-
 }
 \references{
 Greven, S. and Kneib T. (2010) On the behaviour of marginal and

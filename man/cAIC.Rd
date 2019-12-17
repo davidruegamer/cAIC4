@@ -4,8 +4,7 @@
 \alias{cAIC}
 \title{Conditional Akaike Information for 'lme4' and 'lme'}
 \usage{
-cAIC(object, method = NULL, B = NULL, sigma.penalty = 1,
-  analytic = TRUE)
+cAIC(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE)
 }
 \arguments{
 \item{object}{An object of class merMod either fitted by

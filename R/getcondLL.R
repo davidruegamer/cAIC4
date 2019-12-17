@@ -6,16 +6,13 @@
 #' @return conditional log-likelihood value
 #' @importFrom stats weights
 #' @export
-#'
-#'
-getcondLL <- function(m) UseMethod("getcondLL")
+getcondLL <- function(object) UseMethod("getcondLL")
 
 #' @return \code{NULL}
 #'
 #' @rdname getcondLL
-#' @method getcondLL lme
-#' @export getcondLL lme
-#' 
+#' @importFrom nlme getResponse
+#' @export 
 getcondLL.lme <-
   function(object) {
     stopifnot(family(object)$family == "gaussian")
@@ -28,8 +25,7 @@ getcondLL.lme <-
 #' @return \code{NULL}
 #'
 #' @rdname getcondLL
-#' @method getcondLL merMod
-#' @export getcondLL merMod
+#' @export 
 getcondLL.merMod <-
 function(object) {
   # A function that calls the bias correction functions.
