@@ -48,7 +48,7 @@ deleteZeroComponents <- function(m) UseMethod("deleteZeroComponents")
 #'
 #' @rdname deleteZeroComponents
 #' @method deleteZeroComponents lme
-#' @S3method deleteZeroComponents lme
+#' @export deleteZeroComponents lme
 deleteZeroComponents.lme <-
   function(m) {
     theta <- get_theta(m)
@@ -132,7 +132,7 @@ deleteZeroComponents.lme <-
 #'
 #' @rdname deleteZeroComponents
 #' @method deleteZeroComponents merMod
-#' @S3method deleteZeroComponents merMod
+#' @export deleteZeroComponents merMod
 deleteZeroComponents.merMod <-
 function(m) {
   # A function that deletes all random effects terms if corresponding variance

@@ -14,7 +14,7 @@ getcondLL <- function(m) UseMethod("getcondLL")
 #'
 #' @rdname getcondLL
 #' @method getcondLL lme
-#' @S3method getcondLL lme
+#' @export getcondLL lme
 #' 
 getcondLL.lme <-
   function(object) {
@@ -29,7 +29,7 @@ getcondLL.lme <-
 #'
 #' @rdname getcondLL
 #' @method getcondLL merMod
-#' @S3method getcondLL merMod
+#' @export getcondLL merMod
 getcondLL.merMod <-
 function(object) {
   # A function that calls the bias correction functions.
