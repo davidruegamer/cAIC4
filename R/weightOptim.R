@@ -1,4 +1,4 @@
-.weightOptim = function(weights, lm, targets, hess, lambda, scaler, .envi, ...)
+.weightOptim = function(weights, lm, targets, hess, lambda, scaler, .envi)
 {
   m     <- get("m", envir = .envi)
   y     <- get("y", envir = .envi)

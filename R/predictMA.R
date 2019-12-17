@@ -28,7 +28,7 @@
 #' predictMA(foo)
 #'
 #'
-predictMA <- function(object, new.data, ...){
+predictMA <- function(object, new.data){
   z <- object
   c <- z$candidatmodels
   w <- z$optimresults$weights

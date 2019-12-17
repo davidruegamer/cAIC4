@@ -40,7 +40,7 @@
 #' foo
 #'
 #'
-getWeights <- function(models, ...)
+getWeights <- function(models)
 {
   m             <- models
   .envi         <- environment()

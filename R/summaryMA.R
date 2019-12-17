@@ -27,7 +27,7 @@
 #' summaryMA(foo)
 #'
 #'
-summaryMA <- function(object, randeff = FALSE, ...){
+summaryMA <- function(object, randeff = FALSE){
   z <- object
   c <- z$call
   f <- z$fixeff

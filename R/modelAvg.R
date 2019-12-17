@@ -36,10 +36,10 @@
 #' foo
 #'
 #'
-modelAvg <- function(models, opt = TRUE, ...){
+modelAvg <- function(models, opt = TRUE){
   call <- match.call()
   if (opt == TRUE) {
-    tempres <- getWeights(models, ...)
+    tempres <- getWeights(models)
   } else {
     invisible(capture.output(tempres <-anocAIC(models)))
     tempres$delta<- tempres$cAIC - min(tempres$cAIC)
