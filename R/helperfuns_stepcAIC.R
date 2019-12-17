@@ -1075,7 +1075,8 @@ makeUpdate <- function(modelInit,
   
   isGlm <- any(class(modelInit)%in%c("glm","lm"))
   
-  isGam <- is.list(modelInit) & length(modelInit)==2 & all(c("mer","gam") %in% names(modelInit))
+  isGam <- is.list(modelInit) & length(modelInit)==2 & 
+    all(c("mer","gam") %in% names(modelInit))
   
   # make a decision which method should be used for fitting
   
@@ -1107,9 +1108,11 @@ makeUpdate <- function(modelInit,
                  family(modelInit$mer)$family,
                  family(modelInit)$family)
     
-    mod <- eval(parse(text=paste0("glm(",paste(format(setup$random), collapse=""),
+    mod <- eval(parse(text=paste0("glm(",paste(format(setup$random), 
+                                               collapse=""),
                                   ", family = ", fm, ", data = ",
-                                  attr(data, "orgname"),")")))
+                                  attr(data, "orgname"),")")), 
+                envir = environment(modelInit))
     
   }else if(!willBeGam & !hasBars & isGam){
     
@@ -1117,7 +1120,8 @@ makeUpdate <- function(modelInit,
                  family(modelInit$mer)$family,
                  family(modelInit)$family)
     
-    mod <- eval(parse(text=paste0("glm(",paste(format(setup$gamPart), collapse=""),
+    mod <- eval(parse(text=paste0("glm(",paste(format(setup$gamPart), 
+                                               collapse=""),
                                   ", family = ", fm, ", data = ",
                                   attr(data, "orgname"),")")))   
     

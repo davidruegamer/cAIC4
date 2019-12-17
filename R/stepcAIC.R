@@ -196,6 +196,9 @@ stepcAIC <- function(object,
   
   if(!is.null(data)){
     data <- get(deparse(substitute(data)), envir = parent.frame())
+    if(inherits(object, c("lmerMod", "glmerMod")))
+      attr(data, "orgname") <- as.character(object@call[["data"]]) else
+        attr(data, "orgname") <- as.character(object$call[["data"]])
   }else if(inherits(object, c("lmerMod", "glmerMod"))){
     data <- get(deparse(object@call[["data"]]), envir = parent.frame())
     attr(data, "orgname") <- as.character(object@call[["data"]])
