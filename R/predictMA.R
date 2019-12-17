@@ -25,7 +25,7 @@
 #'     model4 <- lmer(formula = distance ~ Sex + (1 | Subject),
 #'                 data = Orthodont))
 #' foo <- modelAvg(models = models)
-#' predictMA(foo, new.data = data)
+#' predictMA(foo, new.data = Orthodont)
 #' 
 #'
 predictMA <- function(object, new.data){
