@@ -72,7 +72,7 @@ function(model, sigma.penalty, analytic) {
   
   Lambday <- try(solve(B) %*% C)
   
-  if(class(Lambday)=="try-error"){  
+  if(class(Lambday)[1]=="try-error"){  
   
     Rchol   <- try(chol(B))
     L1      <- backsolve(Rchol, C, transpose = TRUE)
