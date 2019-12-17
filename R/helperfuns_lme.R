@@ -186,7 +186,7 @@ get_theta <- function(m) {
   # extracts equivalent to getME(mer,"theta") from a nlme::lme. For now, only
   # random intercept (+ slope, correlated and uncorrelated) can be handled.
 
-  re_vcov <- nlme:::VarCorr(m)
+  re_vcov <- nlme::VarCorr(m)
   sigma <- sigma(m)
 
   rnames <- rownames(re_vcov)
@@ -240,7 +240,7 @@ count_par <- function(m, sigma.estimated = TRUE) {
   length(var_str) + length(cor_str) + sigma.estimated
 }
 
-is_dep <- function(m) "Corr" %in% colnames(nlme:::VarCorr(m))
+is_dep <- function(m) "Corr" %in% colnames(nlme::VarCorr(m))
 
 get_Z <- function(m) {
 
