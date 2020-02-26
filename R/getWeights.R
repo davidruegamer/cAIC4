@@ -59,8 +59,7 @@ getWeights <- function(models)
   }
   mu            <- t(matrix(unlist(mu), nrow = length(m), byrow = TRUE))
   weights       <- rep(1/length(m), times = length(m))
-  fun           <- find_weights <- function(w){
-    (norm(y - matrix(mu %*% w)))^(2) + 2 * varDF * (w %*% df)}
+  fun           <- find_weights <- function(w){(norm(y - matrix(mu %*% w), "F"))^(2) + 2 * varDF * (w %*% df)}
   eqfun         <- equal <-function(w){sum(w)}
   equB           <- 1
   lowb          <- rep(0, times = length(m))
