@@ -1,6 +1,7 @@
 #' Summary of model averaged linear mixed models
 #'
-#' Function to generate a summary of the results of the model averaging process.
+#' summaryMA is a function used to produce result summaries of the model 
+#' averaging approach.
 #'
 #' @param object A object created by the model averaging function.
 #' @param randeff logical. Indicator whether the model averaged random effects should also be part of the output. The default setting is FALSE.

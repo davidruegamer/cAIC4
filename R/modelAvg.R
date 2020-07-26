@@ -1,17 +1,17 @@
 #' Model Averaging for Linear Mixed Models
 #'
-#' Function to perform Model Averaging for Linear Mixed Models based
-#' on the weight selection criterion Model Averaging as proposed by Zhang et al.(2014)
+#' Function to perform model averaging for linear mixed models based
+#' on the weight selection criterion as proposed by Zhang et al. (2014).
 #'
 #' @param models A list object containing all considered candidate models fitted by
 #' \code{\link[lme4]{lmer}} of the lme4-package or of class
 #' \code{\link[nlme]{lme}}.
-#' @param opt logical. If TRUE (the default) the model averaging approach
-#' with optimial weights is calculated. If FALSE the underlying weights as smoothed weights
-#' as proposed by Buckland et al. (1997)
+#' @param opt logical. If TRUE (the default) the model averaging approach based 
+#' on Zhang et al. is applied. If FALSE the underlying weights are calculated 
+#' as smoothed weights as proposed by Buckland et al. (1997).
 #' @return An object containing the function calls of the underlying candidate models,
-#' the values of the model averaged fixed effects, the values of the model averaged random effects
-#' the results of the weight optimization process, as well as a list of the candidate models themselvs
+#' the values of the model averaged fixed effects, the values of the model averaged random effects,
+#' the results of the weight optimization process, as well as a list of the candidate models themselves.
 #' @author Benjamin Saefken & Rene-Marcel Kruse
 #' @seealso \code{\link[lme4]{lme4-package}}, \code{\link[lme4]{lmer}}
 #' @references Greven, S. and Kneib T. (2010) On the behaviour of marginal and
