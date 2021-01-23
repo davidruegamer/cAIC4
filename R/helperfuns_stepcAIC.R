@@ -1099,8 +1099,13 @@ makeUpdate <- function(modelInit,
     
   }else if(!willBeGam & !isGlm & hasBars & !isGam){
     
-    mod <- update(modelInit,
-                  formula = setup$random)    
+    form <- setup$random
+    if(!is.null(setup$gamPart))
+      form <- paste0(paste(format(setup$gamPart), 
+                           collapse=""), 
+                     " + ", setup$random)
+    
+    mod <- update(modelInit, formula = form)    
     
   }else if(!willBeGam & !hasBars & !isGam){
     

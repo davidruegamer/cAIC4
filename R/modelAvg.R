@@ -18,7 +18,6 @@
 #' conditional AIC in linear mixed models. Biometrika 97(4), 773-789.
 #' @references Zhang, X., Zou, G., & Liang, H. (2014). Model averaging and
 #' weight choice in linear mixed-effects models. Biometrika, 101(1), 205-218.
-#' @keywords model averaging, weights, linear mixed models
 #' @rdname modelAvg
 #' @export modelAvg
 #' @examples 

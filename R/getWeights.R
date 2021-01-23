@@ -22,7 +22,6 @@
 #' weight choice in linear mixed-effects models. Biometrika, 101(1), 205-218.
 #' @references Nocedal, J., & Wright, S. (2006). Numerical optimization.
 #' Springer Science & Business Media.
-#' @keywords weights, model averaging, augmented lagrangian method
 #' @rdname getWeights
 #' @export getWeights
 #' @examples data(Orthodont, package = "nlme")

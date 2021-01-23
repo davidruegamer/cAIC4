@@ -9,7 +9,6 @@
 #' @seealso \code{\link[lme4]{lme4-package}}, \code{\link[lme4]{lmer}}
 #' @references Greven, S. and Kneib T. (2010) On the behaviour of marginal and
 #' conditional AIC in linear mixed models. Biometrika 97(4), 773-789.
-#' @keywords model averaging, linear mixed models
 #' @rdname summaryMA
 #' @export summaryMA
 #' @examples 
