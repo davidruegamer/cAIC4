@@ -4,8 +4,10 @@
 #' on the weight selection criterion as proposed by Zhang et al.(2014)
 #'
 #' @param object A object created by the model averaging function.
-#' @param new.data Object that contains the data on which the prediction is to be based on.
-#' @return An object that containing predictions that are calculated on the basis of dataset and the underlying averaged model.
+#' @param new.data Object that contains the data on which the prediction 
+#' is to be based on.
+#' @return An object that contains predictions calculated based on the given 
+#' dataset and the assumed underlying model average. 
 #' @author Benjamin Saefken & Rene-Marcel Kruse
 #' @seealso \code{\link[lme4]{lme4-package}}, \code{\link[lme4]{lmer}}
 #' @references Greven, S. and Kneib T. (2010) On the behaviour of marginal and

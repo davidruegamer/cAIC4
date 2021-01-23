@@ -1,18 +1,20 @@
 #' Optimize weights for model averaging.
 #'
-#' Function to constructed an optimal vector of weights for model averaging of
-#' Linear Mixed Models based on the proposal of Zhang et al. (2014) of using Stein's Formular
-#' to derive a suitable criterion based on the conditional Akaike Information Criterion as
-#' proposed by Greven and Kneib. The underlying optimization used is a customized version
-#' of the Augmented Lagrangian Method.
+#'Function to determine optimal weights for model averaging based on a proposal 
+#'by Zhang et al. ( 2014) to derive a weight choice criterion based on the 
+#'conditional Akaike Information Criterion as proposed by Greven and Kneib 
+#'(2010). The underlying optimization is a customized version of the 
+#'Augmented Lagrangian Method.
 #'
 #' @param models An list object containing all considered candidate models fitted by
 #' \code{\link[lme4]{lmer}} of the lme4-package or of class
 #' \code{\link[nlme]{lme}}.
-#' @return An updated object containing a vector of weights for the underlying candidate models, value
-#' of the object given said weights as well as the time needed.
-#' @section WARNINGS : For models called via \code{gamm4} or \code{gamm}
-#' no weight determination via this function is currently possible.
+#' @return An object containing a vector of optimized weights, 
+#' value of the minimized target function and the duration of the optimization 
+#' process.
+#' 
+#' @section WARNINGS : 
+#' No weight-determination is currently possible for models called via \code{gamm4}.
 #' @author Benjamin Saefken & Rene-Marcel Kruse
 #' @seealso \code{\link[lme4]{lme4-package}}, \code{\link[lme4]{lmer}},
 #' \code{\link[lme4]{getME}}
@@ -58,10 +60,9 @@ getWeights <- function(models)
   }
   mu            <- t(matrix(unlist(mu), nrow = length(m), byrow = TRUE))
   weights       <- rep(1/length(m), times = length(m))
-  fun           <- find_weights <- function(w){
-    (norm(y - matrix(mu %*% w)))^(2) + 2 * varDF * (w %*% df)}
+  fun           <- find_weights <- function(w){(t(y - matrix(mu %*% w))%*%(y - matrix(mu %*% w))) + 2 * varDF * (w %*% df)}
   eqfun         <- equal <-function(w){sum(w)}
-  equB           <- 1
+  equB          <- 1
   lowb          <- rep(0, times = length(m))
   uppb          <- rep(1, times = length(m))
   nw            <- length(weights)
