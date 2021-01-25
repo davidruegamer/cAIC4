@@ -1125,10 +1125,18 @@ makeUpdate <- function(modelInit,
                  family(modelInit$mer)$family,
                  family(modelInit)$family)
     
+    if(length(modelInit$gam$smooth)==0)
+    {
+      # actually a Glm
+      this_data <- data
+    }else{
+      this_data <- attr(data, "orgname")
+    }
+    
     mod <- eval(parse(text=paste0("glm(",paste(format(setup$gamPart), 
                                                collapse=""),
                                   ", family = ", fm, ", data = ",
-                                  attr(data, "orgname"),")")))   
+                                  "this_data",")")))   
     
     
   }else{ # willBeGam
