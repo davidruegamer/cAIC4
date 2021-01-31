@@ -201,21 +201,13 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
     
     y <- object$y
 
-    if(is.null(y)) y <- eval(object$call$data, 
-                             environment(formula(object)))[
-                               all.vars(formula(object))[1]][[1]]
-    if(is.null(y)){ 
-      stop("Please specify the data argument in the initial model call!")
-    }else{
-      # check for transformation
-      lhs <- as.character(formula(object)[[2]])
-      if(length(lhs)==2 &&
-         lhs[2]==all.vars(formula(object))[1] && 
-         is.function(eval(parse(text=lhs[1]))))
-        y <- do.call(lhs[1], list(x=y))
-    }
+    if(is.null(y)) y <- with(eval(object$call$data, 
+                                  environment(formula(object))),
+                             eval(formula(object)[[2]]))
     
-        
+    if(is.null(y)) 
+      stop("Please specify the data argument in the initial model call!")
+   
     n <- length(y)
     
     mu <- predict(object,type="response")
