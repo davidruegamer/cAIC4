@@ -208,6 +208,8 @@ function(object, method = NULL, B = NULL, sigma.penalty = 1, analytic = TRUE) {
     if(is.null(y)) 
       stop("Please specify the data argument in the initial model call!")
    
+    # remove NAs
+    y <- na.omit(y)
     n <- length(y)
     
     mu <- predict(object,type="response")
