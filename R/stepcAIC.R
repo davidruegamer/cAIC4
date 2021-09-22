@@ -379,7 +379,7 @@ stepcAIC <- function(object,
   dirWasBoth <- ifelse( direction=="both", TRUE, FALSE )
   
   # indicator for improvement in direction=="both" - step
-  improvementInBoth <- FALSE
+  improvementInBoth <- TRUE
   
   # indicator for check if step procedure didnt yield better
   # results compared to the previous step
@@ -519,7 +519,7 @@ stepcAIC <- function(object,
     
     
     if (trace) {
-      cat("\r\r\r\r\r\r\r\r\r\r\r\r\r")
+      cat("\n")
       print(aicTab[with(aicTab,order(-caic)), c("models",printValues)], 
             row.names = FALSE, digits = digits)
       cat("\n_____________________________________________\n")
@@ -643,7 +643,7 @@ stepcAIC <- function(object,
       
       direction <- ifelse( direction=="forward", "backward", "forward" )
       improvementInBoth <- FALSE 
-      # set to FALSE to prevent unneccessary steps if the current model is the best model
+      # set to FALSE to prevent unnecessary steps if the current model is the best model
       
     }else{
       

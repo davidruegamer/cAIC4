@@ -1,26 +1,23 @@
-
-
-year <- 2018
-vers <- "0.3"
-
-citHeader("To cite package 'cAIC4' itself use the manual and the software paper.")
-
-citEntry(
- entry = "manual",
- title = "cAIC4: Conditional Akaike information criterion for lme4",
- author = "Benjamin Saefken and David Ruegamer and with contributions from Sonja Greven and Thomas Kneib",
- year = year,
- textVersion = paste0("Saefken, B. and Ruegamer, D. ", "(",year,"), ", "cAIC4: Conditional Akaike information criterion for lme4, ",
-                     "R package version ", vers)
+bibentry(bibtype = "Article",
+  title        = "Conditional Model Selection in Mixed-Effects Models with {cAIC4}",
+  author       = c(person(given = "Benjamin",
+                          family = "S\\\"afken",
+                          email = "bsaefke@uni-goettingen.de"),
+                   person(given = "David",
+                          family = "R\\\"ugamer",
+                          email = "david.ruegamer@stat.uni-muenchen.de"),
+                   person(given = "Thomas",
+                          family = "Kneib",
+                          email = "tkneib@uni-goettingen.de"),
+                   person(given = "Sonja",
+                          family = "Greven",
+                          email = "sonja.greven@stat.uni-muenchen.de")),
+  journal      = "Journal of Statistical Software",
+  year         = "2021",
+  volume       = "99",
+  number       = "8",
+  pages        = "1--30",
+  doi          = "10.18637/jss.v099.i08",
+  header       = "To cite cAIC4 in publications use:"
 )
 
-citEntry(
- entry = "Article",
- title = "Conditional Model Selection in Mixed-Effects Models with cAIC4",
- author = "Benjamin Saefken, David Ruegamer, Thomas Kneib, and Sonja Greven",
- journal = "ArXiv e-prints",
- year = "2018",
- eprint = "1803.05664",
- month = "march",
- textVersion="Saefken, B., Ruegamer, D., Kneib, T., and Greven, S. (2018), Conditional Model Selection in Mixed-Effects Models with cAIC4, ArXiv e-prints 1803.05664."
-) 
