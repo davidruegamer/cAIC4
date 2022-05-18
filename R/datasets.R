@@ -14,7 +14,7 @@ NULL
 #' @description Data analyzed by Kandala et al. (2001) which is used for demonstrative purposes to 
 #' estimate linear mixed and additive models using a stepwise procedure on the basis of the cAIC. 
 #' The full data set is 
-#' available at \url{http://www.uni-goettingen.de/de/551625.html}.
+#' available at \url{https://www.uni-goettingen.de/de/551625.html}.
 #' @docType data
 #' @references Kandala, N. B., Lang, S., Klasen, S., Fahrmeir, L. (2001): 
 #' Semiparametric Analysis of the Socio-Demographic and Spatial 

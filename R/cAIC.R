@@ -116,7 +116,7 @@
 #' @keywords regression
 #' @export
 #' @import lme4 Matrix methods RLRsim mvtnorm
-#' @importFrom stats terms.formula
+#' @importFrom stats terms.formula na.omit
 #' @importFrom stats gaussian printCoefmat residuals
 #' @importFrom utils capture.output
 #' @rawNamespace 

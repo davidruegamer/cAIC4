@@ -163,9 +163,9 @@ boxplot(t(sim))
 
 }
 \references{
-Saefken, B., Ruegamer, D., Kneib, T. and Greven, S. (2018):
+Saefken, B., Ruegamer, D., Kneib, T. and Greven, S. (2021):
 Conditional Model Selection in Mixed-Effects Models with cAIC4.
-\url{https://arxiv.org/abs/1803.05664}
+<doi:10.18637/jss.v099.i08>
 
 Saefken, B., Kneib T., van Waveren C.-S. and Greven, S. (2014) A
 unifying approach to the estimation of the conditional Akaike information in
