@@ -643,6 +643,7 @@ removeUncor <- function(res)
 removeNoInt <- function(res)
 {
   
+  # check if any of the results is an intercept
   hasInt = function(x) any(grepl("(Intercept)",x,fixed=TRUE))
   
   for(i in 1:length(res)){
