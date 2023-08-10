@@ -15,7 +15,7 @@ function(m, sigma.penalty, analytic) {
   #
   zeroLessModel <- deleteZeroComponents(m)
   if (inherits(zeroLessModel, "lm")) {
-    return(zeroLessModel$rank)
+    return(zeroLessModel$rank + sigma.penalty)
   }
   model <- getModelComponents(zeroLessModel, analytic)
   if (identical(m, zeroLessModel)) {
